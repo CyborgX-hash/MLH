@@ -125,6 +125,13 @@ class Sync:
         for key, value in repository_fields(data).items():
             setattr(self.repo, key, value)
         self.o, self.r = self.repo.owner, self.repo.name  # follow renames and transfers
+        try:
+            stats = self.gh.get_repository_stats(self.o, self.r)
+            self.repo.stats = {**stats, "fetched_at": utcnow().isoformat()}
+        except RateLimited:
+            raise
+        except Exception as exc:  # totals are informative only: never fail a sync over them
+            log.warning("could not read repository totals: %s", exc)
         return {"default_branch": self.repo.default_branch}
 
     def issues(self) -> Dict[str, Any]:

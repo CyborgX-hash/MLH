@@ -18,9 +18,24 @@ export interface DecisionSummary {
   updated_at: string
 }
 
+export interface SourceThread {
+  kind: 'issue' | 'pull_request' | 'discussion' | 'commit'
+  number: number | null
+  title: string | null
+  url: string | null
+}
+
+export interface Participant {
+  login: string
+  association: string | null
+}
+
 export interface DecisionListItem extends DecisionSummary {
   alternatives: Alternative[]
   evidence_count: number
+  verified_evidence: number
+  sources: SourceThread[]
+  participants: Participant[]
 }
 
 export interface Evidence {

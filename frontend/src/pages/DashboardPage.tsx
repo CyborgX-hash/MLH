@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { ExtractionPanel } from '../components/ExtractionPanel'
+import { RepoNumbers } from '../components/RepoNumbers'
 import { SyncProgress } from '../components/SyncProgress'
 import { ErrorBox, Section, Spinner, Stat } from '../components/ui'
 import { useApi } from '../hooks/useApi'
@@ -9,8 +10,17 @@ import { useRepo } from '../lib/repoContext'
 import { btn, cardPad, link, muted } from '../lib/ui'
 import { getOverview, syncRepository } from '../services/api'
 
+// "extractor:qwen/qwen3.6-27b" → "AI extraction (qwen3.6-27b)"; "github:alice" → "@alice"
+function actorLabel(actor: string) {
+  if (actor.startsWith('extractor:')) {
+    const model = actor.slice('extractor:'.length)
+    return model === 'manual-ui-check' ? 'a hand-written test candidate' : `AI extraction (${model.split('/').pop()})`
+  }
+  return actor.startsWith('github:') ? `@${actor.slice('github:'.length)}` : actor
+}
+
 const EVENT_LABEL: Record<string, string> = {
-  created: 'recorded',
+  created: 'found',
   reviewed: 'reviewed',
   superseded: 'superseded',
   supersedes: 'now supersedes an earlier decision',
@@ -38,20 +48,21 @@ export function DashboardPage() {
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_22rem]">
       <div className="space-y-8">
-        <Section title="Overview">
+        <Section title="Decisions">
           {overview.error && <ErrorBox message={overview.error} onRetry={overview.reload} />}
           {!c && !overview.error && <Spinner />}
           {c && (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <Stat label="Discussions collected" value={c.discussions_collected}
-                hint={`${c.issues} issues · ${c.pull_requests} PRs · ${c.discussions} discussions`} />
-              <Stat label="Comments & reviews" value={c.comments} />
-              <Stat label="Decisions extracted" value={c.decisions} hint={`${c.accepted} accepted · ${c.superseded} superseded`} />
-              <Stat label="Unresolved decisions" value={c.unresolved} hint={`${c.needs_review} need human review`} />
-              <Stat label="Rejected alternatives" value={c.rejected_alternatives} />
-              <Stat label="Commits · files" value={`${c.commits} · ${c.source_files}`} />
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <Stat label="Decisions found" value={c.decisions} hint={`${c.accepted} accepted · ${c.superseded} superseded`} />
+              <Stat label="Still unresolved" value={c.unresolved} hint="no maintainer stated an outcome" />
+              <Stat label="Waiting for a maintainer" value={c.needs_review} hint="confirm in Conflict review" />
+              <Stat label="Options rejected" value={c.rejected_alternatives} hint="with a recorded objection" />
             </div>
           )}
+        </Section>
+
+        <Section title="Repository numbers">
+          {overview.data ? <RepoNumbers repo={repo} overview={overview.data} /> : !overview.error && <Spinner />}
         </Section>
 
         <Section title="Recent decision activity" aside={<Link to="decisions" className={`text-sm ${link}`}>All decisions</Link>}>
@@ -64,7 +75,7 @@ export function DashboardPage() {
             {overview.data?.recent_activity.map((a, i) => (
               <li key={i} className="text-sm">
                 <Link to={`decisions/${a.decision_id}`} className={link}>{a.topic}</Link>{' '}
-                <span className={muted}>{EVENT_LABEL[a.event] ?? a.event} by {a.actor} · {new Date(a.at).toLocaleString()}</span>
+                <span className={muted}>{EVENT_LABEL[a.event] ?? a.event} by {actorLabel(a.actor)} · {new Date(a.at).toLocaleString()}</span>
               </li>
             ))}
           </ul>

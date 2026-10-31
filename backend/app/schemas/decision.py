@@ -76,6 +76,9 @@ class DecisionSummary(BaseModel):
 class DecisionListItem(DecisionSummary):
     alternatives: List["AlternativeOut"] = []
     evidence_count: int = 0
+    verified_evidence: int = 0
+    sources: List[Dict[str, Any]] = []  # threads it was discussed in: kind, number, title, url
+    participants: List[Dict[str, Any]] = []  # login, association
 
 
 class DecisionOut(DecisionSummary):

@@ -1,7 +1,7 @@
 from typing import Callable, List, Optional
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, require_admin
@@ -14,6 +14,7 @@ from app.schemas.extraction import CandidateDecision
 from app.services.evidence.authority import Reviewer, verify_reviewer
 from app.services.evidence.records import ReviewError, create_decision, review_decision, supersede_decision
 from app.services.evidence.validator import Result, validate
+from app.services.linking.history import decision_records, describe
 from app.services.github.errors import GitHubError, Unauthorized
 
 router = APIRouter(tags=["decisions"])
@@ -120,10 +121,20 @@ def list_decisions(
     for d in db.scalars(q):
         alts = db.scalars(select(DecisionAlternative).where(DecisionAlternative.decision_id == d.id)
                           .order_by(DecisionAlternative.id)).all()
-        n = db.scalar(select(func.count()).select_from(DecisionEvidence).where(
-            DecisionEvidence.decision_id == d.id, DecisionEvidence.verification_state != "unsupported")) or 0
-        out.append(DecisionListItem(**DecisionSummary.model_validate(d).model_dump(),
-                                    alternatives=[AlternativeOut.model_validate(a) for a in alts], evidence_count=n))
+        ev = db.scalars(select(DecisionEvidence).where(
+            DecisionEvidence.decision_id == d.id, DecisionEvidence.verification_state != "unsupported")
+            .order_by(DecisionEvidence.id)).all()
+        people: dict = {}
+        for e in ev:
+            if e.author_login and e.author_login not in people:
+                people[e.author_login] = {"login": e.author_login, "association": e.author_association}
+        threads = [describe(db, k) for k in sorted(decision_records(db, d.id))]
+        sources = [{k: t.get(k) for k in ("kind", "number", "title", "url")} for t in threads if not t.get("missing")]
+        out.append(DecisionListItem(
+            **DecisionSummary.model_validate(d).model_dump(),
+            alternatives=[AlternativeOut.model_validate(a) for a in alts], evidence_count=len(ev),
+            verified_evidence=sum(e.verification_state == "verified" for e in ev),
+            sources=sources, participants=list(people.values())))
     return out
 
 

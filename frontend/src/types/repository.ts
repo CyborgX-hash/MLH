@@ -23,6 +23,22 @@ export interface SyncJob {
   finished_at: string | null
 }
 
+/** Totals as GitHub reports them, fetched during the last sync. Null fields could not be counted. */
+export interface RepoStats {
+  open_issues: number | null
+  closed_issues: number | null
+  open_prs: number | null
+  merged_prs: number | null
+  closed_prs: number | null
+  commits: number | null
+  discussions: number | null
+  discussions_enabled: boolean
+  stars: number | null
+  forks: number | null
+  source: 'graphql' | 'rest'
+  fetched_at: string
+}
+
 export interface Repository {
   id: number
   owner: string
@@ -39,6 +55,7 @@ export interface Repository {
   connected_at: string
   last_synced_at: string | null
   latest_job: SyncJob | null
+  stats: RepoStats | null
 }
 
 export interface RepositoryDetail extends Repository {
