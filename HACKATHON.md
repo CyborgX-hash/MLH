@@ -1,13 +1,13 @@
 # Hackathon Submission
 
 ## Team Information
-- **Team Name:** CyborgX
+- **Team Name:** [TEAM NAME]
 - **Team Members:**
   - Mihika Mathur
   - Saksham Sontakke
 
 ## Selected Problem Statement
-- **Problem Name:** Decentralized Trust Network for Open Source Contributions
+- **Problem Statement:** Problem 7 – Decentralized Trust Network for Open Source Contributions
 - **Category:** Open Source Security | Reputation Systems | Distributed Trust
 - **Problem Description:**  
   AI-powered development tools have made it easier to generate large volumes of code, issues, and pull requests. This has increased the risk of low-quality contributions, spam, and coordinated abuse targeting multiple open-source repositories. Individual open-source projects generally evaluate contributors independently and cannot easily share reputation information.
@@ -58,3 +58,4 @@ We propose a decentralized trust network for open-source repositories designed t
 - **Evidence-Backed Reputation Records:** Anchoring vouch and denouncement entries with concrete, auditable evidence (pull requests, commit diffs, review logs).
 - **Cross-Repository Suspicious Activity Detection:** Semantic clustering and temporal analysis to pinpoint cross-repository coordinated spam waves.
 - **Reputation Evaluation and Visualization:** Developing maintainer tooling and visual dashboards for transparent, explainable reputation insights.
+

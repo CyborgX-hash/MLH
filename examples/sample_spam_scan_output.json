@@ -1,0 +1,29 @@
+{
+  "is_flagged": true,
+  "confidence": 0.94,
+  "threat_level": "CRITICAL",
+  "coordinated_campaign_id": "CAMP-74102",
+  "reused_across_repos_count": 3,
+  "similar_submissions": [
+    {
+      "repo_name": "apache/spark",
+      "contributor_handle": "campaign_bot_alpha",
+      "title": "Update README.md to improve project documentation clarity",
+      "similarity_score": 0.98,
+      "timestamp": 1729831200
+    },
+    {
+      "repo_name": "facebook/react",
+      "contributor_handle": "campaign_bot_beta",
+      "title": "Update README.md to improve repository documentation clarity",
+      "similarity_score": 0.94,
+      "timestamp": 1729838400
+    }
+  ],
+  "reasons": [
+    "Contains generic AI/bot boilerplate phrasing: 'kindly merge this pr'",
+    "Superficial whitespace modification detected without functional code change.",
+    "Coordinated Cross-Repo Campaign: Highly similar submissions detected across 2 other repositories within 24h."
+  ],
+  "ai_analysis": "Flagged by sentence-transformers/all-MiniLM-L6-v2 embedding pipeline. Confidence: 94%. High probability of automated campaign spam targeting open-source repositories."
+}
