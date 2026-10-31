@@ -62,3 +62,16 @@ def test_health_against_real_database():
     r = TestClient(app).get("/api/health")
     assert r.status_code == 200, r.text
     assert r.json()["database"]["pgvector"] is True
+
+
+@pytest.mark.parametrize("given,expected", [
+    ("postgres://u:p@db.example.com:5432/app?sslmode=require",
+     "postgresql+psycopg://u:p@db.example.com:5432/app?sslmode=require"),
+    ("postgresql://u:p@ep-x.neon.tech/neondb?sslmode=require&channel_binding=require",
+     "postgresql+psycopg://u:p@ep-x.neon.tech/neondb?sslmode=require&channel_binding=require"),
+    ("postgresql+psycopg://u:p@localhost:5433/decitrace", "postgresql+psycopg://u:p@localhost:5433/decitrace"),
+])
+def test_hosted_database_urls_get_the_psycopg_driver(monkeypatch, given, expected):
+    from app.core.config import Settings
+    monkeypatch.setenv("DATABASE_URL", given)
+    assert Settings().database_url == expected
