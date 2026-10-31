@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { useRepositoryDetail } from '../hooks/useRepositoryDetail'
 import { syncRepository } from '../services/api'
+import { DecisionList } from './DecisionList'
 import { SyncProgress } from './SyncProgress'
 
 export function RepositoryPanel({ id, onChanged }: { id: number; onChanged: () => void }) {
@@ -79,6 +80,9 @@ export function RepositoryPanel({ id, onChanged }: { id: number; onChanged: () =
 
       <h3 className="mt-6 mb-2 font-medium">Ingestion</h3>
       {job ? <SyncProgress job={job} /> : <p className="text-sm text-slate-500">Not synced yet.</p>}
+
+      <h3 className="mt-6 mb-2 font-medium">Decisions</h3>
+      <DecisionList repoId={repo.id} />
     </section>
   )
 }

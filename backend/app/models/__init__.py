@@ -1,5 +1,6 @@
 """ORM models. Import every model module here so Alembic sees it in Base.metadata."""
 from app.db.base import Base
+from app.models.decisions import Decision, DecisionAlternative, DecisionEvent, DecisionEvidence, DecisionReview
 from app.models.github import (
     Comment,
     Commit,
@@ -13,6 +14,7 @@ from app.models.github import (
 )
 
 __all__ = [
+    "Decision", "DecisionAlternative", "DecisionEvent", "DecisionEvidence", "DecisionReview",
     "Base", "Comment", "Commit", "Discussion", "Issue", "PullRequest", "PullRequestFile", "Repository",
     "SourceFile", "SyncJob",
 ]

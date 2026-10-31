@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '../lib/env'
+import type { Decision, DecisionSummary, ReviewRequest } from '../types/decision'
 import type { Health } from '../types/health'
 import type { Repository, RepositoryDetail, SyncJob } from '../types/repository'
 
@@ -57,5 +58,14 @@ export const connectRepository = (url: string) => request<RepositoryDetail>('/ap
 export const listRepositories = (signal?: AbortSignal) => request<Repository[]>('/api/repositories', { signal })
 export const getRepository = (id: number, signal?: AbortSignal) =>
   request<RepositoryDetail>(`/api/repositories/${id}`, { signal })
+export const listDecisions = (repoId: number, signal?: AbortSignal) =>
+  request<DecisionSummary[]>(`/api/repositories/${repoId}/decisions`, { signal })
+export const getDecision = (id: number, signal?: AbortSignal) => request<Decision>(`/api/decisions/${id}`, { signal })
+// The reviewer's own GitHub token proves identity and repository access. It is sent once and never stored.
+export const reviewDecision = (id: number, body: ReviewRequest, githubToken: string) =>
+  request<Decision>(`/api/decisions/${id}/reviews`, {
+    ...json(body),
+    headers: { 'Content-Type': 'application/json', 'X-GitHub-Token': githubToken },
+  })
 export const syncRepository = (id: number, full = false) =>
   request<SyncJob>(`/api/repositories/${id}/sync?full=${full}`, { method: 'POST' })

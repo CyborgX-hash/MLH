@@ -176,7 +176,11 @@ class GitHubClient:
     # ------------------------------------------------------------------ REST
 
     def get_repository(self, owner: str, repo: str) -> dict:
+        """With a token, the response includes `permissions` for the authenticated user."""
         return self._get(self._repo(owner, repo))
+
+    def get_authenticated_user(self) -> dict:
+        return self._get("/user")
 
     def get_repository_tree(self, owner: str, repo: str, ref: str) -> dict:
         """Recursive tree listing (paths, blob SHAs, sizes). Never downloads file contents."""

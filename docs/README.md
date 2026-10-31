@@ -27,7 +27,7 @@ repo URL → collectors (GitHub REST/GraphQL, Discourse) → messages (original 
 | M3 | Discourse collector + PEP mode (port from `decisionlens`) | |
 | M4 | Linker and threading | |
 | M5 | Extractor through an OpenAI-compatible client | |
-| M6 | Validator and status rules | |
+| M6 | Evidence validator, status rules, conflict detection, authorised human review, audit history | done |
 | M7 | Code linking with renames | |
 | M8 | Embeddings and grounded `/ask` | |
 | M9 | PR check | |
