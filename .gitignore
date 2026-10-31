@@ -34,3 +34,7 @@ htmlcov/
 *.sqlite3
 *.db
 *.log
+
+# Node / frontend
+node_modules/
+*.tsbuildinfo
