@@ -87,6 +87,7 @@ class Result:
     alternatives: List[AltResult]
     checks: List[Check]
     notes: List[str]
+    merged_into: Optional[int] = None  # set when the candidate duplicated an existing decision
 
     @property
     def can_create(self) -> bool:

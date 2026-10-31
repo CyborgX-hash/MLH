@@ -24,11 +24,54 @@ def snapshot(db: Session, d: Decision) -> Dict[str, Any]:
     }
 
 
+def _store_checks(db: Session, decision_id: int, result: Result) -> None:
+    for c in result.checks:  # unsupported checks are stored too, flagged, so nothing disappears silently
+        s = c.source
+        db.add(DecisionEvidence(
+            decision_id=decision_id, claim_type=c.claim_type, claim_text=c.claim_text, alternative=c.alternative,
+            stance=c.stance, is_explicit=c.is_explicit, source_id=c.ref.source_id,
+            source_kind=s.kind if s else None, source_db_id=s.db_id if s else None,
+            html_url=s.html_url if s else None, author_login=s.author_login if s else None,
+            author_association=s.author_association if s else None, quote=c.quote,
+            verification_state=c.state, flags=c.flags,
+        ))
+
+
+def _merge_into(db: Session, d: Decision, result: Result, cand: CandidateDecision) -> Decision:
+    """Attach a duplicate candidate's validated evidence to the existing decision. Never changes its outcome:
+    a different outcome or a new conflict only flags the decision for human review."""
+    before = snapshot(db, d)
+    _store_checks(db, d.id, result)
+    notes = [f"Merged a related candidate ('{cand.topic}') from linked sources."]
+    differs = (result.decision or None) != (d.decision or None) or result.status != d.status
+    if (differs or result.conflict_detected) and d.determination != "human_confirmed":
+        d.requires_human_review = True
+        d.verification_state = "needs_human_review"
+        notes.append("The related sources suggest a different outcome or a conflict: needs human review.")
+    if result.conflict_detected:
+        d.conflict_detected = True
+    d.validation_notes = list(d.validation_notes or []) + notes + result.notes
+    db.add(DecisionEvent(decision_id=d.id, event="merged_duplicate", actor=f"extractor:{cand.model or 'unknown'}",
+                         snapshot=before, details={"candidate_topic": cand.topic, "candidate_decision": result.decision,
+                                                   "candidate_status": result.status, "notes": notes}))
+    db.commit()
+    db.refresh(d)
+    result.merged_into = d.id
+    return d
+
+
 def create_decision(db: Session, repo: Repository, cand: CandidateDecision) -> Tuple[Optional[Decision], Result]:
-    """Validate first; store only if at least some evidence is real. Unsupported candidates are refused."""
+    """Validate first; store only if at least some evidence is real. Unsupported candidates are refused.
+    A candidate about a decision already recorded from explicitly linked sources is merged, not duplicated."""
+    from app.services.linking.history import find_duplicate, records_for_sources
+
     result = validate(db, repo, cand)
     if not result.can_create:
         return None, result
+    cited = records_for_sources(db, ((c.source.kind, c.source.db_id) for c in result.checks if c.ok and c.source))
+    duplicate = find_duplicate(db, repo.id, result.topic, result.decision or cand.decision, cited)
+    if duplicate is not None:
+        return _merge_into(db, duplicate, result, cand), result
     d = Decision(
         repository_id=repo.id, topic=result.topic, problem=result.problem, decision=result.decision,
         status=result.status, determination=result.determination, verification_state=result.verification_state,
@@ -40,16 +83,7 @@ def create_decision(db: Session, repo: Repository, cand: CandidateDecision) -> T
     for a in result.alternatives:
         db.add(DecisionAlternative(decision_id=d.id, name=a.name, status=a.status, proposed_status=a.proposed_status,
                                    rejection_reason=a.rejection_reason, verification_state=a.verification_state))
-    for c in result.checks:  # unsupported checks are stored too, flagged, so nothing disappears silently
-        s = c.source
-        db.add(DecisionEvidence(
-            decision_id=d.id, claim_type=c.claim_type, claim_text=c.claim_text, alternative=c.alternative,
-            stance=c.stance, is_explicit=c.is_explicit, source_id=c.ref.source_id,
-            source_kind=s.kind if s else None, source_db_id=s.db_id if s else None,
-            html_url=s.html_url if s else None, author_login=s.author_login if s else None,
-            author_association=s.author_association if s else None, quote=c.quote,
-            verification_state=c.state, flags=c.flags,
-        ))
+    _store_checks(db, d.id, result)
     db.add(DecisionEvent(decision_id=d.id, event="created", actor=d.created_by, snapshot={},
                          details={"notes": result.notes}))
     db.commit()

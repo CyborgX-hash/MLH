@@ -25,10 +25,10 @@ repo URL → collectors (GitHub REST/GraphQL, Discourse) → messages (original 
 | M1 | Backend and frontend scaffold, Postgres + pgvector, health check | done |
 | M2 | GitHub client and incremental ingestion (issues, PRs, reviews, discussions, commits, code) | done |
 | M3 | Discourse collector + PEP mode (port from `decisionlens`) | |
-| M4 | Linker and threading | |
+| M4 | Cross-source linking (verified vs possible), decision deduplication | done |
 | M5 | Extractor through an OpenAI-compatible client | |
 | M6 | Evidence validator, status rules, conflict detection, authorised human review, audit history | done |
-| M7 | Code linking with renames | |
+| M7 | Decision-to-code mapping with renames, deletions and later changes | done |
 | M8 | Embeddings and grounded `/ask` | |
 | M9 | PR check | |
 | M10 | UI: intake, decisions, ask, PR check, review queue | |

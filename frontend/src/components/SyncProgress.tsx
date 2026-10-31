@@ -8,6 +8,7 @@ const STAGES: [string, string][] = [
   ['discussions', 'Fetching discussions'],
   ['commits', 'Fetching commits'],
   ['code', 'Fetching code'],
+  ['links', 'Linking related records'],
 ]
 
 const ICON: Record<string, string> = { pending: '○', running: '◌', done: '✓', skipped: '–', failed: '✕' }
@@ -27,6 +28,7 @@ function detail(p: StageProgress): string {
   if (typeof p.review_comments === 'number') parts.push(`${p.review_comments} review comments`)
   if (typeof p.comments === 'number') parts.push(`${p.comments} comments`)
   if (typeof p.selected === 'number') parts.push(`${p.selected} files selected, ${p.unchanged ?? 0} unchanged`)
+  if (typeof p.verified === 'number') parts.push(`${p.verified} verified links, ${p.possible ?? 0} possible`)
   if (p.truncated) parts.push('limited to the most recent items')
   return parts.join(' · ')
 }
