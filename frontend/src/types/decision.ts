@@ -18,6 +18,11 @@ export interface DecisionSummary {
   updated_at: string
 }
 
+export interface DecisionListItem extends DecisionSummary {
+  alternatives: Alternative[]
+  evidence_count: number
+}
+
 export interface Evidence {
   claim_type: string
   claim_text: string

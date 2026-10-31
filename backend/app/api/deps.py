@@ -26,7 +26,10 @@ def get_github_client(settings: Settings = Depends(get_settings)) -> Iterator[Gi
 
 def get_sync_runner(settings: Settings = Depends(get_settings)) -> SyncRunner:
     def runner(job_id: int) -> None:
-        run_sync(job_id, SessionLocal, lambda: make_github_client(settings))
+        from app.services.ai.client import AIClient
+
+        run_sync(job_id, SessionLocal, lambda: make_github_client(settings),
+                 ai_factory=lambda: AIClient.from_settings(settings))
 
     return runner
 

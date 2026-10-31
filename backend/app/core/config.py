@@ -17,10 +17,16 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://decitrace:decitrace@localhost:5433/decitrace"
     cors_origins: List[str] = Field(default_factory=lambda: ["http://localhost:5173"])
 
-    # Used by later milestones; declared now so configuration is documented in one place.
     github_token: Optional[str] = None
-    llm_base_url: str = "http://localhost:11434/v1"
-    llm_model: str = "qwen2.5:1.5b"
+
+    # Any OpenAI-compatible endpoint serving open-weight models: Ollama (default), vLLM, llama.cpp server,
+    # or a hosted provider. The API key is only sent to that endpoint, never to the frontend.
+    ai_provider: str = "ollama"
+    ai_base_url: str = "http://localhost:11434/v1"
+    ai_model: str = "qwen3:8b"
+    ai_api_key: Optional[str] = None
+    ai_embed_model: Optional[str] = "qwen3-embedding:0.6b"  # empty disables vector search (full-text only)
+    ai_timeout: float = 180.0
 
 
 @lru_cache

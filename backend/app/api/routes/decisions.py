@@ -1,13 +1,13 @@
 from typing import Callable, List, Optional
 
 from fastapi import APIRouter, Depends, Header, HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
 from app.models import Decision, DecisionAlternative, DecisionEvent, DecisionEvidence, DecisionReview, Repository
 from app.schemas.decision import (
-    AlternativeOut, DecisionOut, DecisionSummary, EventOut, EvidenceOut, ReviewOut, ReviewRequest, SupersedeRequest,
+    AlternativeOut, DecisionListItem, DecisionOut, DecisionSummary, EventOut, EvidenceOut, ReviewOut, ReviewRequest, SupersedeRequest,
     ValidationReport,
 )
 from app.schemas.extraction import CandidateDecision
@@ -101,13 +101,21 @@ def create(repository_id: int, cand: CandidateDecision, db: Session = Depends(ge
     return _out(db, d)
 
 
-@router.get("/repositories/{repository_id}/decisions", response_model=List[DecisionSummary])
+@router.get("/repositories/{repository_id}/decisions", response_model=List[DecisionListItem])
 def list_decisions(repository_id: int, status_filter: Optional[str] = None, db: Session = Depends(get_db)):
     _repo(db, repository_id)
     q = select(Decision).where(Decision.repository_id == repository_id)
     if status_filter:
         q = q.where(Decision.status == status_filter)
-    return db.scalars(q.order_by(Decision.requires_human_review.desc(), Decision.id.desc())).all()
+    out = []
+    for d in db.scalars(q.order_by(Decision.requires_human_review.desc(), Decision.id.desc())):
+        alts = db.scalars(select(DecisionAlternative).where(DecisionAlternative.decision_id == d.id)
+                          .order_by(DecisionAlternative.id)).all()
+        n = db.scalar(select(func.count()).select_from(DecisionEvidence).where(
+            DecisionEvidence.decision_id == d.id, DecisionEvidence.verification_state != "unsupported")) or 0
+        out.append(DecisionListItem(**DecisionSummary.model_validate(d).model_dump(),
+                                    alternatives=[AlternativeOut.model_validate(a) for a in alts], evidence_count=n))
+    return out
 
 
 @router.get("/decisions/{decision_id}", response_model=DecisionOut)

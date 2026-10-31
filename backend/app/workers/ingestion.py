@@ -24,7 +24,7 @@ from app.services.github.files import select_files
 
 log = logging.getLogger(__name__)
 
-STAGES = ["metadata", "issues", "issue_comments", "pull_requests", "discussions", "commits", "code", "links"]
+STAGES = ["metadata", "issues", "issue_comments", "pull_requests", "discussions", "commits", "code", "links", "index"]
 STAGE_LABELS = {
     "queued": "Waiting to start",
     "metadata": "Repository connected",
@@ -35,6 +35,7 @@ STAGE_LABELS = {
     "commits": "Fetching commits",
     "code": "Fetching code",
     "links": "Linking related records",
+    "index": "Building the knowledge base",
     "done": "Processing completed",
     "failed": "Processing failed",
 }
@@ -109,8 +110,10 @@ def repository_fields(data: dict) -> Dict[str, Any]:
 
 
 class Sync:
-    def __init__(self, db: Session, gh: GitHubClient, repo: Repository, job: SyncJob, limits: Limits):
+    def __init__(self, db: Session, gh: GitHubClient, repo: Repository, job: SyncJob, limits: Limits,
+                 ai_factory: Optional[Callable[[], Any]] = None):
         self.db, self.gh, self.repo, self.job, self.limits = db, gh, repo, job, limits
+        self.ai_factory = ai_factory
         self.o, self.r = repo.owner, repo.name
         self.cursors: Dict[str, str] = {} if job.full else dict(repo.sync_cursors or {})
 
@@ -313,6 +316,17 @@ class Sync:
 
         return rebuild_links(self.db, self.repo)
 
+    def index(self) -> Dict[str, Any]:
+        """Knowledge-base chunks (+ embeddings when an embedding model is available). No GitHub requests."""
+        from app.services.retrieval.indexer import build_index
+
+        ai = self.ai_factory() if self.ai_factory else None
+        try:
+            return build_index(self.db, self.repo, ai)
+        finally:
+            if ai is not None:
+                ai.close()
+
     # ------------------------------------------------------------------ helpers
 
     def _comment(self, c: dict, kind: str, parent_kind: str, number: int, review_state=None, path=None,
@@ -336,6 +350,7 @@ def run_sync(
     session_factory: Callable[[], Session],
     client_factory: Callable[[], GitHubClient],
     limits: Optional[Limits] = None,
+    ai_factory: Optional[Callable[[], Any]] = None,
 ) -> None:
     db = session_factory()
     gh = client_factory()
@@ -349,7 +364,7 @@ def run_sync(
         job.progress = {s: {"status": "pending"} for s in STAGES}
         db.commit()
 
-        sync = Sync(db, gh, repo, job, limits or Limits.for_token(gh.has_token))
+        sync = Sync(db, gh, repo, job, limits or Limits.for_token(gh.has_token), ai_factory)
         new_cursors: Dict[str, str] = {}
         errors: List[Dict[str, Any]] = []
         failed = False
