@@ -177,6 +177,12 @@ class FakeGitHub:
 
     def _graphql(self, body: dict) -> httpx.Response:
         variables = body["variables"]
+        if "openIssues" in body["query"]:
+            return httpx.Response(200, json={"data": {"repository": {
+                "openIssues": {"totalCount": 2}, "closedIssues": {"totalCount": 5}, "openPRs": {"totalCount": 1},
+                "mergedPRs": {"totalCount": 9}, "closedPRs": {"totalCount": 0}, "discussions": {"totalCount": 1},
+                "hasDiscussionsEnabled": self.repo.get("has_discussions", False), "stargazerCount": 7,
+                "forkCount": 1, "defaultBranchRef": {"target": {"history": {"totalCount": 42}}}}}})
         if "discussions(" in body["query"]:
             enabled = self.repo.get("has_discussions", False)
             return httpx.Response(200, json={"data": {"repository": {

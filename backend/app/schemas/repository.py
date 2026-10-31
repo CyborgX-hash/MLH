@@ -41,6 +41,7 @@ class RepositoryOut(BaseModel):
     connected_at: datetime
     last_synced_at: Optional[datetime]
     latest_job: Optional[SyncJobOut] = None
+    stats: Optional[Dict[str, Any]] = None
 
 
 class RepositoryCounts(BaseModel):

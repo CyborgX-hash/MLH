@@ -17,6 +17,10 @@ export interface Overview {
     rejected_alternatives: number
   }
   recent_activity: { decision_id: number; topic: string; event: string; actor: string; at: string }[]
+  /** How the last finished sync ran: with a GitHub token (large sample) or without (small sample). */
+  sync: { authenticated: boolean | null; limits: Record<string, number> | null; finished_at: string | null }
+  /** The threads with the most discussion that DeciTrace collected, with whether extraction has read them. */
+  top_threads: { kind: string; number: number; title: string | null; url: string; comments: number; analysed: boolean }[]
 }
 
 export interface TimelineEvent {

@@ -37,6 +37,8 @@ class Repository(Base):
     gh_pushed_at: Mapped[Optional[datetime]] = mapped_column(TZ)
     connected_at: Mapped[datetime] = mapped_column(TZ, server_default=func.now())
     last_synced_at: Mapped[Optional[datetime]] = mapped_column(TZ)
+    # Totals as GitHub reports them (open/closed issues, PRs, commits, discussions), refreshed every sync.
+    stats: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB)
     # Per-stage "fetched everything updated up to" timestamps, for incremental sync.
     sync_cursors: Mapped[Dict[str, str]] = mapped_column(JSONB, default=dict)
 

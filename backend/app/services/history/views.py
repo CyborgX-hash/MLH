@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 
 from app.models import (
     Comment, Commit, Decision, DecisionAlternative, DecisionCodeLink, DecisionEvent, DecisionEvidence, DecisionReview,
-    Discussion, Issue, PullRequest, Repository, SourceFile,
+    Discussion, ExtractedThread, Issue, PullRequest, Repository, SourceFile, SyncJob,
 )
 from app.services.impact.code_map import map_decision
 from app.services.linking.history import RECORD_MODELS, describe, record_of, related_graph
@@ -39,6 +39,8 @@ def overview(db: Session, repo: Repository) -> Dict:
     ).all()
     issues, prs, discussions = count(Issue), count(PullRequest), count(Discussion)
     return {
+        "sync": _sync_mode(db, rid),
+        "top_threads": _top_threads(db, rid),
         "counts": {
             "issues": issues, "pull_requests": prs, "discussions": discussions,
             "discussions_collected": issues + prs + discussions, "comments": count(Comment), "commits": count(Commit),
@@ -54,6 +56,42 @@ def overview(db: Session, repo: Repository) -> Dict:
             for e, topic in recent
         ],
     }
+
+
+def _sync_mode(db: Session, repo_id: int) -> Dict:
+    """Whether the last finished sync had a GitHub token, read from the rate limit GitHub reported."""
+    from dataclasses import asdict
+
+    from app.workers.ingestion import Limits
+
+    job = db.scalars(select(SyncJob).where(SyncJob.repository_id == repo_id, SyncJob.status.in_(("completed", "partial")))
+                     .order_by(SyncJob.id.desc())).first()
+    limit = ((job.progress or {}).get("rate_limit") or {}).get("limit") if job else None
+    authenticated = None if limit is None else limit > 60
+    return {"authenticated": authenticated,
+            "limits": asdict(Limits.for_token(authenticated)) if authenticated is not None else None,
+            "finished_at": job.finished_at if job else None}
+
+
+def _top_threads(db: Session, repo_id: int, n: int = 8) -> List[Dict]:
+    rows = db.execute(
+        select(Comment.parent_kind, Comment.parent_number, func.count().label("c"))
+        .where(Comment.repository_id == repo_id).group_by(Comment.parent_kind, Comment.parent_number)
+        .order_by(func.count().desc()).limit(n)).all()
+    analysed = {(k, i) for k, i in db.execute(select(ExtractedThread.record_kind, ExtractedThread.record_id)
+                                              .where(ExtractedThread.repository_id == repo_id))}
+    repo = db.get(Repository, repo_id)
+    path = {"issue": "issues", "pull_request": "pull", "discussion": "discussions"}
+    out = []
+    for kind, number, comments in rows:
+        model = RECORD_MODELS[kind]
+        rec = db.scalar(select(model).where(model.repository_id == repo_id, model.number == number))
+        # Comments arrive through GitHub's repository-wide feed, so a busy older thread can be present without its
+        # issue/PR record (older than the most recent ones collected). Link it by GitHub's standard URL.
+        out.append({"kind": kind, "number": number, "title": rec.title if rec else None,
+                    "url": rec.html_url if rec else f"{repo.html_url}/{path[kind]}/{number}",
+                    "comments": comments, "analysed": rec is not None and (kind, rec.id) in analysed})
+    return out
 
 
 def _source_time(db: Session, kind: Optional[str], db_id: Optional[int]) -> Optional[datetime]:

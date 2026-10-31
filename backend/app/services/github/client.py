@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import base64
+import re
 import time
 from typing import Any, Callable, Dict, Iterator, Optional
 from urllib.parse import quote
@@ -178,6 +179,47 @@ class GitHubClient:
     def get_repository(self, owner: str, repo: str) -> dict:
         """With a token, the response includes `permissions` for the authenticated user."""
         return self._get(self._repo(owner, repo))
+
+    def get_repository_stats(self, owner: str, repo: str) -> Dict[str, Any]:
+        """Totals as GitHub reports them. One GraphQL query with a token; without one, REST search counts
+        (Discussions cannot be counted without a token). Values that cannot be read are None."""
+        if self.has_token:
+            data = self.graphql(STATS_QUERY, {"owner": owner, "name": repo}).get("repository") or {}
+            history = ((data.get("defaultBranchRef") or {}).get("target") or {}).get("history") or {}
+            total = lambda k: (data.get(k) or {}).get("totalCount")  # noqa: E731
+            return {
+                "open_issues": total("openIssues"), "closed_issues": total("closedIssues"),
+                "open_prs": total("openPRs"), "merged_prs": total("mergedPRs"), "closed_prs": total("closedPRs"),
+                "commits": history.get("totalCount"), "discussions": total("discussions"),
+                "discussions_enabled": bool(data.get("hasDiscussionsEnabled")),
+                "stars": data.get("stargazerCount"), "forks": data.get("forkCount"), "source": "graphql",
+            }
+        base = f"repo:{owner}/{repo}"
+        def search(q: str) -> Optional[int]:
+            try:
+                return int(self._get("/search/issues", {"q": f"{base} {q}", "per_page": 1}).get("total_count"))
+            except (GitHubError, TypeError, ValueError):
+                return None
+        meta = self.get_repository(owner, repo)
+        return {
+            "open_issues": search("is:issue is:open"), "closed_issues": search("is:issue is:closed"),
+            "open_prs": search("is:pr is:open"), "merged_prs": search("is:pr is:merged"),
+            "closed_prs": search("is:pr is:closed is:unmerged"), "commits": self.count_commits(owner, repo),
+            "discussions": None, "discussions_enabled": bool(meta.get("has_discussions")),
+            "stars": meta.get("stargazers_count"), "forks": meta.get("forks_count"), "source": "rest",
+        }
+
+    def count_commits(self, owner: str, repo: str) -> Optional[int]:
+        """Commits on the default branch: with one commit per page, the last page number is the total."""
+        try:
+            resp = self._request("GET", f"{self._repo(owner, repo)}/commits", params={"per_page": 1})
+        except (GitHubError, EmptyRepository):
+            return None
+        last = resp.links.get("last", {}).get("url")
+        if not last:
+            return len(resp.json())
+        m = re.search(r"[?&]page=(\d+)", last)
+        return int(m.group(1)) if m else None
 
     def get_authenticated_user(self) -> dict:
         return self._get("/user")
@@ -352,6 +394,23 @@ class GitHubClient:
 
 
 _COMMENT_FIELDS = "id databaseId url body createdAt updatedAt authorAssociation author { login }"
+
+STATS_QUERY = """
+query($owner: String!, $name: String!) {
+  repository(owner: $owner, name: $name) {
+    openIssues: issues(states: OPEN) { totalCount }
+    closedIssues: issues(states: CLOSED) { totalCount }
+    openPRs: pullRequests(states: OPEN) { totalCount }
+    mergedPRs: pullRequests(states: MERGED) { totalCount }
+    closedPRs: pullRequests(states: CLOSED) { totalCount }
+    discussions { totalCount }
+    hasDiscussionsEnabled
+    stargazerCount
+    forkCount
+    defaultBranchRef { target { ... on Commit { history { totalCount } } } }
+  }
+}
+"""
 
 DISCUSSIONS_QUERY = """
 query($owner: String!, $name: String!, $cursor: String) {
