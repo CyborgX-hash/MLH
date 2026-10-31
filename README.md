@@ -59,8 +59,11 @@ owner/member/collaborator actually state the outcome without negating it) before
 | ![Repository dashboard with sync progress](docs/screenshots/dashboard.jpg) | ![Decision detail with timeline](docs/screenshots/decision-timeline.jpg) |
 | **Decision graph** | **Conflict review** |
 | ![Decision graph](docs/screenshots/decision-graph.jpg) | ![Conflict review](docs/screenshots/conflict-review.jpg) |
+| **Ask DeciTrace** (Qwen3.6-27B, `pallets/itsdangerous`) | |
+| ![Cited answer citing the maintainer's comments on PR #186](docs/screenshots/ask-answer.jpg) | |
 
-All screenshots show real data from the public [`psf/requests`](https://github.com/psf/requests) repository.
+All screenshots show real data from public repositories: [`psf/requests`](https://github.com/psf/requests) and, for the answer,
+[`pallets/itsdangerous`](https://github.com/pallets/itsdangerous).
 
 ## Architecture
 
@@ -118,6 +121,11 @@ ollama pull qwen3-embedding:0.6b         # enables vector search
 ```
 
 Tests: `make test` (backend tests need the database from `make db`).
+
+### Deploying for free
+
+[`render.yaml`](render.yaml) deploys the API and the frontend on Render's free plans, with Neon for PostgreSQL +
+pgvector and Qwen3.6-27B through OpenRouter. Step-by-step guide: [docs/DEPLOY.md](docs/DEPLOY.md).
 
 ## Environment variables
 

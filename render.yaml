@@ -1,0 +1,54 @@
+# Render Blueprint for DeciTrace: the FastAPI API and the React frontend on free plans.
+# The database is external (Neon or Supabase free Postgres with pgvector); see docs/DEPLOY.md.
+# Secrets use `sync: false`: Render asks for them when the Blueprint is created; they never live in this file.
+services:
+  - type: web
+    name: decitrace-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt
+    # Migrations run on every start (the free plan has no separate pre-deploy step); they are idempotent.
+    startCommand: cd backend && alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.8"
+      - key: ENVIRONMENT
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: CORS_ORIGINS  # JSON list, e.g. ["https://decitrace-web.onrender.com"]
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: DECITRACE_ADMIN_TOKEN
+        generateValue: true
+      - key: AI_PROVIDER
+        value: openrouter
+      - key: AI_BASE_URL
+        value: https://openrouter.ai/api/v1
+      - key: AI_MODEL
+        value: qwen/qwen3.6-27b
+      - key: AI_EXTRACT_MODEL
+        value: qwen/qwen3.6-27b
+      - key: AI_EMBED_MODEL  # empty: full-text retrieval (no embedding model on OpenRouter)
+        value: ""
+      - key: AI_EXTRA_BODY
+        value: '{"reasoning": {"enabled": false}}'
+      - key: AI_TIMEOUT
+        value: "300"
+      - key: AI_API_KEY
+        sync: false
+
+  - type: web
+    name: decitrace-web
+    runtime: static
+    buildCommand: cd frontend && npm ci && npm run build
+    staticPublishPath: frontend/dist
+    routes:
+      - type: rewrite  # client-side routing: every path serves the React app
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_BASE_URL  # the API's URL, e.g. https://decitrace-api.onrender.com (build time)
+        sync: false

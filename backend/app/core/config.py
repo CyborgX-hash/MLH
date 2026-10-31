@@ -5,7 +5,7 @@ Secrets such as GITHUB_TOKEN are never hard-coded; they only come from the envir
 from functools import lru_cache
 from typing import Any, Dict, List, Optional
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -33,6 +33,16 @@ class Settings(BaseSettings):
     # Provider-specific options merged into every chat request, as a JSON object. Example for OpenRouter's
     # reasoning models: {"reasoning": {"enabled": false}} so hidden reasoning does not consume the token budget.
     ai_extra_body: Dict[str, Any] = Field(default_factory=dict)
+
+    @field_validator("database_url")
+    @classmethod
+    def _use_psycopg_driver(cls, url: str) -> str:
+        """Hosted Postgres providers (Render, Neon, Supabase) hand out `postgres://` or `postgresql://` URLs;
+        SQLAlchemy needs the driver named explicitly. Query parameters such as `sslmode=require` are kept."""
+        for prefix in ("postgres://", "postgresql://"):
+            if url.startswith(prefix):
+                return "postgresql+psycopg://" + url[len(prefix):]
+        return url
 
 
 @lru_cache
