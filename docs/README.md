@@ -30,6 +30,7 @@ repo URL → collectors (GitHub REST/GraphQL, Discourse) → messages (original 
 | M6 | Evidence validator, status rules, conflict detection, authorised human review, audit history | done |
 | M7 | Decision-to-code mapping with renames, deletions and later changes | done |
 | M8 | Knowledge index (full-text + pgvector), hybrid retrieval, grounded `/ask` | done (Qwen3-8B not yet verified) |
-| M9 | PR check | |
+| M9 | PR impact analysis (deterministic, never blocks) | done |
+| M10b | Full technical and security audit, fixes ([AUDIT.md](AUDIT.md)) | done |
 | M10 | UI: landing, connect, dashboard, explorer, decision detail (timeline + graph), ask, conflict review | done |
 | M11 | PEP blind evaluation report, final examples | |

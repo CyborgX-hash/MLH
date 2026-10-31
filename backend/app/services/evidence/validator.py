@@ -13,11 +13,14 @@ import re
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Set, Tuple
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models import Comment, Commit, Discussion, Issue, PullRequest, Repository
 from app.schemas.extraction import CandidateDecision, EvidenceRef
-from app.services.evidence.text import OBJECTION_CUES, RESOLUTION_CUES, normalize, overlap, sentences, tokens
+from app.services.evidence.text import (
+    OBJECTION_CUES, RESOLUTION_CUES, names_positively, normalize, overlap, sentences, tokens,
+)
 
 VERIFIED, PARTIAL, UNSUPPORTED, REVIEW = "verified", "partially_verified", "unsupported", "needs_human_review"
 AUTHORITY = {"OWNER", "MEMBER", "COLLABORATOR"}
@@ -38,6 +41,7 @@ class Source:
     author_association: Optional[str]
     review_state: Optional[str] = None
     merged: bool = False
+    context: str = ""  # for a review: the title and description of the pull request it reviews
 
 
 @dataclass
@@ -99,8 +103,13 @@ def _load(db: Session, kind: str, db_id: int) -> Optional[Source]:
     if row is None:
         return None
     if kind == "comment":
+        context = ""
+        if row.review_state and row.parent_kind == "pull_request":
+            pr = db.scalar(select(PullRequest).where(PullRequest.repository_id == row.repository_id,
+                                                     PullRequest.number == row.parent_number))
+            context = f"{pr.title}\n{pr.body or ''}" if pr else ""
         return Source(kind, row.id, row.repository_id, row.body or "", row.html_url, row.author_login,
-                      row.author_association, review_state=row.review_state)
+                      row.author_association, review_state=row.review_state, context=context)
     if kind in ("issue", "pull_request", "discussion"):
         text = f"{row.title}\n{row.body or ''}"
         assoc = getattr(row, "author_association", None)
@@ -237,9 +246,21 @@ def validate(db: Session, repo: Repository, cand: CandidateDecision) -> Result:
         notes.append("Extractor reported a conflict that the cited positions do not show; kept for human review.")
         conflict = True
 
-    # ---- resolution: only an authoritative, explicit, verified statement settles a decision
-    explicit = [c for c in resolution if c.state == VERIFIED and c.authoritative and c.source and (
-        c.source.review_state == "APPROVED" or RESOLUTION_CUES.search(c.quote or c.source.text))]
+    # ---- resolution: only an authoritative, explicit, verified statement settles a decision, and it must name
+    # the outcome positively ("We decided on PostgreSQL, not MongoDB" never establishes "Use MongoDB").
+    def establishes(c: Check) -> bool:
+        if not (c.state == VERIFIED and c.authoritative and c.source and cand.decision):
+            return False
+        if c.source.review_state == "APPROVED":  # an approval approves the pull request it was given on
+            return names_positively(c.source.context, cand.decision)
+        statement = c.quote or c.source.text
+        return bool(RESOLUTION_CUES.search(statement)) and names_positively(statement, cand.decision)
+
+    explicit = [c for c in resolution if establishes(c)]
+    for c in resolution:
+        if c.state == VERIFIED and c.authoritative and c not in explicit and cand.decision:
+            notes.append(f"Statement by @{c.source.author_login} does not positively name '{cand.decision}'; "
+                         "it cannot establish that outcome.")
     implied = [c for c in resolution if c.ok and c not in explicit and c.source and (
         c.source.merged or c.source.kind == "commit")]
 

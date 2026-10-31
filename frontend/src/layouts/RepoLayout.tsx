@@ -36,6 +36,7 @@ export function RepoLayout() {
         <NavLink to="decisions" className={tab}>Decisions</NavLink>
         <NavLink to="ask" className={tab}>Ask DeciTrace</NavLink>
         <NavLink to="conflicts" className={tab}>Conflict review</NavLink>
+        <NavLink to="pr-impact" className={tab}>PR impact</NavLink>
       </nav>
       <div className="pt-6">
         <Outlet context={{ repo, reload } satisfies RepoContext} />

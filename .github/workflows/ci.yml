@@ -73,8 +73,12 @@ jobs:
           python-version: "3.12"
       - name: Install dependencies
         run: pip install -r requirements.txt
+      - name: Static checks (broken imports, undefined names)
+        run: pip install ruff && ruff check app tests --select F,E9 --ignore F811
       - name: Apply migrations (enables pgvector)
         run: alembic upgrade head
+      - name: Migrations match the models
+        run: alembic check
       - name: Run tests, including the live database health check
         run: python -m pytest -q
 

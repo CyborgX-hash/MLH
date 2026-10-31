@@ -1,10 +1,10 @@
 from typing import Callable, List, Optional
 
-from fastapi import APIRouter, Depends, Header, HTTPException, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_db
+from app.api.deps import get_db, require_admin
 from app.models import Decision, DecisionAlternative, DecisionEvent, DecisionEvidence, DecisionReview, Repository
 from app.schemas.decision import (
     AlternativeOut, DecisionListItem, DecisionOut, DecisionSummary, EventOut, EvidenceOut, ReviewOut, ReviewRequest, SupersedeRequest,
@@ -83,13 +83,15 @@ def _reviewer(
         raise HTTPException(status.HTTP_502_BAD_GATEWAY, f"Could not verify the reviewer with GitHub: {exc}")
 
 
-@router.post("/repositories/{repository_id}/decisions/validate", response_model=ValidationReport)
+@router.post("/repositories/{repository_id}/decisions/validate", response_model=ValidationReport,
+             dependencies=[Depends(require_admin)])
 def validate_candidate(repository_id: int, cand: CandidateDecision, db: Session = Depends(get_db)) -> ValidationReport:
     """Dry run: shows exactly what validation would do with a candidate, stores nothing."""
     return _report(validate(db, _repo(db, repository_id), cand))
 
 
-@router.post("/repositories/{repository_id}/decisions", response_model=DecisionOut, status_code=status.HTTP_201_CREATED)
+@router.post("/repositories/{repository_id}/decisions", response_model=DecisionOut, status_code=status.HTTP_201_CREATED,
+             dependencies=[Depends(require_admin)])
 def create(repository_id: int, cand: CandidateDecision, db: Session = Depends(get_db)) -> DecisionOut:
     d, result = create_decision(db, _repo(db, repository_id), cand)
     if d is None:
@@ -102,13 +104,20 @@ def create(repository_id: int, cand: CandidateDecision, db: Session = Depends(ge
 
 
 @router.get("/repositories/{repository_id}/decisions", response_model=List[DecisionListItem])
-def list_decisions(repository_id: int, status_filter: Optional[str] = None, db: Session = Depends(get_db)):
+def list_decisions(
+    repository_id: int,
+    status_filter: Optional[str] = None,
+    limit: int = Query(200, ge=1, le=500),
+    offset: int = Query(0, ge=0),
+    db: Session = Depends(get_db),
+):
     _repo(db, repository_id)
     q = select(Decision).where(Decision.repository_id == repository_id)
     if status_filter:
         q = q.where(Decision.status == status_filter)
     out = []
-    for d in db.scalars(q.order_by(Decision.requires_human_review.desc(), Decision.id.desc())):
+    q = q.order_by(Decision.requires_human_review.desc(), Decision.id.desc()).limit(limit).offset(offset)
+    for d in db.scalars(q):
         alts = db.scalars(select(DecisionAlternative).where(DecisionAlternative.decision_id == d.id)
                           .order_by(DecisionAlternative.id)).all()
         n = db.scalar(select(func.count()).select_from(DecisionEvidence).where(

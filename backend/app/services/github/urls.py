@@ -16,6 +16,23 @@ _RESERVED = {
 }
 
 
+_PR = re.compile(rf"^(?:https?://)?(?:www\.)?github\.com/(?P<owner>{_OWNER})/(?P<repo>{_REPO})/pull/(?P<num>\d{{1,9}})(?:[/?#].*)?$", re.I)
+
+
+def parse_pr_url(url: str) -> Tuple[str, str, int]:
+    """Return (owner, repo, number) for a GitHub pull request URL or raise InvalidRepositoryURL."""
+    text = (url or "").strip()
+    m = _PR.match(text) if len(text) <= 300 else None
+    if not m:
+        raise InvalidRepositoryURL(
+            "Not a GitHub pull request URL. Use the form https://github.com/<owner>/<repository>/pull/<number>."
+        )
+    owner, repo = m.group("owner"), m.group("repo")
+    if owner.lower() in _RESERVED or repo in (".", ".."):
+        raise InvalidRepositoryURL("That URL points to a GitHub page, not a pull request.")
+    return owner, repo, int(m.group("num"))
+
+
 def parse_repo_url(url: str) -> Tuple[str, str]:
     """Return (owner, repo) for a GitHub repository URL or raise InvalidRepositoryURL."""
     text = (url or "").strip()

@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import func, select
 
 from app.api.deps import get_db
+from tests.conftest import ADMIN
 from app.api.routes.decisions import get_reviewer_verifier
 from app.main import app
 from app.models import Comment, Decision, DecisionEvidence, PullRequest, Repository
@@ -188,11 +189,45 @@ def test_non_maintainer_saying_lets_go_with_is_not_a_decision(db, world):
     assert r.status == "unresolved" and r.checks[0].state == "verified"  # real comment, but no authority
 
 
-def test_maintainer_approval_review_is_explicit(db, world):
-    repo, ids = world
-    r = validate(db, repo, cand(decision="Use PostgreSQL", decision_status="accepted",
-                                resolution_evidence=[ev(ids["approve"])]))
+def _approval_on_pr(db, repo, number, title):
+    db.add(PullRequest(repository_id=repo.id, github_id=number, node_id=f"PRA{number}", number=number, title=title,
+                       state="open", html_url=f"{repo.html_url}/pull/{number}"))
+    c = Comment(repository_id=repo.id, github_id=900 + number, node_id=f"REV{number}", kind="review",
+                parent_kind="pull_request", parent_number=number, author_login="dave", author_association="OWNER",
+                body="Looks right.", review_state="APPROVED", html_url=f"{repo.html_url}/pull/{number}#pullrequestreview-1")
+    db.add(c)
+    db.commit()
+    return f"comment:{c.id}"
+
+
+def test_maintainer_approval_of_the_implementing_pr_is_explicit(db, world):
+    repo, _ = world
+    approval = _approval_on_pr(db, repo, 77, "Switch order storage to PostgreSQL")
+    r = validate(db, repo, cand(decision="Use PostgreSQL", decision_status="accepted", resolution_evidence=[ev(approval)]))
     assert (r.status, r.determination) == ("accepted", "explicit")
+
+
+def test_approval_of_an_unrelated_pr_cannot_establish_an_arbitrary_decision(db, world):
+    repo, _ = world
+    approval = _approval_on_pr(db, repo, 78, "Fix typo in README")
+    r = validate(db, repo, cand(decision="Use MongoDB", decision_status="accepted", resolution_evidence=[ev(approval)]))
+    assert r.determination != "explicit" and r.decision is None
+
+
+def test_negated_option_in_a_maintainer_statement_is_never_the_decision(db, world):
+    """Security regression: citing "We decided to go with PostgreSQL. MongoDB does not support..." must not let
+    a caller record "Use MongoDB" as explicitly accepted."""
+    repo, ids = world
+    flipped = validate(db, repo, cand(decision="Use MongoDB", decision_status="accepted",
+                                      resolution_evidence=[ev(ids["maint"])]))
+    assert flipped.determination != "explicit" and flipped.decision is None
+    assert any("does not positively name" in n for n in flipped.notes)
+    negated = comment(db, repo, 50, "dave", "OWNER", "We decided to use PostgreSQL, not MongoDB.")
+    db.commit()
+    r = validate(db, repo, cand(decision="Use MongoDB", decision_status="accepted", resolution_evidence=[ev(negated)]))
+    assert r.determination != "explicit"
+    ok = validate(db, repo, cand(decision="Use PostgreSQL", decision_status="accepted", resolution_evidence=[ev(negated)]))
+    assert ok.determination == "explicit"
 
 
 def test_missing_rejection_reason_is_stored_as_null(db, world):
@@ -267,7 +302,7 @@ def api(session_factory):
 
     app.dependency_overrides[get_db] = db_override
     app.dependency_overrides[get_reviewer_verifier] = lambda: verifier
-    yield TestClient(app)
+    yield TestClient(app, headers=ADMIN)
     app.dependency_overrides.clear()
 
 
@@ -330,3 +365,18 @@ def test_review_validation_errors(api, world):
     assert api.post(f"/api/decisions/{did}/reviews", json=no_outcome, headers=h).status_code == 422
     short = {"outcome_status": "unresolved", "explanation": "no"}
     assert api.post(f"/api/decisions/{did}/reviews", json=short, headers=h).status_code == 422
+
+
+def test_candidate_endpoints_require_the_admin_token(api, world, monkeypatch):
+    from app.core.config import get_settings
+    repo, ids = world
+    body = conflict_payload(ids)
+    for headers in ({"X-DeciTrace-Admin-Token": ""}, {"X-DeciTrace-Admin-Token": "wrong"}):
+        assert api.post(f"/api/repositories/{repo.id}/decisions", json=body, headers=headers).status_code == 401
+        assert api.post(f"/api/repositories/{repo.id}/decisions/validate", json=body, headers=headers).status_code == 401
+    monkeypatch.delenv("DECITRACE_ADMIN_TOKEN")
+    get_settings.cache_clear()
+    r = api.post(f"/api/repositories/{repo.id}/decisions", json=body)
+    assert r.status_code == 403 and "disabled" in r.json()["detail"]
+    assert api.post(f"/api/repositories/{repo.id}/index").status_code == 403
+    assert api.post(f"/api/repositories/{repo.id}/links/rebuild").status_code == 403

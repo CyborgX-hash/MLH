@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     cors_origins: List[str] = Field(default_factory=lambda: ["http://localhost:5173"])
 
     github_token: Optional[str] = None
+    # Protects endpoints that write decision candidates or rebuild indexes. Unset = those endpoints are disabled.
+    decitrace_admin_token: Optional[str] = None
 
     # Any OpenAI-compatible endpoint serving open-weight models: Ollama (default), vLLM, llama.cpp server,
     # or a hosted provider. The API key is only sent to that endpoint, never to the frontend.

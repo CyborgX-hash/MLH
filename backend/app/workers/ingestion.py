@@ -19,7 +19,7 @@ from sqlalchemy.orm import Session
 from app.db.upsert import upsert
 from app.models import Comment, Commit, Discussion, Issue, PullRequest, PullRequestFile, Repository, SourceFile, SyncJob
 from app.services.github.client import GitHubClient
-from app.services.github.errors import BinaryFile, FileTooLarge, GitHubError, GraphQLUnavailable, InvalidPath, RateLimited
+from app.services.github.errors import BinaryFile, FileTooLarge, GitHubError, InvalidPath, RateLimited
 from app.services.github.files import select_files
 
 log = logging.getLogger(__name__)
@@ -40,6 +40,7 @@ STAGE_LABELS = {
     "failed": "Processing failed",
 }
 ACTIVE = ("queued", "running")
+LOCAL_STAGES = ("links", "index")  # no GitHub requests
 # Overlap applied to incremental cursors so clock skew between GitHub and us never loses an update.
 CURSOR_SKEW = timedelta(minutes=2)
 
@@ -368,7 +369,11 @@ def run_sync(
         new_cursors: Dict[str, str] = {}
         errors: List[Dict[str, Any]] = []
         failed = False
+        rate_limited = False
         for i, stage in enumerate(STAGES):
+            if rate_limited and stage not in LOCAL_STAGES:
+                _set(job, stage, {"status": "skipped", "message": "Skipped: GitHub rate limit reached earlier."})
+                continue
             job.stage = stage
             _set(job, stage, {"status": "running"})
             db.commit()
@@ -387,14 +392,17 @@ def run_sync(
                 message = str(exc) if expected else f"Internal error ({exc.__class__.__name__})."
                 errors.append({"stage": stage, "error": exc.__class__.__name__, "message": message})
                 _set(job, stage, {"status": "failed", "message": message})
-                if stage == "metadata" or isinstance(exc, RateLimited):
-                    # Without metadata nothing else is meaningful; after a rate limit every request would fail.
+                if stage == "metadata":
+                    # Without metadata nothing else is meaningful.
                     for rest in STAGES[i + 1 :]:
                         _set(job, rest, {"status": "skipped", "message": "Stopped after an earlier failure."})
-                    failed = stage == "metadata"
+                    failed = True
                     job.errors = errors
                     db.commit()
                     break
+                if isinstance(exc, RateLimited):
+                    # Every further GitHub request would fail, but linking and indexing use stored data only.
+                    rate_limited = True
                 job.errors = errors
                 db.commit()
 

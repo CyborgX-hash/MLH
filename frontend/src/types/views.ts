@@ -54,6 +54,28 @@ export interface DecisionGraphData {
   edges: GraphEdge[]
 }
 
+export interface ImpactFinding {
+  decision_id: number
+  topic: string
+  decision: string | null
+  status: 'accepted' | 'rejected' | 'unresolved' | 'deferred' | 'superseded'
+  determination: 'explicit' | 'inferred' | 'human_confirmed' | 'unresolved'
+  severity: 'potential_conflict' | 'related'
+  headline: string
+  triggers: { signal: string; detail: string; file: string; lines: string[] }[]
+  triggered_by_files: string[]
+  supporting_sources: { url: string; author: string | null; claim_type: string; quote: string; verification_state: string }[]
+}
+
+export interface ImpactReport {
+  repository_id: number
+  pull_request: { number: number; title: string; url: string; state: string; merged: boolean; author: string | null }
+  changed_files: { filename: string; status: string; previous_filename: string | null; additions: number; deletions: number }[]
+  findings: ImpactFinding[]
+  note: string
+  decisions_checked: number
+}
+
 export interface Citation {
   id: string
   source_type: string

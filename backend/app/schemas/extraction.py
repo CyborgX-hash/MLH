@@ -24,15 +24,15 @@ class CandidateAlternative(BaseModel):
     name: str = Field(..., max_length=200)
     status: AlternativeStatus = "proposed"
     rejection_reason: Optional[str] = Field(None, max_length=1000)
-    evidence: List[EvidenceRef] = Field(default_factory=list)
-    rejection_evidence: List[EvidenceRef] = Field(default_factory=list)
+    evidence: List[EvidenceRef] = Field(default_factory=list, max_length=20)
+    rejection_evidence: List[EvidenceRef] = Field(default_factory=list, max_length=20)
 
 
 class CandidateReason(BaseModel):
     reason: str = Field(..., max_length=1000)
     alternative: Optional[str] = Field(None, max_length=200, description="Alternative this reason is about")
     is_explicit: bool = True
-    evidence: List[EvidenceRef] = Field(default_factory=list)
+    evidence: List[EvidenceRef] = Field(default_factory=list, max_length=20)
 
 
 class CandidatePosition(BaseModel):
@@ -49,11 +49,12 @@ class CandidateDecision(BaseModel):
     decision: Optional[str] = Field(None, max_length=500)
     decision_status: DecisionStatus = "unresolved"
     is_explicit: bool = False
-    alternatives: List[CandidateAlternative] = Field(default_factory=list)
-    reasoning: List[CandidateReason] = Field(default_factory=list)
-    positions: List[CandidatePosition] = Field(default_factory=list)
+    # Bounded so one request cannot make the validator do unbounded work.
+    alternatives: List[CandidateAlternative] = Field(default_factory=list, max_length=30)
+    reasoning: List[CandidateReason] = Field(default_factory=list, max_length=60)
+    positions: List[CandidatePosition] = Field(default_factory=list, max_length=100)
     resolution_evidence: List[EvidenceRef] = Field(
-        default_factory=list, description="The statement(s) that establish the final decision, if any"
+        default_factory=list, max_length=20, description="The statement(s) that establish the final decision, if any"
     )
     conflict_detected: bool = False
     requires_human_review: bool = False

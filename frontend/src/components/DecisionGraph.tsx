@@ -3,6 +3,7 @@ import '@xyflow/react/dist/style.css'
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { isSafeGithubUrl } from '../lib/safeUrl'
 import type { DecisionGraphData, GraphNode } from '../types/views'
 
 // Columns left to right: who → where it was discussed → the decision → options → implementation → files.
@@ -97,7 +98,7 @@ export function DecisionGraph({
         onNodeClick={(_, node) => {
           const n = (node.data as { node: GraphNode }).node
           if (n.kind === 'decision') navigate(`../${n.id.split(':')[1]}`, { relative: 'path' })
-          else if (n.url) window.open(n.url, '_blank', 'noopener,noreferrer')
+          else if (isSafeGithubUrl(n.url)) window.open(n.url, '_blank', 'noopener,noreferrer')
         }}
         proOptions={{ hideAttribution: true }}
       >

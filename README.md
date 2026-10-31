@@ -212,6 +212,34 @@ also runs PostgreSQL in Docker, the system ran out of swap and PostgreSQL restar
 from its WAL, but use a 16 GB machine, a smaller model (`AI_MODEL=qwen2.5:1.5b` works) or a remote
 OpenAI-compatible endpoint for the models.
 
+### PR impact analysis
+
+`POST /api/pr-impact` with `{"pr_url": "https://github.com/<owner>/<repo>/pull/<n>"}` (also the **PR impact** tab).
+DeciTrace fetches the PR's changed files and diff from GitHub, finds recorded decisions whose implementation
+touched those files (by old or current name), and applies fixed, deterministic rules. No AI judges the PR:
+
+| Signal | Meaning | Severity |
+|---|---|---|
+| deletes implementing file | the PR deletes a file that implemented an accepted decision | potential conflict |
+| removes decision code | removed lines in an implementing file mention the decision's own terms and are not added back | potential conflict |
+| reintroduces a rejected alternative | added lines mention an alternative the project explicitly rejected | potential conflict |
+| changes implementing file | context for the reviewer | related |
+
+Each finding names the decision, why it may be affected, which changed files triggered it (with the diff
+lines), and the verified sources behind the decision. Unresolved and superseded decisions never produce
+conflicts. **Findings are review prompts, not proof the PR is wrong; DeciTrace never blocks or rejects a PR.**
+
+### Security
+
+See [docs/AUDIT.md](docs/AUDIT.md) for the full audit. In short:
+
+- GitHub content is untrusted. It is fenced in the model prompt, the model has no write path, and every citation
+  is validated.
+- Writing decision candidates and rebuilding indexes over HTTP requires `DECITRACE_ADMIN_TOKEN`; without it
+  those endpoints are disabled.
+- Human review needs GitHub-verified write access. There are no user accounts otherwise, so keep the API on
+  localhost or behind an authenticating proxy.
+
 ### Web interface
 
 The frontend (React, Vite, TypeScript, Tailwind) is dark-first with a light theme, and every page reads the real API:

@@ -14,6 +14,17 @@ from app.core.config import get_settings
 from app.models import Base
 
 _engine = None
+ADMIN_TOKEN = "test-admin-token"
+ADMIN = {"X-DeciTrace-Admin-Token": ADMIN_TOKEN}
+
+
+@pytest.fixture(autouse=True)
+def admin_token(monkeypatch):
+    """Every test runs with an admin token configured; tests that need it disabled override the env."""
+    monkeypatch.setenv("DECITRACE_ADMIN_TOKEN", ADMIN_TOKEN)
+    get_settings.cache_clear()
+    yield
+    get_settings.cache_clear()
 
 
 def _test_engine():
