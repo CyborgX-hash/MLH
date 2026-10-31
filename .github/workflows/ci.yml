@@ -46,3 +46,54 @@ jobs:
 
       - name: Validate - committed example outputs are well-formed and fully cited
         run: python scripts/validate_examples.py
+
+  backend:
+    name: Backend (FastAPI + PostgreSQL/pgvector)
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: decitrace
+          POSTGRES_PASSWORD: decitrace
+          POSTGRES_DB: decitrace
+        ports: ["5433:5432"]
+        options: >-
+          --health-cmd "pg_isready -U decitrace" --health-interval 5s --health-timeout 3s --health-retries 10
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DATABASE_URL: postgresql+psycopg://decitrace:decitrace@localhost:5433/decitrace
+      RUN_DB_TESTS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Apply migrations (enables pgvector)
+        run: alembic upgrade head
+      - name: Run tests, including the live database health check
+        run: python -m pytest -q
+
+  frontend:
+    name: Frontend (React + Vite)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Type-check and build
+        run: npm run build

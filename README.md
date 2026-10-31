@@ -31,7 +31,65 @@ Discourse thread ──► ingest ──► chunk ──► LLM extraction (map)
 | Identity | `identity.py` | Resolves one contributor across GitHub, Discourse and mailing lists using shared email, explicit profile links, `.mailmap`, handles and names, with a confidence score. |
 | Evaluate | `evaluate.py` | Blind test on Python PEPs: the model sees only the discussion; the PEP's "Rejected Ideas" section is the hidden answer key. |
 
-## Install
+## DeciTrace web platform (in progress)
+
+The `decisionlens` package below is the working extraction engine. It is being grown into **DeciTrace**, a
+web platform: FastAPI backend, React frontend, PostgreSQL with pgvector. Today the platform connects
+public GitHub repositories and ingests their history; AI decision extraction arrives in later pull requests.
+
+| Folder | Purpose |
+|---|---|
+| `backend/app/api/routes/` | FastAPI routers (`/api/health` today) |
+| `backend/app/core/` | settings from environment variables (`config.py`) |
+| `backend/app/db/` | SQLAlchemy engine, session and declarative base |
+| `backend/app/models/`, `schemas/` | ORM tables and Pydantic request/response models |
+| `backend/app/services/` | `github`, `extraction`, `evidence`, `retrieval`, `impact`: empty packages for the next milestones |
+| `backend/app/workers/` | background ingestion and extraction jobs (next milestones) |
+| `backend/alembic/` | database migrations (`0001` enables pgvector) |
+| `frontend/src/` | `pages`, `layouts`, `components`, `hooks`, `services` (API client), `types`, `lib` |
+| `docs/` | architecture notes |
+
+Requirements: Python 3.11+, Node 22+, Docker.
+
+```bash
+cp .env.example .env
+make setup        # backend venv + npm install
+make db           # PostgreSQL 16 + pgvector on localhost:5433
+make migrate      # alembic upgrade head
+make backend      # http://localhost:8000/api/health  (API docs: /docs)
+make frontend     # http://localhost:5173
+make test         # backend tests, frontend lint + build
+```
+
+To run the backend tests that need the real database: `cd backend && RUN_DB_TESTS=1 .venv/bin/python -m pytest -q`
+(they use a separate `decitrace_test` database).
+
+### GitHub ingestion
+
+| Method | Path | Purpose |
+|---|---|---|
+| POST | `/api/repositories/connect` | `{"url": "https://github.com/psf/requests"}`: validates the URL, checks the repository exists and is public, stores its metadata and starts a background sync |
+| GET | `/api/repositories` | connected repositories with their latest sync status |
+| GET | `/api/repositories/{id}` | metadata, stored-item counts and the latest sync job |
+| POST | `/api/repositories/{id}/sync?full=false` | incremental sync (only what changed since the last one); `full=true` re-reads everything. 409 if a sync is already running |
+| GET | `/api/repositories/{id}/sync-status` | per-stage progress, counts and errors |
+
+A sync runs these stages: metadata, issues, issue comments, pull requests (with reviews, review comments
+and changed files), discussions, commits, code. Each stage commits on its own, so a failed stage leaves the
+others intact and the job ends as `partial`; the next sync retries it.
+
+- **Duplicates and re-downloads:** every row is upserted on GitHub's stable IDs. Reviews and changed files are
+  only re-fetched for pull requests whose `updated_at` changed, and file contents only when the blob SHA changed.
+- **Code:** DeciTrace reads the git tree, never clones. It skips binaries, lock files, dependency and build folders,
+  and files over 200 KB, then fetches decision documents (ADRs, RFCs, README, CONTRIBUTING) first, then other
+  docs, manifests and source. Paths are validated against traversal before any request.
+- **Rate limits:** the client waits for short resets, honours `Retry-After`, retries 5xx with backoff, and stops
+  the sync cleanly when the limit is exhausted.
+- **Token:** optional. Without `GITHUB_TOKEN` (60 requests/hour) a sync samples the most recent items and
+  skips Discussions, because GitHub's GraphQL API requires authentication. With a token (5,000 requests/hour)
+  limits are much higher. The token stays on the server; `/api/health` only reports whether one is set.
+
+## Install the extraction engine
 
 Requires Python 3.9 or newer.
 
