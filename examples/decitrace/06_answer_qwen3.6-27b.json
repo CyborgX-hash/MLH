@@ -1,0 +1,126 @@
+{
+  "_label": "REAL OUTPUT of POST /api/repositories/{id}/ask with Qwen3.6-27B via OpenRouter (full-text retrieval).",
+  "question": "Why does requests declare type annotations at class level on Response instead of in __init__?",
+  "response": {
+    "answer": "The decision regarding where to declare type annotations on Response attributes (class-level vs. inside __init__) is unresolved, with no authoritative resolution established [S1]. Participants in the discussion proposed keeping class-level annotations because they are PEP 526 compliant and match how concepts are represented in the rest of the dependency chain [S1, S3]. Additionally, one participant noted that the primary reason for adding them at the class level was consistency, though they did not have a strong reason beyond that [S5]. Conversely, moving annotations into __init__ was opposed by some who felt it would be 'lying about types' for attributes not set there [S1, S4], although others argued that moving them to __init__ fixes issues with downstream libraries using attrs/cattrs [S1, S2].",
+    "citations": [
+      {
+        "id": "S1",
+        "source_type": "decision",
+        "source_number": 1,
+        "url": null,
+        "title": "Decision: Where to declare type annotations on Response attributes",
+        "evidence": "Decision topic: Where to declare type annotations on Response attributes\nStatus: unresolved (no authoritative resolution).\nProblem: Class-level attribute annotations on Response break downstream classes that subclass it with attrs/cattrs (reported for requests-cache).\nOutcome: none established.\nParticipants disagreed (conflict detected).\nAlternative Keep class-level annotations: proposed.\nAlternative Move annotations into __init__: proposed.\nReason: Class-level annotations are PEP 526 compliant and match the rest of the dependency chain\nReason: Moving annotations to __init__ for attributes not",
+        "author": null
+      },
+      {
+        "id": "S2",
+        "source_type": "issue",
+        "source_number": 7271,
+        "url": "https://github.com/psf/requests/issues/7271#issuecomment-4401573618",
+        "title": "Evidence for decision 1: alternative by @edgarrmondragon",
+        "evidence": "moving the annotations to the attribute assignments inside `__init__` seems to fix the problem.",
+        "author": "edgarrmondragon"
+      },
+      {
+        "id": "S3",
+        "source_type": "issue",
+        "source_number": 7271,
+        "url": "https://github.com/psf/requests/issues/7271#issuecomment-4416447146",
+        "title": "Evidence for decision 1: reason by @nateprewitt",
+        "evidence": "What requests is doing is PEP 526 compliant and matches how these concepts are represented in the rest of our dependency chain.",
+        "author": "nateprewitt"
+      },
+      {
+        "id": "S4",
+        "source_type": "issue",
+        "source_number": 7271,
+        "url": "https://github.com/psf/requests/issues/7271#issuecomment-4402573028",
+        "title": "Evidence for decision 1: position (oppose Move annotations into __init__) by @nateprewitt",
+        "evidence": "Mechanically, I agree it works to move the attributes into `__init__`, but adding a type in `__init__` that doesn't exist yet seems like we're lying about types to work around this use case.",
+        "author": "nateprewitt"
+      },
+      {
+        "id": "S5",
+        "source_type": "issue",
+        "source_number": 7271,
+        "url": "https://github.com/psf/requests/issues/7271#issuecomment-4402314060",
+        "title": "Evidence for decision 1: alternative by @nateprewitt",
+        "evidence": "I don't have a strong reason why these were added at class-level other than consistency.",
+        "author": "nateprewitt"
+      }
+    ],
+    "confidence": "supported",
+    "insufficient_evidence": false,
+    "conflicts": [
+      {
+        "decision_id": 1,
+        "topic": "Where to declare type annotations on Response attributes",
+        "alternatives": [
+          "Keep class-level annotations",
+          "Move annotations into __init__"
+        ]
+      }
+    ],
+    "decisions": [
+      {
+        "id": 1,
+        "topic": "Where to declare type annotations on Response attributes",
+        "status": "unresolved",
+        "determination": "unresolved",
+        "decision": null,
+        "conflict_detected": true,
+        "requires_human_review": true,
+        "implementation": "none",
+        "alternatives": [
+          {
+            "name": "Keep class-level annotations",
+            "status": "proposed",
+            "rejection_reason": null
+          },
+          {
+            "name": "Move annotations into __init__",
+            "status": "proposed",
+            "rejection_reason": null
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "topic": "Type hint for `json` argument in requests API",
+        "status": "unresolved",
+        "determination": "unresolved",
+        "decision": null,
+        "conflict_detected": false,
+        "requires_human_review": true,
+        "implementation": "none",
+        "alternatives": [
+          {
+            "name": "Using `Any` for the json argument",
+            "status": "proposed",
+            "rejection_reason": null
+          },
+          {
+            "name": "Using parameterized Protocol",
+            "status": "proposed",
+            "rejection_reason": null
+          },
+          {
+            "name": "Using `Mapping` for dicts and `Sequence` for lists",
+            "status": "proposed",
+            "rejection_reason": null
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      "No embedding model configured; used full-text search only.",
+      "Some retrieved decisions are unresolved: participants disagreed and no authoritative resolution exists."
+    ],
+    "retrieval": {
+      "mode": "full_text",
+      "hits": 12
+    },
+    "model": "qwen/qwen3.6-27b"
+  }
+}

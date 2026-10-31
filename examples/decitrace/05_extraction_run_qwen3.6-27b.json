@@ -1,0 +1,1277 @@
+{
+  "_label": "REAL OUTPUT. AI extraction over the same 5 psf/requests threads with the open-weight model Qwen3.6-27B (Apache-2.0) served by OpenRouter, reasoning disabled. Every decision below was proposed by the model and then checked by the evidence validator.",
+  "threads": [
+    {
+      "kind": "issue",
+      "record_id": 66,
+      "outcome": {
+        "merged": [
+          1
+        ],
+        "created": [
+          3
+        ],
+        "invalid": 0,
+        "refused": [],
+        "candidates": 2
+      }
+    },
+    {
+      "kind": "pull_request",
+      "record_id": 1,
+      "outcome": {
+        "merged": [
+          4,
+          4
+        ],
+        "created": [
+          4,
+          5
+        ],
+        "invalid": 0,
+        "refused": [],
+        "candidates": 4
+      }
+    },
+    {
+      "kind": "issue",
+      "record_id": 4,
+      "outcome": {
+        "merged": [],
+        "created": [
+          6
+        ],
+        "invalid": 0,
+        "refused": [],
+        "candidates": 1
+      }
+    },
+    {
+      "kind": "issue",
+      "record_id": 20,
+      "outcome": {
+        "merged": [],
+        "created": [],
+        "invalid": 0,
+        "refused": [],
+        "candidates": 0
+      }
+    },
+    {
+      "kind": "issue",
+      "record_id": 81,
+      "outcome": {
+        "merged": [],
+        "created": [
+          7
+        ],
+        "invalid": 0,
+        "refused": [],
+        "candidates": 1
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "id": 3,
+      "repository_id": 1,
+      "topic": "Typing of params keyword in GET requests",
+      "problem": "The `GetKwargs` type excluded the `params` keyword, but GET requests should allow `params` to build query strings. There was asymmetry between `Session.get()` and `requests.get()`.",
+      "decision": null,
+      "status": "unresolved",
+      "determination": "unresolved",
+      "verification_state": "needs_human_review",
+      "conflict_detected": false,
+      "requires_human_review": true,
+      "superseded_by_id": null,
+      "created_by": "extractor:qwen/qwen3.6-27b",
+      "created_at": "2026-10-31T22:03:30.833243Z",
+      "updated_at": "2026-10-31T22:03:30.833243Z",
+      "validation_notes": [
+        "'Include `params` in the typing for GET requests.' is not established by an authoritative, verified statement: kept unresolved.",
+        "Alternative 'Exclude params from GetKwargs': 'rejected' changed to 'proposed' by the status rules.",
+        "Rejection reason for 'Exclude params from GetKwargs' dropped: no verified source states it."
+      ],
+      "alternatives": [
+        {
+          "name": "Exclude params from GetKwargs",
+          "status": "proposed",
+          "proposed_status": "rejected",
+          "rejection_reason": null,
+          "verification_state": "partially_verified"
+        }
+      ],
+      "evidence": [
+        {
+          "claim_type": "resolution",
+          "claim_text": "Include `params` in the typing for GET requests.",
+          "alternative": null,
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:236",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7271#issuecomment-4423088175",
+          "author_login": "nateprewitt",
+          "author_association": "MEMBER",
+          "quote": "I'll get that cleaned up. **Edit:** Should be addressed in #7429.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "alternative",
+          "claim_text": "Exclude params from GetKwargs",
+          "alternative": "Exclude params from GetKwargs",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:238",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7271#issuecomment-4423060223",
+          "author_login": "bastimeyer",
+          "author_association": "CONTRIBUTOR",
+          "quote": "GET requests should also allow params, so query strings can be built from a mapping.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "rejection",
+          "claim_text": "GET requests should allow params to build query strings.",
+          "alternative": "Exclude params from GetKwargs",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:236",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7271#issuecomment-4423088175",
+          "author_login": "nateprewitt",
+          "author_association": "MEMBER",
+          "quote": null,
+          "verification_state": "partially_verified",
+          "flags": [
+            "quote_not_found"
+          ]
+        },
+        {
+          "claim_type": "reason",
+          "claim_text": "Asymmetry between Session.get() and requests.get() APIs regarding params.",
+          "alternative": null,
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:236",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7271#issuecomment-4423088175",
+          "author_login": "nateprewitt",
+          "author_association": "MEMBER",
+          "quote": null,
+          "verification_state": "partially_verified",
+          "flags": [
+            "quote_not_found"
+          ]
+        },
+        {
+          "claim_type": "position",
+          "claim_text": "Include params in GetKwargs",
+          "alternative": "Include params in GetKwargs",
+          "stance": "support",
+          "is_explicit": true,
+          "source_id": "comment:238",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7271#issuecomment-4423060223",
+          "author_login": "bastimeyer",
+          "author_association": "CONTRIBUTOR",
+          "quote": "GET requests should also allow params, so query strings can be built from a mapping.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        }
+      ],
+      "reviews": [],
+      "history": [
+        {
+          "event": "created",
+          "actor": "extractor:qwen/qwen3.6-27b",
+          "snapshot": {},
+          "details": {
+            "notes": [
+              "'Include `params` in the typing for GET requests.' is not established by an authoritative, verified statement: kept unresolved.",
+              "Alternative 'Exclude params from GetKwargs': 'rejected' changed to 'proposed' by the status rules.",
+              "Rejection reason for 'Exclude params from GetKwargs' dropped: no verified source states it."
+            ]
+          },
+          "created_at": "2026-10-31T22:03:30.833243Z"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "repository_id": 1,
+      "topic": "Support for both 'no' and 'no_proxy' keys in proxies dictionary",
+      "problem": "The `urllib.request.getproxies()` function stores proxy bypass settings under the key `no`, while users might expect `no_proxy`. The PR initially only supported one or the other, creating inconsistency.",
+      "decision": null,
+      "status": "unresolved",
+      "determination": "unresolved",
+      "verification_state": "needs_human_review",
+      "conflict_detected": false,
+      "requires_human_review": true,
+      "superseded_by_id": null,
+      "created_by": "extractor:qwen/qwen3.6-27b",
+      "created_at": "2026-10-31T22:03:30.858688Z",
+      "updated_at": "2026-10-31T22:04:17.355108Z",
+      "validation_notes": [
+        "'The code was updated to check for both `no` and `no_proxy` keys in the `proxies` dictionary to ensure compatibility with `urllib` expectations while maintaining support for the explicit `no_proxy` key.' is not established by an authoritative, verified statement: kept unresolved.",
+        "Alternative 'Use only 'no' key': 'considered_not_selected' changed to 'proposed' by the status rules.",
+        "Alternative 'Use only 'no_proxy' key': 'considered_not_selected' changed to 'proposed' by the status rules.",
+        "Merged a related candidate ('Respecting Session.trust_env=False for proxy bypass rules') from linked sources.",
+        "'Proxy bypass evaluation now only falls back to environment/OS bypass settings when `self.trust_env` is `True`. Explicit `'no_proxy'` and `'no'` rules in the `proxies` dictionary are still honored regardless of `trust_env`.' is not established by an authoritative, verified statement: kept unresolved.",
+        "Alternative 'Always check environment variables for bypass': 'rejected' changed to 'proposed' by the status rules.",
+        "Rejection reason for 'Always check environment variables for bypass' dropped: no verified source states it.",
+        "Merged a related candidate ('Documentation of 'no' and 'no_proxy' keys') from linked sources.",
+        "'The documentation (docstrings) for `requests.request` and `Session.request` was updated to explicitly mention support for `'no'` and `'no_proxy'` keys.' is not established by an authoritative, verified statement: kept unresolved."
+      ],
+      "alternatives": [
+        {
+          "name": "Use only 'no' key",
+          "status": "proposed",
+          "proposed_status": "considered_not_selected",
+          "rejection_reason": null,
+          "verification_state": "partially_verified"
+        },
+        {
+          "name": "Use only 'no_proxy' key",
+          "status": "proposed",
+          "proposed_status": "considered_not_selected",
+          "rejection_reason": null,
+          "verification_state": "partially_verified"
+        }
+      ],
+      "evidence": [
+        {
+          "claim_type": "resolution",
+          "claim_text": "The code was updated to check for both `no` and `no_proxy` keys in the `proxies` dictionary to ensure compatibility with `urllib` expectations while maintaining support for the explicit `no_proxy` key.",
+          "alternative": null,
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:313",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/pull/7068#discussion_r4054167166",
+          "author_login": "cjac",
+          "author_association": "NONE",
+          "quote": "I have updated the logic to check both keys in the `proxies` dictionary, ensuring compatibility with `urllib` expectations while maintaining support for the more explicit `'no_proxy'` key.",
+          "verification_state": "verified",
+          "flags": []
+        },
+        {
+          "claim_type": "alternative",
+          "claim_text": "Use only 'no' key",
+          "alternative": "Use only 'no' key",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:315",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/pull/7068#discussion_r3940668772",
+          "author_login": "hajo-m",
+          "author_association": "NONE",
+          "quote": "this code would require to either rename `no_proxy` to `no` or consider both names",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "alternative",
+          "claim_text": "Use only 'no_proxy' key",
+          "alternative": "Use only 'no_proxy' key",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:315",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/pull/7068#discussion_r3940668772",
+          "author_login": "hajo-m",
+          "author_association": "NONE",
+          "quote": "I personally do have a preference for `no_proxy`, here.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "reason",
+          "claim_text": "To maintain compatibility with `urllib` which uses 'no', while also supporting the more explicit 'no_proxy' key preferred by some users.",
+          "alternative": "Support both 'no' and 'no_proxy'",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:313",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/pull/7068#discussion_r4054167166",
+          "author_login": "cjac",
+          "author_association": "NONE",
+          "quote": "I have updated the logic to check both keys in the `proxies` dictionary, ensuring compatibility with `urllib` expectations while maintaining support for the more explicit `'no_proxy'` key.",
+          "verification_state": "verified",
+          "flags": []
+        },
+        {
+          "claim_type": "position",
+          "claim_text": "Support both 'no' and 'no_proxy'",
+          "alternative": "Support both 'no' and 'no_proxy'",
+          "stance": "support",
+          "is_explicit": true,
+          "source_id": "comment:313",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/pull/7068#discussion_r4054167166",
+          "author_login": "cjac",
+          "author_association": "NONE",
+          "quote": "I have updated the logic to check both keys in the `proxies` dictionary",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "resolution",
+          "claim_text": "Proxy bypass evaluation now only falls back to environment/OS bypass settings when `self.trust_env` is `True`. Explicit `'no_proxy'` and `'no'` rules in the `proxies` dictionary are still honored regardless of `trust_env`.",
+          "alternative": null,
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:1",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/pull/7068#issuecomment-6546766348",
+          "author_login": "cjac",
+          "author_association": "NONE",
+          "quote": "Proxy bypass evaluation now only falls back to environment/OS bypass settings when `self.trust_env` is `True`",
+          "verification_state": "verified",
+          "flags": []
+        },
+        {
+          "claim_type": "alternative",
+          "claim_text": "Always check environment variables for bypass",
+          "alternative": "Always check environment variables for bypass",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:304",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/pull/7068#pullrequestreview-5668440967",
+          "author_login": "OKAN-SOFTWARE",
+          "author_association": "NONE",
+          "quote": "The new code can clear the configured proxy even though the session explicitly disables environment-derived proxy settings.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "rejection",
+          "claim_text": "Violates the contract of trust_env=False",
+          "alternative": "Always check environment variables for bypass",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:1",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/pull/7068#issuecomment-6546766348",
+          "author_login": "cjac",
+          "author_association": "NONE",
+          "quote": "Proxy bypass evaluation now only falls back to environment/OS bypass settings when `self.trust_env` is `True`",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "reason",
+          "claim_text": "To preserve the existing `trust_env=False` behavior where environment variables should not influence proxy settings, while still allowing explicit bypass rules in the proxies dict.",
+          "alternative": "Only fallback to env if trust_env is True",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:1",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/pull/7068#issuecomment-6546766348",
+          "author_login": "cjac",
+          "author_association": "NONE",
+          "quote": "Proxy bypass evaluation now only falls back to environment/OS bypass settings when `self.trust_env` is `True`, while continuing to honor explicit `'no_proxy'` and `'no'` rules in `proxies`",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "position",
+          "claim_text": "Respect trust_env=False",
+          "alternative": "Respect trust_env=False",
+          "stance": "support",
+          "is_explicit": true,
+          "source_id": "comment:304",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/pull/7068#pullrequestreview-5668440967",
+          "author_login": "OKAN-SOFTWARE",
+          "author_association": "NONE",
+          "quote": "Could we preserve the existing `trust_env=False` behavior while still honoring explicitly supplied `no_proxy` or `no` rules?",
+          "verification_state": "verified",
+          "flags": []
+        },
+        {
+          "claim_type": "resolution",
+          "claim_text": "The documentation (docstrings) for `requests.request` and `Session.request` was updated to explicitly mention support for `'no'` and `'no_proxy'` keys.",
+          "alternative": null,
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:313",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/pull/7068#discussion_r4054167166",
+          "author_login": "cjac",
+          "author_association": "NONE",
+          "quote": "I have updated the documentation (docstrings) for both `requests.request` and `Session.request` to explicitly mention that the `proxies` dictionary supports `'no'` and `'no_proxy'` keys for bypass rules.",
+          "verification_state": "verified",
+          "flags": []
+        },
+        {
+          "claim_type": "reason",
+          "claim_text": "To inform users of the available keys for bypass rules.",
+          "alternative": "Update docstrings",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:315",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/pull/7068#discussion_r3940668772",
+          "author_login": "hajo-m",
+          "author_association": "NONE",
+          "quote": "an addition to the documentation of `requests.request` would be good.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "reason",
+          "claim_text": "To inform users of the available keys for bypass rules.",
+          "alternative": "Update docstrings",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:313",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/pull/7068#discussion_r4054167166",
+          "author_login": "cjac",
+          "author_association": "NONE",
+          "quote": "I have updated the documentation (docstrings) for both `requests.request` and `Session.request` to explicitly mention that the `proxies` dictionary supports `'no'` and `'no_proxy'` keys for bypass rules.",
+          "verification_state": "verified",
+          "flags": []
+        },
+        {
+          "claim_type": "position",
+          "claim_text": "Update docstrings",
+          "alternative": "Update docstrings",
+          "stance": "support",
+          "is_explicit": true,
+          "source_id": "comment:315",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/pull/7068#discussion_r3940668772",
+          "author_login": "hajo-m",
+          "author_association": "NONE",
+          "quote": "an addition to the documentation of `requests.request` would be good.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        }
+      ],
+      "reviews": [],
+      "history": [
+        {
+          "event": "created",
+          "actor": "extractor:qwen/qwen3.6-27b",
+          "snapshot": {},
+          "details": {
+            "notes": [
+              "'The code was updated to check for both `no` and `no_proxy` keys in the `proxies` dictionary to ensure compatibility with `urllib` expectations while maintaining support for the explicit `no_proxy` key.' is not established by an authoritative, verified statement: kept unresolved.",
+              "Alternative 'Use only 'no' key': 'considered_not_selected' changed to 'proposed' by the status rules.",
+              "Alternative 'Use only 'no_proxy' key': 'considered_not_selected' changed to 'proposed' by the status rules."
+            ]
+          },
+          "created_at": "2026-10-31T22:03:30.858688Z"
+        },
+        {
+          "event": "merged_duplicate",
+          "actor": "extractor:qwen/qwen3.6-27b",
+          "snapshot": {
+            "topic": "Support for both 'no' and 'no_proxy' keys in proxies dictionary",
+            "status": "unresolved",
+            "decision": null,
+            "alternatives": [
+              {
+                "name": "Use only 'no' key",
+                "status": "proposed",
+                "rejection_reason": null
+              },
+              {
+                "name": "Use only 'no_proxy' key",
+                "status": "proposed",
+                "rejection_reason": null
+              }
+            ],
+            "determination": "unresolved",
+            "superseded_by_id": null,
+            "conflict_detected": false,
+            "verification_state": "needs_human_review",
+            "requires_human_review": true
+          },
+          "details": {
+            "notes": [
+              "Merged a related candidate ('Respecting Session.trust_env=False for proxy bypass rules') from linked sources."
+            ],
+            "candidate_topic": "Respecting Session.trust_env=False for proxy bypass rules",
+            "candidate_status": "unresolved",
+            "candidate_decision": null
+          },
+          "created_at": "2026-10-31T22:04:17.288673Z"
+        },
+        {
+          "event": "merged_duplicate",
+          "actor": "extractor:qwen/qwen3.6-27b",
+          "snapshot": {
+            "topic": "Support for both 'no' and 'no_proxy' keys in proxies dictionary",
+            "status": "unresolved",
+            "decision": null,
+            "alternatives": [
+              {
+                "name": "Use only 'no' key",
+                "status": "proposed",
+                "rejection_reason": null
+              },
+              {
+                "name": "Use only 'no_proxy' key",
+                "status": "proposed",
+                "rejection_reason": null
+              }
+            ],
+            "determination": "unresolved",
+            "superseded_by_id": null,
+            "conflict_detected": false,
+            "verification_state": "needs_human_review",
+            "requires_human_review": true
+          },
+          "details": {
+            "notes": [
+              "Merged a related candidate ('Documentation of 'no' and 'no_proxy' keys') from linked sources."
+            ],
+            "candidate_topic": "Documentation of 'no' and 'no_proxy' keys",
+            "candidate_status": "unresolved",
+            "candidate_decision": null
+          },
+          "created_at": "2026-10-31T22:04:17.355108Z"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "repository_id": 1,
+      "topic": "Precedence of lowercase vs uppercase NO_PROXY environment variables",
+      "problem": "The initial implementation ignored the lowercase `no_proxy` environment variable, creating an inconsistency with `urllib.request.getproxies()` which prefers lowercase if both exist.",
+      "decision": null,
+      "status": "unresolved",
+      "determination": "unresolved",
+      "verification_state": "needs_human_review",
+      "conflict_detected": false,
+      "requires_human_review": true,
+      "superseded_by_id": null,
+      "created_by": "extractor:qwen/qwen3.6-27b",
+      "created_at": "2026-10-31T22:04:17.205031Z",
+      "updated_at": "2026-10-31T22:04:17.205031Z",
+      "validation_notes": [
+        "'The logic was refined to prioritize the lowercase `no_proxy` environment variable over the uppercase `NO_PROXY` variable, matching standard precedence in `urllib`.' is not established by an authoritative, verified statement: kept unresolved.",
+        "Alternative 'Ignore case or prefer uppercase': 'rejected' changed to 'proposed' by the status rules.",
+        "Rejection reason for 'Ignore case or prefer uppercase' dropped: no verified source states it."
+      ],
+      "alternatives": [
+        {
+          "name": "Ignore case or prefer uppercase",
+          "status": "proposed",
+          "proposed_status": "rejected",
+          "rejection_reason": null,
+          "verification_state": "partially_verified"
+        }
+      ],
+      "evidence": [
+        {
+          "claim_type": "resolution",
+          "claim_text": "The logic was refined to prioritize the lowercase `no_proxy` environment variable over the uppercase `NO_PROXY` variable, matching standard precedence in `urllib`.",
+          "alternative": null,
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:313",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/pull/7068#discussion_r4054167166",
+          "author_login": "cjac",
+          "author_association": "NONE",
+          "quote": "The logic in `select_proxy` has been refined to prioritize lowercase `no_proxy` over uppercase `NO_PROXY`, matching standard precedence in `urllib` and other HTTP clients.",
+          "verification_state": "verified",
+          "flags": []
+        },
+        {
+          "claim_type": "alternative",
+          "claim_text": "Ignore case or prefer uppercase",
+          "alternative": "Ignore case or prefer uppercase",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:314",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/pull/7068#discussion_r3940767255",
+          "author_login": "hajo-m",
+          "author_association": "NONE",
+          "quote": "`getproxies` from urllib, used in src/requests/utils.py@825, does consider upper and lower-case environment variables, so this would create an inconsistency, see e.g.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "quote_paraphrased",
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "rejection",
+          "claim_text": "Inconsistent with urllib behavior",
+          "alternative": "Ignore case or prefer uppercase",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:313",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/pull/7068#discussion_r4054167166",
+          "author_login": "cjac",
+          "author_association": "NONE",
+          "quote": "The logic in `select_proxy` has been refined to prioritize lowercase `no_proxy` over uppercase `NO_PROXY`, matching standard precedence in `urllib`",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "reason",
+          "claim_text": "To maintain consistency with `urllib` and other standard HTTP clients regarding environment variable precedence.",
+          "alternative": "Prioritize lowercase no_proxy",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:313",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/pull/7068#discussion_r4054167166",
+          "author_login": "cjac",
+          "author_association": "NONE",
+          "quote": "The logic in `select_proxy` has been refined to prioritize lowercase `no_proxy` over uppercase `NO_PROXY`, matching standard precedence in `urllib` and other HTTP clients.",
+          "verification_state": "verified",
+          "flags": []
+        },
+        {
+          "claim_type": "position",
+          "claim_text": "Prioritize lowercase no_proxy",
+          "alternative": "Prioritize lowercase no_proxy",
+          "stance": "support",
+          "is_explicit": true,
+          "source_id": "comment:314",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/pull/7068#discussion_r3940767255",
+          "author_login": "hajo-m",
+          "author_association": "NONE",
+          "quote": "If both lowercase and uppercase environment variables exist (and disagree), lowercase is preferred.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        }
+      ],
+      "reviews": [],
+      "history": [
+        {
+          "event": "created",
+          "actor": "extractor:qwen/qwen3.6-27b",
+          "snapshot": {},
+          "details": {
+            "notes": [
+              "'The logic was refined to prioritize the lowercase `no_proxy` environment variable over the uppercase `NO_PROXY` variable, matching standard precedence in `urllib`.' is not established by an authoritative, verified statement: kept unresolved.",
+              "Alternative 'Ignore case or prefer uppercase': 'rejected' changed to 'proposed' by the status rules.",
+              "Rejection reason for 'Ignore case or prefer uppercase' dropped: no verified source states it."
+            ]
+          },
+          "created_at": "2026-10-31T22:04:17.205031Z"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "repository_id": 1,
+      "topic": "Handling of non-string field names in requests",
+      "problem": "Inconsistent behavior where non-string keys (e.g., integers) in `data` work for URL-encoded bodies but raise an `AttributeError` when `files` are attached (multipart encoding). The issue stems from the multipart path passing raw keys to urllib3, while the urlencoded path implicitly stringifies them.",
+      "decision": null,
+      "status": "unresolved",
+      "determination": "unresolved",
+      "verification_state": "needs_human_review",
+      "conflict_detected": false,
+      "requires_human_review": true,
+      "superseded_by_id": null,
+      "created_by": "extractor:qwen/qwen3.6-27b",
+      "created_at": "2026-10-31T22:04:17.432003Z",
+      "updated_at": "2026-10-31T22:04:17.432003Z",
+      "validation_notes": [
+        "Alternative 'Normalize non-string keys to strings (coercion)': 'rejected' changed to 'proposed' by the status rules.",
+        "Rejection reason for 'Normalize non-string keys to strings (coercion)' dropped: no verified source states it."
+      ],
+      "alternatives": [
+        {
+          "name": "Normalize non-string keys to strings (coercion)",
+          "status": "proposed",
+          "proposed_status": "rejected",
+          "rejection_reason": null,
+          "verification_state": "partially_verified"
+        },
+        {
+          "name": "Raise TypeError for non-string field names",
+          "status": "proposed",
+          "proposed_status": "proposed",
+          "rejection_reason": null,
+          "verification_state": "partially_verified"
+        },
+        {
+          "name": "Warn on non-string keys in URL-encoded data, raise TypeError for files/multipart",
+          "status": "proposed",
+          "proposed_status": "proposed",
+          "rejection_reason": null,
+          "verification_state": "verified"
+        }
+      ],
+      "evidence": [
+        {
+          "claim_type": "alternative",
+          "claim_text": "Normalize non-string keys to strings (coercion)",
+          "alternative": "Normalize non-string keys to strings (coercion)",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:23",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7634#issuecomment-6132462657",
+          "author_login": "heyuhe2003",
+          "author_association": "NONE",
+          "quote": null,
+          "verification_state": "partially_verified",
+          "flags": [
+            "quote_not_found"
+          ]
+        },
+        {
+          "claim_type": "alternative",
+          "claim_text": "Normalize non-string keys to strings (coercion)",
+          "alternative": "Normalize non-string keys to strings (coercion)",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:16",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7634#issuecomment-6202968191",
+          "author_login": "nateprewitt",
+          "author_association": "MEMBER",
+          "quote": null,
+          "verification_state": "partially_verified",
+          "flags": [
+            "quote_not_found"
+          ]
+        },
+        {
+          "claim_type": "rejection",
+          "claim_text": "Member @nateprewitt stated that `files` explicitly only supports str keys and that normalizing `data` originally was arguably wrong. He argued keys should be strings and cannot be emitted without being strings.",
+          "alternative": "Normalize non-string keys to strings (coercion)",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:16",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7634#issuecomment-6202968191",
+          "author_login": "nateprewitt",
+          "author_association": "MEMBER",
+          "quote": "The proposed solutions are incorrect. files explicitly only supports str keys. The case of non-string keys in data and string keys in files not working is a defect spawned from overly permissive data input in the original implementation.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "alternative",
+          "claim_text": "Raise TypeError for non-string field names",
+          "alternative": "Raise TypeError for non-string field names",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "issue:4",
+          "source_kind": "issue",
+          "html_url": "https://github.com/psf/requests/issues/7634",
+          "author_login": "jbrown9513",
+          "author_association": "NONE",
+          "quote": null,
+          "verification_state": "partially_verified",
+          "flags": [
+            "quote_not_found"
+          ]
+        },
+        {
+          "claim_type": "alternative",
+          "claim_text": "Raise TypeError for non-string field names",
+          "alternative": "Raise TypeError for non-string field names",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:17",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7634#issuecomment-6202831320",
+          "author_login": "bernardgardner",
+          "author_association": "NONE",
+          "quote": "To my mind, the right approach is likely to only accept string-like types in all cases and consistently raise a TypeError rather than depending on the behavior of downstream encoding functions.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "alternative",
+          "claim_text": "Raise TypeError for non-string field names",
+          "alternative": "Raise TypeError for non-string field names",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:15",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7634#issuecomment-6206804433",
+          "author_login": "bernardgardner",
+          "author_association": "NONE",
+          "quote": null,
+          "verification_state": "partially_verified",
+          "flags": [
+            "quote_not_found"
+          ]
+        },
+        {
+          "claim_type": "alternative",
+          "claim_text": "Warn on non-string keys in URL-encoded data, raise TypeError for files/multipart",
+          "alternative": "Warn on non-string keys in URL-encoded data, raise TypeError for files/multipart",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:15",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7634#issuecomment-6206804433",
+          "author_login": "bernardgardner",
+          "author_association": "NONE",
+          "quote": "URL-encoded data field names: warn when accepting non-string keys, since that path currently stringifies them. A later release can turn that warning into a TypeError when appropriate to introduce the breaking change.",
+          "verification_state": "verified",
+          "flags": []
+        },
+        {
+          "claim_type": "reason",
+          "claim_text": "Implicit stringification of keys in the urlencoded path is considered a defect/overly permissive behavior that led to inconsistent errors in the multipart path.",
+          "alternative": "Normalize non-string keys to strings",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:16",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7634#issuecomment-6202968191",
+          "author_login": "nateprewitt",
+          "author_association": "MEMBER",
+          "quote": "The case of non-string keys in data and string keys in files not working is a defect spawned from overly permissive data input in the original implementation.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "reason",
+          "claim_text": "Files explicitly support only string keys according to type definitions and member opinion.",
+          "alternative": "Raise TypeError for non-string field names",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:16",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7634#issuecomment-6202968191",
+          "author_login": "nateprewitt",
+          "author_association": "MEMBER",
+          "quote": "files explicitly only supports str keys.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "reason",
+          "claim_text": "Files explicitly support only string keys according to type definitions and member opinion.",
+          "alternative": "Raise TypeError for non-string field names",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:15",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7634#issuecomment-6206804433",
+          "author_login": "bernardgardner",
+          "author_association": "NONE",
+          "quote": "In [src/requests/_types.py](https://github.com/psf/requests/blob/main/src/requests/_types.py#L121-L134), FilesType is typed as `Mapping[str, _FileSpec] | Iterable[tuple[str, _FileSpec]] | None`, so file field names are declared as strings.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "quote_paraphrased",
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "reason",
+          "claim_text": "Raising TypeError immediately might be a breaking change for users relying on the implicit conversion in urlencoded paths, suggesting a deprecation warning first.",
+          "alternative": "Warn on non-string keys in URL-encoded data",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:17",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7634#issuecomment-6202831320",
+          "author_login": "bernardgardner",
+          "author_association": "NONE",
+          "quote": "That would, however, be a breaking change.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "reason",
+          "claim_text": "Raising TypeError immediately might be a breaking change for users relying on the implicit conversion in urlencoded paths, suggesting a deprecation warning first.",
+          "alternative": "Warn on non-string keys in URL-encoded data",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:15",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7634#issuecomment-6206804433",
+          "author_login": "bernardgardner",
+          "author_association": "NONE",
+          "quote": "A later release can turn that warning into a TypeError when appropriate to introduce the breaking change.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "position",
+          "claim_text": "Normalize non-string keys to strings",
+          "alternative": "Normalize non-string keys to strings",
+          "stance": "oppose",
+          "is_explicit": true,
+          "source_id": "comment:16",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7634#issuecomment-6202968191",
+          "author_login": "nateprewitt",
+          "author_association": "MEMBER",
+          "quote": null,
+          "verification_state": "partially_verified",
+          "flags": [
+            "quote_not_found"
+          ]
+        },
+        {
+          "claim_type": "position",
+          "claim_text": "Raise TypeError for non-string field names",
+          "alternative": "Raise TypeError for non-string field names",
+          "stance": "support",
+          "is_explicit": true,
+          "source_id": "comment:17",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7634#issuecomment-6202831320",
+          "author_login": "bernardgardner",
+          "author_association": "NONE",
+          "quote": "To my mind, the right approach is likely to only accept string-like types in all cases and consistently raise a TypeError",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "position",
+          "claim_text": "Raise TypeError for non-string field names",
+          "alternative": "Raise TypeError for non-string field names",
+          "stance": "support",
+          "is_explicit": true,
+          "source_id": "comment:15",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7634#issuecomment-6206804433",
+          "author_login": "bernardgardner",
+          "author_association": "NONE",
+          "quote": "File field names: raise a clear TypeError for non-string names.",
+          "verification_state": "verified",
+          "flags": []
+        },
+        {
+          "claim_type": "position",
+          "claim_text": "Warn on non-string keys in URL-encoded data",
+          "alternative": "Warn on non-string keys in URL-encoded data",
+          "stance": "support",
+          "is_explicit": true,
+          "source_id": "comment:15",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7634#issuecomment-6206804433",
+          "author_login": "bernardgardner",
+          "author_association": "NONE",
+          "quote": "URL-encoded data field names: warn when accepting non-string keys",
+          "verification_state": "verified",
+          "flags": []
+        }
+      ],
+      "reviews": [],
+      "history": [
+        {
+          "event": "created",
+          "actor": "extractor:qwen/qwen3.6-27b",
+          "snapshot": {},
+          "details": {
+            "notes": [
+              "Alternative 'Normalize non-string keys to strings (coercion)': 'rejected' changed to 'proposed' by the status rules.",
+              "Rejection reason for 'Normalize non-string keys to strings (coercion)' dropped: no verified source states it."
+            ]
+          },
+          "created_at": "2026-10-31T22:04:17.432003Z"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "repository_id": 1,
+      "topic": "Type hint for `json` argument in requests API",
+      "problem": "The strict type annotation `JsonType` introduced in version 2.34.0 caused mypy errors when passing standard Python dictionaries (e.g., `dict[str, str]`, `dict[str, Any]`) or lists of dictionaries to the `json` argument of `Request` and `Session.post`. This was due to variance issues with mutable types like `dict` and `list`.",
+      "decision": null,
+      "status": "unresolved",
+      "determination": "unresolved",
+      "verification_state": "needs_human_review",
+      "conflict_detected": false,
+      "requires_human_review": true,
+      "superseded_by_id": null,
+      "created_by": "extractor:qwen/qwen3.6-27b",
+      "created_at": "2026-10-31T22:04:39.915707Z",
+      "updated_at": "2026-10-31T22:04:39.915707Z",
+      "validation_notes": [
+        "'Use `Mapping` as the type constraint for dictionary-like JSON payloads and `Sequence` for list-like JSON payloads instead of strict `dict` or `list` types.' is not established by an authoritative, verified statement: kept unresolved.",
+        "Alternative 'Using `Any` for the json argument': 'considered_not_selected' changed to 'proposed' by the status rules.",
+        "Rejection reason for 'Using `Any` for the json argument' dropped: no verified source states it.",
+        "Alternative 'Using parameterized Protocol': 'rejected' changed to 'proposed' by the status rules.",
+        "Rejection reason for 'Using parameterized Protocol' dropped: no verified source states it.",
+        "Alternative 'Using `Mapping` for dicts and `Sequence` for lists': 'selected' changed to 'proposed' by the status rules."
+      ],
+      "alternatives": [
+        {
+          "name": "Using `Any` for the json argument",
+          "status": "proposed",
+          "proposed_status": "considered_not_selected",
+          "rejection_reason": null,
+          "verification_state": "partially_verified"
+        },
+        {
+          "name": "Using parameterized Protocol",
+          "status": "proposed",
+          "proposed_status": "rejected",
+          "rejection_reason": null,
+          "verification_state": "verified"
+        },
+        {
+          "name": "Using `Mapping` for dicts and `Sequence` for lists",
+          "status": "proposed",
+          "proposed_status": "selected",
+          "rejection_reason": null,
+          "verification_state": "partially_verified"
+        }
+      ],
+      "evidence": [
+        {
+          "claim_type": "resolution",
+          "claim_text": "Use `Mapping` as the type constraint for dictionary-like JSON payloads and `Sequence` for list-like JSON payloads instead of strict `dict` or `list` types.",
+          "alternative": null,
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:218",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7434#issuecomment-4432850849",
+          "author_login": "nateprewitt",
+          "author_association": "MEMBER",
+          "quote": "If you'd like to check against #7436, that's the current patch proposal. `dict[str, Any]` should satisfy the Mapping constraint from a quick local test.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "resolution",
+          "claim_text": "Use `Mapping` as the type constraint for dictionary-like JSON payloads and `Sequence` for list-like JSON payloads instead of strict `dict` or `list` types.",
+          "alternative": null,
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:211",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7434#issuecomment-4438226113",
+          "author_login": "markhobson",
+          "author_association": "NONE",
+          "quote": "@nateprewitt Works for me, thanks for your help!",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "alternative",
+          "claim_text": "Using `Any` for the json argument",
+          "alternative": "Using `Any` for the json argument",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:220",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7434#issuecomment-4432298137",
+          "author_login": "nateprewitt",
+          "author_association": "MEMBER",
+          "quote": null,
+          "verification_state": "partially_verified",
+          "flags": [
+            "quote_not_found",
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "alternative",
+          "claim_text": "Using parameterized Protocol",
+          "alternative": "Using parameterized Protocol",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:220",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7434#issuecomment-4432298137",
+          "author_login": "nateprewitt",
+          "author_association": "MEMBER",
+          "quote": "I don't think any Mapping definition is going to work here and I'm pretty sure can't do the parameterized protocol like we did for `ParamsType`.",
+          "verification_state": "verified",
+          "flags": []
+        },
+        {
+          "claim_type": "alternative",
+          "claim_text": "Using `Mapping` for dicts and `Sequence` for lists",
+          "alternative": "Using `Mapping` for dicts and `Sequence` for lists",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:220",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7434#issuecomment-4432298137",
+          "author_login": "nateprewitt",
+          "author_association": "MEMBER",
+          "quote": "After a closer look, `Mapping` does appear to work specifically because we're only concerned about the value, not the key.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "alternative",
+          "claim_text": "Using `Mapping` for dicts and `Sequence` for lists",
+          "alternative": "Using `Mapping` for dicts and `Sequence` for lists",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:215",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7434#issuecomment-4433151990",
+          "author_login": "nateprewitt",
+          "author_association": "MEMBER",
+          "quote": "It's the same mutability issue for `list` as `dict`. I _believe_ `Sequence` solves this the same way `Mapping` does in this case.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "reason",
+          "claim_text": "The `json` payload is passed directly to `json.dumps` untouched, so mutability features of `dict` (like `update`) are not required by the library internals.",
+          "alternative": "Using `Mapping`",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:220",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7434#issuecomment-4432298137",
+          "author_login": "nateprewitt",
+          "author_association": "MEMBER",
+          "quote": "`json` gets passed directly through to `json.dumps` untouched and we have `bytes` on the PreparedRequest so post-preparation mutation shouldn't be a concern.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "reason",
+          "claim_text": "The primary issue was explicitly constraining input prior to calling into Requests; using covariant/immutable interfaces like `Mapping` and `Sequence` resolves the mypy variance errors while maintaining some type safety.",
+          "alternative": "Using `Mapping` and `Sequence`",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:220",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7434#issuecomment-4432298137",
+          "author_login": "nateprewitt",
+          "author_association": "MEMBER",
+          "quote": "The primary issue here is explicitly constraining input prior to calling into Requests.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "reason",
+          "claim_text": "The primary issue was explicitly constraining input prior to calling into Requests; using covariant/immutable interfaces like `Mapping` and `Sequence` resolves the mypy variance errors while maintaining some type safety.",
+          "alternative": "Using `Mapping` and `Sequence`",
+          "stance": null,
+          "is_explicit": true,
+          "source_id": "comment:215",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7434#issuecomment-4433151990",
+          "author_login": "nateprewitt",
+          "author_association": "MEMBER",
+          "quote": "I _believe_ `Sequence` solves this the same way `Mapping` does in this case.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "position",
+          "claim_text": "Using `Mapping` and `Sequence`",
+          "alternative": "Using `Mapping` and `Sequence`",
+          "stance": "support",
+          "is_explicit": true,
+          "source_id": "comment:220",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7434#issuecomment-4432298137",
+          "author_login": "nateprewitt",
+          "author_association": "MEMBER",
+          "quote": "Let's try expanding it and hold the `Any` escape hatch for now.",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        },
+        {
+          "claim_type": "position",
+          "claim_text": "Using `Mapping` and `Sequence`",
+          "alternative": "Using `Mapping` and `Sequence`",
+          "stance": "support",
+          "is_explicit": true,
+          "source_id": "comment:211",
+          "source_kind": "comment",
+          "html_url": "https://github.com/psf/requests/issues/7434#issuecomment-4438226113",
+          "author_login": "markhobson",
+          "author_association": "NONE",
+          "quote": "Works for me, thanks for your help!",
+          "verification_state": "partially_verified",
+          "flags": [
+            "weak_support"
+          ]
+        }
+      ],
+      "reviews": [],
+      "history": [
+        {
+          "event": "created",
+          "actor": "extractor:qwen/qwen3.6-27b",
+          "snapshot": {},
+          "details": {
+            "notes": [
+              "'Use `Mapping` as the type constraint for dictionary-like JSON payloads and `Sequence` for list-like JSON payloads instead of strict `dict` or `list` types.' is not established by an authoritative, verified statement: kept unresolved.",
+              "Alternative 'Using `Any` for the json argument': 'considered_not_selected' changed to 'proposed' by the status rules.",
+              "Rejection reason for 'Using `Any` for the json argument' dropped: no verified source states it.",
+              "Alternative 'Using parameterized Protocol': 'rejected' changed to 'proposed' by the status rules.",
+              "Rejection reason for 'Using parameterized Protocol' dropped: no verified source states it.",
+              "Alternative 'Using `Mapping` for dicts and `Sequence` for lists': 'selected' changed to 'proposed' by the status rules."
+            ]
+          },
+          "created_at": "2026-10-31T22:04:39.915707Z"
+        }
+      ]
+    }
+  ]
+}

@@ -68,14 +68,18 @@ class AIClient:
         provider: str = "ollama",
         timeout: float = 180.0,
         transport: Optional[httpx.BaseTransport] = None,
+        extra_body: Optional[Dict[str, Any]] = None,
     ):
         self.provider, self.model, self.embed_model = provider, model, embed_model or None
+        # Provider-specific chat options (e.g. OpenRouter "reasoning"); never overrides the fields set below.
+        self.extra_body = dict(extra_body or {})
         headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
         self._http = httpx.Client(base_url=base_url.rstrip("/"), headers=headers, timeout=timeout, transport=transport)
 
     @classmethod
     def from_settings(cls, s: Settings) -> "AIClient":
-        return cls(s.ai_base_url, s.ai_model, s.ai_api_key, s.ai_embed_model, s.ai_provider, s.ai_timeout)
+        return cls(s.ai_base_url, s.ai_model, s.ai_api_key, s.ai_embed_model, s.ai_provider, s.ai_timeout,
+                   extra_body=s.ai_extra_body)
 
     def close(self) -> None:
         self._http.close()
@@ -106,6 +110,7 @@ class AIClient:
         last_error = ""
         for attempt in range(2):
             data = self._post("/chat/completions", {
+                **self.extra_body,
                 "model": self.model, "messages": convo, "temperature": 0, "max_tokens": max_tokens,
                 "response_format": {"type": "json_object"},
             })

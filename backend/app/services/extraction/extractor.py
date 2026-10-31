@@ -204,7 +204,7 @@ def extract_thread(db: Session, repo: Repository, kind: str, record, ai: AIClien
 
     messages = [{"role": "system", "content": SYSTEM_PROMPT.format(repo=repo.full_name)},
                 {"role": "user", "content": f"Thread:\n\n{text}\n\nReturn the JSON object."}]
-    raw = ai.chat_json(messages, RawExtraction, max_tokens=2500)
+    raw = ai.chat_json(messages, RawExtraction, max_tokens=6000)  # room for several decisions with quotes
     outcome: Dict[str, Any] = {"candidates": len(raw.decisions), "created": [], "merged": [], "refused": [], "invalid": 0}
     for item in raw.decisions:
         try:
@@ -230,6 +230,15 @@ def extract_thread(db: Session, repo: Repository, kind: str, record, ai: AIClien
     return outcome
 
 
+def _safe_rollback(db: Session) -> None:
+    """Roll back without letting a dropped database connection abort the whole run."""
+    try:
+        db.rollback()
+    except Exception:
+        log.warning("rollback failed; the database connection was lost", exc_info=True)
+        db.close()
+
+
 def run_extraction(job_id: int, session_factory: Callable[[], Session], ai_factory: Callable[[], AIClient],
                    limit: int = 5) -> None:
     db = session_factory()
@@ -249,10 +258,10 @@ def run_extraction(job_id: int, session_factory: Callable[[], Session], ai_facto
                 job.merged += len(out.get("merged", []))
                 job.refused += len(out.get("refused", []))
             except AIError as exc:
-                db.rollback()
+                _safe_rollback(db)
                 errors.append({"thread": f"{kind} #{rec.number}", "error": exc.__class__.__name__, "message": str(exc)})
             except Exception as exc:  # one bad thread must not stop the run
-                db.rollback()
+                _safe_rollback(db)
                 log.exception("extraction of %s #%s failed", kind, rec.number)
                 errors.append({"thread": f"{kind} #{rec.number}", "error": exc.__class__.__name__,
                                "message": "Internal error while extracting this thread."})

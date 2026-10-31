@@ -42,7 +42,7 @@ def get_extraction_runner(settings: Settings = Depends(get_settings)) -> Extract
     def runner(job_id: int, limit: int) -> None:
         def ai() -> AIClient:
             return AIClient(settings.ai_base_url, extraction_model(settings), settings.ai_api_key, None,
-                            settings.ai_provider, settings.ai_timeout)
+                            settings.ai_provider, settings.ai_timeout, extra_body=settings.ai_extra_body)
         run_extraction(job_id, SessionLocal, ai, limit)
 
     return runner

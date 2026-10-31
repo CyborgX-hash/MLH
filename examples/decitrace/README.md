@@ -9,6 +9,8 @@ discussion, author or link here was invented. The one manual step is labelled be
 | `01_input_thread_issue_7271.json` | The GitHub thread [psf/requests#7271](https://github.com/psf/requests/issues/7271) ("RFC: Adding inline type annotations to Requests"), exactly as the extraction model receives it: each message fenced with its DeciTrace source id, author and role | DeciTrace ingestion + `thread_messages()` |
 | `02_extraction_run_qwen2.5-1.5b.json` | The outcome of AI extraction over the five most-discussed threads with **qwen2.5:1.5b** | DeciTrace extraction + evidence validator |
 | `03_validated_decision_1.json` | The full decision record for #7271: alternatives, evidence with original GitHub URLs and verification states, validation notes, audit history, and the timeline | Evidence validator, `GET /api/decisions/1`, `GET /api/decisions/1/timeline` |
+| `05_extraction_run_qwen3.6-27b.json` | The same five threads extracted by **Qwen3.6-27B** (open weights, via OpenRouter), with the full validated record of every decision it produced | DeciTrace extraction + evidence validator |
+| `06_answer_qwen3.6-27b.json` | The same question answered by **Qwen3.6-27B** | `POST /api/repositories/{id}/ask` |
 | `04_answer_qwen2.5-1.5b.json` | The answer to "Why does requests declare type annotations at class level on Response instead of in `__init__`?" with citations | `POST /api/repositories/{id}/ask` with **qwen2.5:1.5b** |
 
 ## What happened, honestly
@@ -38,6 +40,14 @@ That closing statement contains none of the explicit resolution phrases DeciTrac
 so it is shown as a statement cited as a resolution, not as an approval. A maintainer can confirm the outcome
 through human review. This is the intended conservative behaviour: DeciTrace under-claims rather than invents a
 decision.
+
+**Qwen3.6-27B (files 05 and 06).** The larger open-weight model, run through OpenRouter, proposed 8 candidates
+from the same five threads in 117 seconds. The validator refused none: 5 became decisions and 3 merged into them
+as duplicates. Topics include the typing of `params` for GET requests, `NO_PROXY` case precedence, and how non-string
+field names are handled. Every decision stayed **unresolved, needs human review**. The model claimed some options
+were selected, but no maintainer stated an outcome in explicit words, so the rules downgraded them and kept each
+cited comment with its own verification state. Its answer explains the PEP 526 reasoning behind #7271 and cites five
+real sources.
 
 **Answer (file 04).** The model's answer restates the problem and cites decision 1. The backend rates it
 **partial**, because the cited decision is unresolved and not explicitly established. The answer contains no
