@@ -7,8 +7,9 @@ script says so instead of hiding it.
 ## Before the demo (10 minutes, once)
 
 1. `make db && make migrate`, then `make backend` and `make frontend`.
-2. In `.env`, for an 8 GB laptop: `AI_MODEL=qwen2.5:1.5b`, `AI_EXTRACT_MODEL=qwen2.5:1.5b`, `AI_EMBED_MODEL=`
-   (empty: full-text retrieval). On a 16 GB+ machine keep the Qwen3 defaults.
+2. In `.env`, use the hosted open-weight model: `AI_PROVIDER=openrouter`, `AI_BASE_URL=https://openrouter.ai/api/v1`,
+   `AI_MODEL=qwen/qwen3.6-27b`, `AI_EXTRACT_MODEL=qwen/qwen3.6-27b`, `AI_EMBED_MODEL=` (full-text retrieval),
+   `AI_EXTRA_BODY={"reasoning": {"enabled": false}}` and your `AI_API_KEY`.
 3. **Set `GITHUB_TOKEN`.** Without it GitHub allows 60 requests per hour *per network*; on shared Wi-Fi the
    quota can already be used up, and the live connect step will show the rate-limit message instead.
 4. Pre-ingest so the demo does not wait on the network: connect `https://github.com/psf/requests`, wait for
@@ -23,7 +24,7 @@ script says so instead of hiding it.
 | 0:00 | Landing page | "Why code is the way it is lives in old issue threads. DeciTrace recovers it, with evidence." |
 | 0:15 | **Repositories**: paste `https://github.com/psf/requests`, press Connect (or open the pre-connected one) | "Public repos only, read-only. It never posts to GitHub." |
 | 0:30 | **Dashboard**: sync stages and counts (129 discussions, 611 comments) | "Issues, PRs, reviews, comments, commits and key files, linked together and indexed." |
-| 0:45 | **Decision extraction** panel: 5 threads, 5 candidates, 3 refused | "An open-weight model proposes decisions. Our validator checks every citation, and it refused three of five here. We would rather show fewer decisions than wrong ones." |
+| 0:45 | **Decision extraction** panel: 5 threads, 8 candidates, 5 decisions | "Qwen3.6-27B, an open-weight model, proposes decisions. Our validator checks every citation before anything is recorded. Notice they are all *unresolved*: the model thought some options were chosen, but no maintainer said so explicitly, so a human confirms them." |
 | 1:05 | **Decisions** → open "Where to declare type annotations on Response attributes" | "This is a real RFC thread, #7271." |
 | 1:15 | Alternatives (both *proposed*), contributors, **Timeline** | "The extractor claimed one option was selected and the other rejected. The rules downgraded both, because no maintainer stated an outcome in explicit words. The maintainer's closing comment is shown as 'cited as a resolution, not an approval'." |
 | 1:35 | Click **source on GitHub** on the objection | Opens the maintainer's real comment: "every line on screen comes from a real comment." |

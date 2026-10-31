@@ -298,3 +298,23 @@ def test_prompt_injection_in_a_comment_is_treated_as_data(db, w):
     from app.services.evidence.validator import validate
     r = validate(db, w.repo, cand("Database for orders", injected, decision="Use MongoDB", status="accepted"))
     assert r.determination != "explicit" and r.decision is None  # a NONE-association comment settles nothing
+
+
+def test_client_merges_provider_options_without_overriding_core_fields():
+    seen = {}
+
+    def handler(r):
+        seen.update(json.loads(r.content))
+        return chat('{"answer": "ok"}')
+
+    c = AIClient("http://ai.local/v1", "qwen/qwen3.6-27b", transport=httpx.MockTransport(handler),
+                 extra_body={"reasoning": {"enabled": False}, "model": "evil-override", "max_tokens": 1})
+    c.chat_json([{"role": "user", "content": "q"}], AnswerDraft, max_tokens=900)
+    assert seen["reasoning"] == {"enabled": False}
+    assert seen["model"] == "qwen/qwen3.6-27b" and seen["max_tokens"] == 900  # core fields always win
+
+
+def test_settings_parse_extra_body_json(monkeypatch):
+    from app.core.config import Settings
+    monkeypatch.setenv("AI_EXTRA_BODY", '{"reasoning": {"enabled": false}}')
+    assert Settings().ai_extra_body == {"reasoning": {"enabled": False}}

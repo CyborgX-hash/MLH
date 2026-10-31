@@ -3,7 +3,7 @@
 Secrets such as GITHUB_TOKEN are never hard-coded; they only come from the environment.
 """
 from functools import lru_cache
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -30,6 +30,9 @@ class Settings(BaseSettings):
     ai_embed_model: Optional[str] = "qwen3-embedding:0.6b"  # empty disables vector search (full-text only)
     ai_extract_model: Optional[str] = None  # model for decision extraction; defaults to ai_model
     ai_timeout: float = 180.0
+    # Provider-specific options merged into every chat request, as a JSON object. Example for OpenRouter's
+    # reasoning models: {"reasoning": {"enabled": false}} so hidden reasoning does not consume the token budget.
+    ai_extra_body: Dict[str, Any] = Field(default_factory=dict)
 
 
 @lru_cache

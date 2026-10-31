@@ -106,7 +106,10 @@ make backend    # API on http://localhost:8000 (docs at /docs)
 make frontend   # web app on http://localhost:5173 (in a second terminal)
 ```
 
-Models (pick what fits your machine; any OpenAI-compatible server works too):
+Models: **hosted (recommended, works anywhere, used for our best results).** Create an OpenRouter key and set
+`AI_PROVIDER=openrouter`, `AI_BASE_URL=https://openrouter.ai/api/v1`, `AI_MODEL=qwen/qwen3.6-27b`,
+`AI_EXTRACT_MODEL=qwen/qwen3.6-27b`, `AI_API_KEY=<key>`, `AI_EMBED_MODEL=` and
+`AI_EXTRA_BODY={"reasoning": {"enabled": false}}` in `.env`. **Or local**, if your machine has the memory:
 
 ```bash
 ollama pull qwen2.5:1.5b                 # small: runs extraction and answers on an 8 GB laptop (low quality)
@@ -130,6 +133,7 @@ Tests: `make test` (backend tests need the database from `make db`).
 | `AI_EMBED_MODEL` | `qwen3-embedding:0.6b` | Embeddings for vector search; empty = full-text only |
 | `AI_API_KEY` | empty | Only for hosted providers |
 | `AI_TIMEOUT` | `180` | Seconds per model call |
+| `AI_EXTRA_BODY` | `{}` | Provider-specific chat options as JSON, e.g. `{"reasoning": {"enabled": false}}` for OpenRouter's Qwen3 models |
 | `DECITRACE_ADMIN_TOKEN` | empty | Enables submitting decision candidates and index rebuilds over HTTP |
 | `VITE_API_BASE_URL`, `VITE_BACKEND_PROXY_TARGET` | empty, `http://localhost:8000` | Frontend API location |
 
@@ -153,12 +157,12 @@ A recorded end-to-end example from real data is in [examples/](examples/README.m
 
 ## Limitations
 
-- **Extraction quality is limited by model size.** On our 8 GB machine only `qwen2.5:1.5b` fits next to the
-  database. On five real `psf/requests` threads it proposed five candidates: three were refused by the validator,
-  one was malformed, and one was recorded only as unresolved. The validator kept every wrong claim out, but a
-  1.5B model does not find good decisions. Qwen3-8B (the configured default) has not completed a run on our
-  hardware because it ran out of memory alongside Docker. The one well-formed decision in our examples was
-  written by hand from real comments and then validated (it is labelled as such).
+- **Extraction quality depends on the model.** A local 1.5B model mostly produced candidates the validator
+  refused. **Qwen3.6-27B through OpenRouter** (open weights, Apache-2.0) found five real decisions in the same five
+  `psf/requests` threads, with none refused (see `examples/decitrace/`). The local Qwen3-8B setup has not completed
+  a run on our 8 GB machine (out of memory alongside Docker).
+- **The status rules under-claim.** All five Qwen3.6-27B decisions stayed *unresolved*. The model believed some
+  options were selected, but no maintainer said so in explicit words. A maintainer confirms them in Conflict review.
 - **Rules are lexical.** Resolution and objection phrases are matched as words, so real decisions phrased
   unusually can stay "unresolved" until a human reviews them, and PR-impact signals can miss reworded conflicts.
 - **Sampling without a token.** Without `GITHUB_TOKEN`, GitHub allows 60 requests/hour; DeciTrace samples the most
