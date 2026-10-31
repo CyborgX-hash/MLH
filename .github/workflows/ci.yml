@@ -8,7 +8,7 @@ on:
 
 jobs:
   validate:
-    name: Repository & Examples Validation
+    name: Submission Deliverables & Schema Validation
     runs-on: ubuntu-latest
 
     steps:
@@ -20,21 +20,22 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Verify Required Repository Files Exist
+      - name: Verify Required Deliverables
         run: |
-          echo "Checking mandatory repository structure..."
+          echo "Verifying mandatory hackathon deliverables..."
           test -f LICENSE || (echo "Missing LICENSE" && exit 1)
           test -f HACKATHON.md || (echo "Missing HACKATHON.md" && exit 1)
           test -f README.md || (echo "Missing README.md" && exit 1)
           test -f .github/pull_request_template.md || (echo "Missing PR template" && exit 1)
-          test -d examples || (echo "Missing examples directory" && exit 1)
-          echo "All mandatory files present."
+          test -f examples/sample_input.json || (echo "Missing examples/sample_input.json" && exit 1)
+          test -f examples/sample_output.json || (echo "Missing examples/sample_output.json" && exit 1)
+          echo "All required deliverables are present."
 
-      - name: Validate Example JSON Schemas and Payloads
+      - name: Validate Example JSON Payloads
         run: |
-          echo "Validating JSON syntax in examples/..."
+          echo "Validating syntax of sample inputs and outputs in examples/..."
           for file in examples/*.json; do
-            echo "Checking $file"
+            echo "Checking $file..."
             python -m json.tool "$file" > /dev/null || exit 1
           done
-          echo "All example payloads are valid JSON."
+          echo "All JSON files in examples/ are valid."

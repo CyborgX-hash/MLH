@@ -1,61 +1,58 @@
 # Hackathon Submission
 
 ## Team Information
-- **Team Name:** [TEAM NAME]
-- **Team Members:**
+- **Team Name:** Commit Crimes
+- **Members:**
   - Mihika Mathur
   - Saksham Sontakke
 
-## Selected Problem Statement
-- **Problem Statement:** Problem 7 – Decentralized Trust Network for Open Source Contributions
-- **Category:** Open Source Security | Reputation Systems | Distributed Trust
-- **Problem Description:**  
-  AI-powered development tools have made it easier to generate large volumes of code, issues, and pull requests. This has increased the risk of low-quality contributions, spam, and coordinated abuse targeting multiple open-source repositories. Individual open-source projects generally evaluate contributors independently and cannot easily share reputation information.
-- **Project Objective:**  
-  We aim to build a decentralized trust network that allows open-source projects to exchange contributor reputation signals through public vouch and denouncement records. The system will identify suspicious contribution patterns across repositories, detect coordinated spam campaigns, and provide fair reputation evaluation without automatically penalizing legitimate newcomers.
+## Selected Problem
+- **Problem ID:** 06
+- **Problem Name:** Open Source Decision Intelligence and Knowledge Recovery
+- **Category:** Knowledge Management | Developer Intelligence | Information Retrieval
 
-## Proposed Solution
-We propose a decentralized trust network for open-source repositories designed to protect project maintainers while encouraging authentic contributors. Key capabilities include:
-- **Public Vouch Records:** Verifiable endorsements published by repositories and maintainers acknowledging credible and positive contributions.
-- **Public Denouncement Records:** Evidence-backed records documenting instances of spam, automated low-quality contributions, or malicious activity.
-- **Cross-Project Reputation Exchange:** Inter-repository sharing of contributor trust signals, enabling maintainers to benefit from community-wide reputation insights.
-- **Trust Propagation:** Weighted network trust propagation based on mutual project endorsements, maintainer standing, and historical verification.
-- **Coordinated Spam Campaign Detection:** Cross-repository telemetry to detect coordinated spam campaigns and automated bot attacks spanning multiple projects.
-- **Fair Evaluation of New Contributors:** Distinction between an unestablished track record and negative reputation, ensuring legitimate newcomers are evaluated fairly without premature penalization.
+## Problem Overview
+Open-source software projects generate thousands of critical technical discussions across GitHub issues, pull requests, code reviews, and community threads. Over time, crucial architectural decisions, trade-offs, and explicitly rejected alternatives become buried in closed threads. 
 
-## AI Models Used / Selected
+When new contributors or maintainers join or attempt architectural changes, they often:
+1. Re-propose solutions that were already thoroughly evaluated and rejected in the past.
+2. Miss crucial context on why specific architectural patterns or constraints were chosen.
+3. Lack direct traceability between lines of production code and the underlying human decisions that produced them.
 
-> **Note on Implementation Status:** The models below represent our initially selected and planned AI architecture. They are not yet integrated or implemented into the codebase.
+Without automated decision extraction, historical knowledge is lost to developer turnover and voluminous discussion archives.
 
-### Model 1: GPT-4o-mini
-- **Status:** Planned / Initially Selected
+## Our Objective
+Our objective is to build an intelligent knowledge recovery platform that automatically captures, structures, and surfaces historical technical decisions:
+- **Extract Technical Decisions:** Parse unstructured developer discussions to isolate concrete technical decisions and architectural consensus.
+- **Recover Rejected Alternatives:** Systematically capture discarded options along with the specific reasons, trade-offs, and failure modes identified by the team.
+- **Link Decisions to Code:** Correlate extracted decisions directly to relevant files, modules, and commit references in the codebase.
+- **Preserve Discussion Traceability:** Anchor every decision record to its original source URL, author, and timestamp for verifiable auditability.
+- **Proactive PR Retrieval:** Retrieve and surface relevant historical decisions when new pull requests or issues touch related areas of the system.
+- **Evidence-Backed Traceability:** Guarantee that all extracted knowledge remains traceable to verifiable discussion records.
+
+## AI Models and Justification
+
+> **Implementation Status Note:** The models listed below are **proposed architectural choices** planned for the intelligence and extraction pipeline. They are not claimed to be fully integrated into production at this stage.
+
+### 1. GPT-4o-mini
+- **Status:** Proposed / Planned Model
 - **Intended Purpose:**
-  - Analyze contributor behavior and contribution context.
-  - Assist in identifying suspicious contribution patterns.
-  - Explain reputation assessments in natural language for maintainers.
-  - Analyze evidence associated with vouch and denouncement records.
+  - **Decision Extraction:** Parsing natural language discussion threads to isolate technical consensus from conversational chatter.
+  - **Discussion Summarization:** Generating concise summaries of complex technical debates and trade-offs.
+  - **Classification of Approaches:** Distinguishing between accepted solutions, rejected alternatives, and deferred proposals.
+  - **Reasoning Extraction:** Identifying explicit rationales, performance implications, and trade-offs behind each decision.
 - **Reason for Selection:**
-  - Excellent balance between reasoning capabilities, response latency, and API operational cost.
-  - Well-suited for structured analysis, context synthesis, and classification tasks.
-  - Generates clear, human-understandable explanations that maintainers can review to make informed decisions.
+  - Superior reasoning capability for structured information extraction from long developer dialogues.
+  - Cost-effective and fast inference suitable for scanning extensive issue and PR histories.
+  - Strong adherence to strict JSON extraction schemas.
 
-### Model 2: sentence-transformers/all-MiniLM-L6-v2
-- **Status:** Planned / Initially Selected
+### 2. sentence-transformers/all-MiniLM-L6-v2
+- **Status:** Proposed / Planned Model
 - **Intended Purpose:**
-  - Generate dense semantic embeddings for pull request descriptions, commit messages, and issue reports.
-  - Identify semantic similarity across contribution descriptions to flag template reuse.
-  - Compare suspicious contribution patterns across multiple repositories.
-  - Help detect potentially duplicated, low-effort, or coordinated submissions.
+  - **Text Embeddings:** Generating dense vector representations of extracted decision summaries, contexts, and technical keywords.
+  - **Semantic Search:** Enabling conceptual search across historical decisions rather than rigid keyword matching.
+  - **Similarity-Based Retrieval:** Powering real-time recommendation of historical decisions for newly opened pull requests and issues.
 - **Reason for Selection:**
-  - Lightweight and highly efficient embedding model.
-  - Delivers fast semantic similarity search performance at scale.
-  - Capable of processing large volumes of contribution records.
-  - Runs locally without requiring external or paid embedding API services.
-
-## Initial Development Goals
-- **Contributor Reputation Management:** Implementing data structures and logic for tracking, scoring, and maintaining contributor trust profiles.
-- **Project-to-Project Trust Exchange:** Creating federated exchange protocols and querying interfaces for cross-project reputation sharing.
-- **Evidence-Backed Reputation Records:** Anchoring vouch and denouncement entries with concrete, auditable evidence (pull requests, commit diffs, review logs).
-- **Cross-Repository Suspicious Activity Detection:** Semantic clustering and temporal analysis to pinpoint cross-repository coordinated spam waves.
-- **Reputation Evaluation and Visualization:** Developing maintainer tooling and visual dashboards for transparent, explainable reputation insights.
-
+  - Fast, lightweight embedding generation with 384-dimensional dense vectors.
+  - Capable of running locally or at the edge with minimal resource overhead.
+  - High semantic retrieval accuracy for developer terminology and code-adjacent technical prose.

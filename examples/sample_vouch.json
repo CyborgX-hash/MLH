@@ -1,9 +1,0 @@
-{
-  "issuer_repo": "open-source-org/core-framework",
-  "issuer_maintainer": "alice_maintainer",
-  "contributor_handle": "alex_developer",
-  "vouch_type": "BUG_FIX",
-  "evidence_url": "https://github.com/open-source-org/core-framework/pull/142",
-  "context": "Identified and fixed a high-concurrency race condition in connection pooling with comprehensive unit tests.",
-  "weight": 1.5
-}

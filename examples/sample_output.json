@@ -1,0 +1,75 @@
+{
+  "_meta": {
+    "status": "illustrative_expected_output",
+    "description": "Illustrative structured technical decision record demonstrating the target output schema of the Open Source Decision Intelligence extraction pipeline (Problem 06).",
+    "pipeline_stage": "AI Decision Extraction & Classification",
+    "proposed_extraction_models": [
+      "GPT-4o-mini (Decision & Reasoning Extraction)",
+      "sentence-transformers/all-MiniLM-L6-v2 (Embedding & Semantic Indexing)"
+    ]
+  },
+  "decision_record": {
+    "record_id": "DEC-2024-0012",
+    "title": "Adoption of Two-Tier Hybrid Caching (In-Process W-TinyLFU + Async Redis L2)",
+    "status": "ACCEPTED",
+    "category": "Architecture & Performance",
+    "consensus_timestamp": "2024-03-14T17:45:00Z",
+    "context": {
+      "problem_statement": "Hot partition lookups at 85k ops/sec overwhelmed Postgres read-replicas, demanding a low-latency caching layer with strict P99 < 2ms SLA and bounded memory footprint.",
+      "discussion_source": {
+        "platform": "github_discussion",
+        "repository": "commit-crimes/event-stream-core",
+        "discussion_id": "DISC-2024-8841",
+        "url": "https://github.com/commit-crimes/event-stream-core/discussions/482",
+        "primary_consensus_lead": "sarah_backend_lead"
+      }
+    },
+    "chosen_approach": {
+      "name": "Two-Tier Hybrid Cache (Proposal C)",
+      "description": "In-process bounded W-TinyLFU (Window Tiny LFU) L1 cache capped at 512MB heap per worker, backed by an asynchronous Redis L2 cache for secondary fallback and invalidation broadcasting.",
+      "justification": "Satisfies strict < 2ms P99 latency SLA with 98% hit rate at sub-millisecond local speed while avoiding memory exhaustion and cross-process thrashing.",
+      "trade_offs_accepted": [
+        "Slightly higher local memory utilization (512MB limit per worker).",
+        "Eventual consistency across worker caches during async L2 invalidation window (<50ms)."
+      ]
+    },
+    "rejected_alternatives": [
+      {
+        "alternative_name": "Shared External Redis Cluster (Proposal A)",
+        "proposed_by": "raj_infrastructure",
+        "rejection_reason": "Failed latency SLA: network roundtrip added 4.2ms to P99 latency (exceeding 2ms budget). Worker reconnect storms caused buffer bloat during network partition simulations.",
+        "evidence_reference": "https://github.com/commit-crimes/event-stream-core/discussions/482#msg-003"
+      },
+      {
+        "alternative_name": "Unbounded Process-Local LRU Map (Proposal B)",
+        "proposed_by": "alex_core_dev",
+        "rejection_reason": "High risk of Out-Of-Memory (OOM) crashes under high-cardinality flash crowds; poor cache efficiency due to frequency bias and cache thrashing (previously reproduced in PR #310).",
+        "evidence_reference": "https://github.com/commit-crimes/event-stream-core/discussions/482#msg-005"
+      }
+    ],
+    "code_references": [
+      {
+        "file_path": "ingestion/routing/cache_manager.py",
+        "reference_type": "implementation",
+        "symbol": "PartitionCacheManager"
+      },
+      {
+        "file_path": "docs/architecture/decisions/ADR-0012.md",
+        "reference_type": "documentation",
+        "symbol": "ADR-0012"
+      }
+    ],
+    "retrieval_metadata": {
+      "semantic_tags": [
+        "caching",
+        "w-tinylfu",
+        "redis",
+        "latency-optimization",
+        "eviction-policy",
+        "event-ingestion"
+      ],
+      "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+      "embedding_vector_dimensions": 384
+    }
+  }
+}

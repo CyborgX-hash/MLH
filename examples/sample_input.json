@@ -1,0 +1,60 @@
+{
+  "discussion_id": "DISC-2024-8841",
+  "repository": "commit-crimes/event-stream-core",
+  "source_type": "github_discussion",
+  "url": "https://github.com/commit-crimes/event-stream-core/discussions/482",
+  "title": "RFC: In-Memory Caching and Buffer Eviction Architecture for Event Ingestion",
+  "category": "Architecture & Performance",
+  "created_at": "2024-03-12T09:15:00Z",
+  "updated_at": "2024-03-14T17:45:00Z",
+  "participants": [
+    { "username": "sarah_backend_lead", "role": "maintainer" },
+    { "username": "raj_infrastructure", "role": "contributor" },
+    { "username": "elena_perf", "role": "member" },
+    { "username": "alex_core_dev", "role": "member" }
+  ],
+  "messages": [
+    {
+      "message_id": "msg-001",
+      "author": "sarah_backend_lead",
+      "timestamp": "2024-03-12T09:15:00Z",
+      "body": "As event throughput reaches 85k ops/sec, our hot partition lookups are overwhelming the primary Postgres read-replicas. We need to decide on a standardized in-memory caching tier and eviction policy for the ingestion pipeline before v2.4 ships."
+    },
+    {
+      "message_id": "msg-002",
+      "author": "raj_infrastructure",
+      "timestamp": "2024-03-12T10:30:00Z",
+      "body": "Proposal A: Let's deploy an external Redis Cluster shared across ingestion workers. It gives us centralized cache invalidation out of the box and simplifies horizontal scaling across worker nodes."
+    },
+    {
+      "message_id": "msg-003",
+      "author": "elena_perf",
+      "timestamp": "2024-03-12T14:10:00Z",
+      "body": "Benchmarked Proposal A under peak load. The network roundtrip to Redis added 4.2ms to our P99 latency budget (budget is 2ms). During network partition simulations, worker reconnect storms caused buffer bloat. I strongly advise against an external network hop for L1 partition routing."
+    },
+    {
+      "message_id": "msg-004",
+      "author": "alex_core_dev",
+      "timestamp": "2024-03-13T11:00:00Z",
+      "body": "Proposal B: What about a process-local unbounded in-memory LRU map? Zero network overhead and sub-microsecond access time."
+    },
+    {
+      "message_id": "msg-005",
+      "author": "sarah_backend_lead",
+      "timestamp": "2024-03-13T16:20:00Z",
+      "body": "A naive LRU map was previously tried in PR #310 and caused Out-Of-Memory (OOM) crashes during flash crowds when high cardinality keys thrash the working set. It also doesn't handle frequency bias well."
+    },
+    {
+      "message_id": "msg-006",
+      "author": "elena_perf",
+      "timestamp": "2024-03-14T10:00:00Z",
+      "body": "Proposal C: Two-Tier Hybrid Strategy. Use in-process W-TinyLFU (Window Tiny LFU) bounded cache with a fixed 512MB heap limit per worker for 98% hit rates at sub-millisecond latency. Back it with an optional asynchronous Redis L2 for secondary fallback and cross-process broadcast invalidation."
+    },
+    {
+      "message_id": "msg-007",
+      "author": "sarah_backend_lead",
+      "timestamp": "2024-03-14T17:45:00Z",
+      "body": "Consensus reached. We will adopt Proposal C (Two-Tier Hybrid Cache with in-process W-TinyLFU L1 and async Redis L2). Proposal A (pure Redis) is rejected due to P99 network latency SLA breaches. Proposal B (unbounded LRU) is rejected due to OOM risk and thrashing. I will document this in ADR-0012 and update ingestion/routing/cache_manager.py."
+    }
+  ]
+}

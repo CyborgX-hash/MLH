@@ -1,98 +1,125 @@
-# Decentralized Trust Network for Open Source Contributions
+# Open Source Decision Intelligence and Knowledge Recovery
 
-> **Problem 7:** Decentralized Trust Network for Open Source Contributions  
-> **Category:** Open Source Security | Reputation Systems | Distributed Trust  
+> **Hackathon Submission:** Problem 06 – Open Source Decision Intelligence and Knowledge Recovery  
+> **Category:** Knowledge Management | Developer Intelligence | Information Retrieval  
+> **Team Name:** Commit Crimes  
 > **Team Members:** Mihika Mathur, Saksham Sontakke  
 
 ---
 
 ## 📌 Project Overview
 
-With the explosion of generative AI coding assistants, open-source repositories are being inundated with automated pull requests, low-effort documentation tweaks, hallucinated library imports, and coordinated spam waves. 
+In open-source software engineering, key architectural decisions, performance trade-offs, and critical constraints are thoroughly debated in GitHub issues, pull request review threads, and developer discussions. 
 
-Currently, open-source maintainers evaluate contributors in complete isolation. An abusive bot or serial spammer banned in one repository simply targets another, while legitimate newcomers face heightened suspicion and hostile PR reviews.
+However, once a pull request is merged or a discussion is closed, that hard-won knowledge becomes buried under thousands of subsequent commits and comments. When new contributors join or architectural components evolve, teams frequently:
+- **Re-litigate already settled debates:** Re-proposing patterns that were previously tested, evaluated, and rejected.
+- **Lose context on system constraints:** Modifying critical paths without understanding historical failure modes or design trade-offs.
+- **Suffer from developer turnover:** Valuable institutional memory vanishes when maintainers step down.
 
-**Decentralized Trust Network** is a distributed reputation and threat intelligence framework designed to enable open-source projects to securely exchange contributor trust signals via tamper-evident **vouch** and **denouncement** ledgers, without central gatekeepers.
-
----
-
-## 🎯 Problem Statement & Why Decentralized Trust is Needed
-
-1. **Siloed Threat Intelligence:** Repositories cannot easily share data on coordinated spam campaigns, leaving maintainers to waste hundreds of hours closing duplicate or AI-hallucinated PRs.
-2. **Centralization Risks:** Centralized contributor scoring risks censorship, single points of failure, and corporate capture.
-3. **Newcomer Bias:** Strict blanket defenses (such as blocking new accounts) unfairly penalize genuine first-time contributors.
-4. **Need for Tamper-Evidence:** Reputation records must be cryptographically verifiable and auditable to prevent defamation or Sybil attacks.
+**Commit Crimes** is designing an intelligent knowledge recovery and decision intelligence framework that extracts technical decisions, catalogues rejected alternatives with explicit justifications, links decisions to source code references, and surfaces relevant historical knowledge directly during code review.
 
 ---
 
-## 💡 How the Trust Network Works
+## 🎯 Problem Statement
 
-```
-                     +----------------------------+
-                     | Open Source Repositories   |
-                     | (Maintainers & Reviewers)  |
-                     +--------------+-------------+
-                                    |
-          +-------------------------+-------------------------+
-          |                                                   |
-          v                                                   v
-+-------------------------+                       +-------------------------+
-|   Public Vouch Ledger   |                       | Public Denouncement     |
-| (Verifiable Merits/PRs) |                       | Ledger (Abuse Evidence) |
-+------------+------------+                       +------------+------------+
-             |                                                 |
-             +--------------------+----------------------------+
-                                  |
-                                  v
-            +-------------------------------------------+
-            |        Decentralized Trust Engine         |
-            | - Tamper-Evident SHA-256 Chaining         |
-            | - Sybil-Resistant Dampening & Time Decay  |
-            | - Guaranteed Newcomer Neutral Baseline    |
-            +---------------------+---------------------+
-                                  |
-                                  v
-            +-------------------------------------------+
-            | AI Intelligence Pipeline (Planned)        |
-            | - all-MiniLM-L6-v2: Semantic Cross-Repo   |
-            |   Duplicate & Campaign Detection          |
-            | - GPT-4o-mini: Contextual PR Analysis &   |
-            |   Explainable Maintainer Assessments      |
-            +---------------------+---------------------+
-                                  |
-                                  v
-            +-------------------------------------------+
-            | Maintainer Decision & Verification Result |
-            +-------------------------------------------+
+**Problem 06:** Open Source Decision Intelligence and Knowledge Recovery
+
+Traditional search engines and keyword-based repository search struggle to differentiate between idle chatter, exploratory proposals, and binding architectural consensus. Open-source communities need an automated pipeline that can:
+1. Parse unstructured discussions across issues, PRs, and team threads.
+2. Differentiate accepted decisions from rejected alternatives and exploratory queries.
+3. Preserve full attribution and verifiable evidence links back to the original messages.
+4. Connect historical decisions to specific files, modules, and functions.
+5. Proactively notify developers during PR review when proposed changes conflict with historical decisions.
+
+---
+
+## 💡 System Workflow
+
+The end-to-end knowledge recovery pipeline processes technical discussions into queryable, code-linked decision records:
+
+```text
+GitHub Discussions
+       |
+       v
+Discussion Collection
+       |
+       v
+Preprocessing
+       |
+       v
+AI Decision Extraction
+       |
+       v
+Decision Classification
+       |
+       v
+Knowledge Storage
+       |
+       v
+Semantic Retrieval
+       |
+       v
+Decision-to-Code Linking
+       |
+       v
+Developer Dashboard / PR Intelligence
 ```
 
-1. **Vouching:** Maintainers publish verifiable vouch records when contributors submit high-value PRs, security audits, or architectural fixes.
-2. **Denouncing:** In cases of coordinated spam, bot flooding, or malicious PRs, maintainers publish evidence-backed denouncement records with diff summaries.
-3. **Reputation Synthesis:** The trust engine aggregates historical vouches and denouncements, applying diminishing returns (Sybil resistance) and exponential time-decay.
-4. **Fair Newcomer Safeguard:** Contributor profiles with zero recorded history automatically receive a neutral baseline score (50.0/100) and `NEUTRAL_NEWCOMER` status, ensuring fair evaluation.
+### Workflow Steps
+1. **Discussion Collection:** Ingest raw conversation threads from GitHub Discussions, Issue comments, and PR review exchanges.
+2. **Preprocessing:** Normalize messages, strip extraneous markdown/bot noise, and structure chronological interaction trees.
+3. **AI Decision Extraction:** Employ language models to distinguish key decision points from conversational chatter.
+4. **Decision Classification:** Categorize options into accepted solutions, rejected alternatives, deferred concepts, or experimental trials.
+5. **Knowledge Storage:** Store structured decision records with deterministic IDs, metadata, and timestamps.
+6. **Semantic Retrieval:** Embed decision summaries into dense vector representations for conceptual search.
+7. **Decision-to-Code Linking:** Correlate extracted architectural patterns with affected files, components, and symbol paths.
+8. **Developer Dashboard / PR Intelligence:** Surface relevant prior decisions in pull request reviews and developer portals.
 
 ---
 
-## 🚀 Key Features
+## 🚀 Core Features
 
 | Feature | Status | Description |
 | :--- | :---: | :--- |
-| **Tamper-Evident Record Hashing** | *Planned / Core Design* | Cryptographic SHA-256 canonical hashing ensuring vouch and denouncement auditability. |
-| **Fair Newcomer Evaluation** | *Planned / Core Design* | Explicit separation between zero history and negative history to protect authentic newcomers. |
-| **Sybil-Resistant Scoring** | *Planned / Core Design* | Diminishing returns on repeated vouches from identical sources to prevent self-collusion. |
-| **Cross-Repo Spam Detection** | *Planned (all-MiniLM-L6-v2)* | Semantic embeddings to flag duplicate PR descriptions submitted across distinct repositories within 24h. |
-| **AI Assessment Synthesis** | *Planned (GPT-4o-mini)* | Natural language summaries explaining contributor credibility to maintainers. |
+| **Technical Consensus Extraction** | *Planned* | Automatically identifies agreed-upon design patterns from lengthy multi-contributor dialogues. |
+| **Rejected Alternative Recovery** | *Planned* | Extracts rejected approaches, benchmarking results, and the exact reasons why alternatives were dismissed. |
+| **Verifiable Evidence Attribution** | *Planned* | Links every extracted decision point to its exact source message, author, and timestamp. |
+| **Codebase Cross-Linking** | *Planned* | Maps architectural decision records (ADRs) to impacted source files and modules. |
+| **Semantic Historical Retrieval** | *Planned* | Retrieves contextually relevant past decisions when reviewing newly submitted PRs. |
+
+---
+
+## 🤖 AI Models & Responsibilities
+
+> **Status Notice:** The models listed below represent our **proposed architectural choices**. They are documented here to outline their planned integration into our processing pipeline.
+
+### 1. GPT-4o-mini
+- **Role:** Deep Decision Parsing & Reasoning Extraction
+- **Responsibilities:**
+  - Ingests preprocessed developer discussions and isolates consensus conclusions.
+  - Summarizes multi-party debates into structured ADR-style summaries.
+  - Classifies approaches into `ACCEPTED`, `REJECTED`, or `DEFERRED`.
+  - Extracts explicit technical justifications (e.g., latency constraints, memory bounds, security trade-offs).
+- **Selection Rationale:** Provides strong reasoning and structured output generation at low inference cost and high processing speed.
+
+### 2. sentence-transformers/all-MiniLM-L6-v2
+- **Role:** Dense Semantic Vector Embedding & Retrieval
+- **Responsibilities:**
+  - Converts decision contexts, problem statements, and technical keywords into 384-dimensional dense vectors.
+  - Enables semantic similarity matching across PR descriptions and existing decision archives.
+  - Detects duplicate proposals or re-emerging rejected architectures.
+- **Selection Rationale:** Lightweight, edge-deployable embedding model running locally without recurring API costs.
 
 ---
 
 ## 🛠 Technology Stack
 
-- **Data Formats & Standards:** JSON Schema, SHA-256 canonical payload hashing
-- **Language & Runtime:** Python 3.10+
-- **Planned ML Architecture:**
-  - `sentence-transformers/all-MiniLM-L6-v2`: Dense semantic vector search for cross-repo duplicate detection
-  - `GPT-4o-mini`: Natural language reasoning over evidence summaries and review explanations
-- **CI/CD:** GitHub Actions for automated validation and schema verification
+- **Data Formats:** JSON / JSON Schema, Markdown
+- **Target Language & Runtime:** Python 3.10+
+- **Planned Natural Language Stack:**
+  - `openai` Python SDK (targeting `gpt-4o-mini`)
+  - `sentence-transformers` (targeting `all-MiniLM-L6-v2`)
+- **Validation & CI/CD:** GitHub Actions for automated linting, schema validation, and deliverables verification.
 
 ---
 
@@ -101,25 +128,20 @@ Currently, open-source maintainers evaluate contributors in complete isolation. 
 ```text
 Hackbotter_final/
 ├── LICENSE                                # MIT Open Source License
-├── HACKATHON.md                           # Hackathon submission details & model justifications
-├── README.md                              # Project overview & execution guide
-├── .gitignore                             # Environment and build artifact ignores
+├── HACKATHON.md                           # Team information, problem selection & model justification
+├── README.md                              # Project overview, workflow, and architecture documentation
 ├── .github/
-│   ├── pull_request_template.md           # Mandatory PR template for contributions
+│   ├── pull_request_template.md           # Mandatory PR template with historical decision checklist
 │   └── workflows/
-│       └── ci.yml                         # Automated validation workflow
+│       └── ci.yml                         # Automated validation and payload testing workflow
 └── examples/
-    ├── sample_vouch.json                  # Sample vouch input payload
-    ├── sample_vouch_output.json           # Sample vouch ledger output record
-    ├── sample_denouncement.json           # Sample denouncement input payload
-    ├── sample_denouncement_output.json    # Sample denouncement ledger output record
-    ├── sample_spam_scan_input.json        # Sample PR cross-repo spam scan input
-    └── sample_spam_scan_output.json       # Sample cross-repo campaign detection output
+    ├── sample_input.json                  # Sample multi-contributor technical discussion input
+    └── sample_output.json                 # Illustrative structured decision record output
 ```
 
 ---
 
-## ⚙️ Setup & Execution Instructions
+## ⚙️ Installation & Setup
 
 ### Prerequisites
 - Python 3.10 or higher
@@ -131,32 +153,33 @@ git clone https://github.com/CyborgX-hash/MLH.git
 cd Hackbotter_final
 ```
 
-### 2. Validate Example Schemas
-You can test the integrity of example payloads directly using Python:
+### 2. Validate Deliverables & JSON Examples
+You can test the integrity and syntax of the provided sample input and output files using Python's built-in JSON validation:
 ```bash
-python3 -m json.tool examples/sample_vouch.json > /dev/null && echo "Vouch payload valid!"
-python3 -m json.tool examples/sample_denouncement.json > /dev/null && echo "Denouncement payload valid!"
-python3 -m json.tool examples/sample_spam_scan_output.json > /dev/null && echo "Spam scan output valid!"
+python3 -m json.tool examples/sample_input.json > /dev/null && echo "sample_input.json is valid!"
+python3 -m json.tool examples/sample_output.json > /dev/null && echo "sample_output.json is valid!"
 ```
 
 ---
 
 ## 💡 Example Use Cases
 
-### 1. Fast-Tracking a Vouched Contributor
-When `@alex_developer` submits a PR to an open-source project, the maintainer queries the trust network. The network reveals verified vouches from two major repositories for critical bug fixes. The maintainer can confidently prioritize reviewing and merging the PR.
+### 1. Preventing Re-Litigation of Rejected Proposals
+A new contributor opens a pull request proposing to replace an in-memory buffer with an external Redis cluster. The decision recovery engine searches historical records, finds `DEC-2024-0012` where an external Redis tier was rejected due to P99 network latency SLA breaches, and automatically alerts the reviewer.
 
-### 2. Blocking Coordinated Multi-Repo Spam Waves
-A bot cluster generates 20 PRs with generic titles (*"Update README.md formatting"*) across 10 unrelated repositories. The semantic spam scanner matches text embeddings with high similarity across distinct repositories within a 24-hour window, automatically flagging the campaign ID (`CAMP-74102`) and alerting maintainers.
+### 2. Accelerated Onboarding for Maintainers
+A newly appointed subsystem maintainer needs to understand why specific caching algorithms or bounded memory limits exist in `ingestion/routing/cache_manager.py`. The tool maps the code back to original GitHub discussion threads, providing the full context of the decision in seconds.
 
-### 3. Fairly Welcoming a First-Time Contributor
-A first-time contributor `@genuine_coder` creates their very first GitHub PR. With zero prior records, the trust engine marks them as `NEUTRAL_NEWCOMER` with baseline trust (50.0/100). The maintainer reviews the PR on its technical merits without bias.
+### 3. Automated Architectural Decision Records (ADRs)
+Instead of relying on developers to manually author and maintain ADR documents, the platform periodically scans merged PRs and closed discussions, drafting structured decision records for maintainer approval.
 
 ---
 
 ## 👥 Team Information
 
-- **Mihika Mathur**
-- **Saksham Sontakke**
+- **Team Name:** Commit Crimes
+- **Team Members:**
+  - Mihika Mathur
+  - Saksham Sontakke
 - **Repository:** [https://github.com/CyborgX-hash/MLH.git](https://github.com/CyborgX-hash/MLH.git)
 - **License:** [MIT License](LICENSE)
