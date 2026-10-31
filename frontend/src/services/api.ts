@@ -1,6 +1,7 @@
 import { API_BASE_URL } from '../lib/env'
 import type { Decision, DecisionSummary, ReviewRequest } from '../types/decision'
 import type { Health } from '../types/health'
+import type { CodeMap, RelatedGraph } from '../types/links'
 import type { Repository, RepositoryDetail, SyncJob } from '../types/repository'
 
 const UNREACHABLE = 'Cannot reach the DeciTrace backend. Is it running on port 8000?'
@@ -67,5 +68,9 @@ export const reviewDecision = (id: number, body: ReviewRequest, githubToken: str
     ...json(body),
     headers: { 'Content-Type': 'application/json', 'X-GitHub-Token': githubToken },
   })
+export const getRelated = (decisionId: number, signal?: AbortSignal) =>
+  request<RelatedGraph>(`/api/decisions/${decisionId}/related`, { signal })
+export const getCodeMap = (decisionId: number, signal?: AbortSignal) =>
+  request<CodeMap>(`/api/decisions/${decisionId}/code`, { signal })
 export const syncRepository = (id: number, full = false) =>
   request<SyncJob>(`/api/repositories/${id}/sync?full=${full}`, { method: 'POST' })

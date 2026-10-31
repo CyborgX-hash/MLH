@@ -131,6 +131,40 @@ change. `POST /api/decisions/{id}/supersede` marks a decision as replaced by a n
 | POST | `/api/decisions/{id}/reviews` | authorised human outcome |
 | POST | `/api/decisions/{id}/supersede` | replace by a newer decision |
 
+### Linking discussions to one another and to code
+
+After every sync, DeciTrace rebuilds a graph between issues, pull requests, discussions and commits.
+
+| Signal | Relation | Status |
+|---|---|---|
+| `#12`, `owner/repo#12` (same repository only), issue/PR/discussion URLs | `references` (`discusses` from a discussion) | verified |
+| `closes/fixes/resolves #12` in a PR or commit | `implements` | verified |
+| `supersedes #20`, `superseded by #30` | `supersedes` | verified |
+| `reverts #12`, `conflicts with #12`, `This reverts commit <sha>` | `conflicts_with` | verified |
+| commit `Title (#25)` / `Merge pull request #25`, PR merge-commit SHA | `references` | verified |
+| a file path mentioned in an issue that a PR changed | `related_to` | possible |
+| two or more shared rare technical terms | `related_to` | possible |
+| text similarity alone | `related_to` (low confidence) | possible |
+
+Every link stores its evidence (snippet and URL, paths or terms). Code blocks are ignored, numbers that do not
+exist are never linked, and possible links are shown as "possible connections", never as facts. A candidate
+decision whose sources are explicitly linked to an existing decision on the same topic is merged into it
+instead of creating a duplicate; if it suggests a different outcome, the decision is flagged for review.
+
+**Decision-to-code mapping** follows change records only: merged PRs or commits that the decision cites, or
+that are explicitly linked to its sources (closing keywords, commit references, merge commits). Each changed
+file keeps its PR and commit links and is followed through later merged PRs: renamed (current path shown),
+deleted, or changed again. Unmerged PRs never count, and file contents are never keyword-matched. Possible
+mappings are listed separately. With no verified link the API says "No verified implementation evidence found."
+
+| Method | Path | Purpose |
+|---|---|---|
+| POST | `/api/repositories/{id}/links/rebuild` | recompute the link graph |
+| GET | `/api/repositories/{id}/links` | links, filterable by record and status |
+| GET | `/api/decisions/{id}/related` | the decision's history across sources |
+| GET | `/api/decisions/{id}/code` | verified and possible implementation (recomputed per request) |
+| GET | `/api/repositories/{id}/files/decisions?path=` | decisions implemented in a file, under its old or new name |
+
 ## Install the extraction engine
 
 Requires Python 3.9 or newer.

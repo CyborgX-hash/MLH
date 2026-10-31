@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { ALT_STATUS, VERIFICATION, decisionBadge } from '../lib/decisionStatus'
 import { getDecision } from '../services/api'
 import type { Decision, Evidence } from '../types/decision'
+import { DecisionContext } from './DecisionContext'
 import { ReviewForm } from './ReviewForm'
 
 function EvidenceItem({ e }: { e: Evidence }) {
@@ -104,6 +105,7 @@ export function DecisionDetail({ id, onChanged }: { id: number; onChanged: () =>
           <ul className="space-y-2">{other.map((e, i) => <EvidenceItem key={i} e={e} />)}</ul>
         </section>
       )}
+      <DecisionContext decisionId={d.id} />
       {d.validation_notes.length > 0 && (
         <section>
           <h4 className="mb-1 text-sm font-medium">Validation notes</h4>

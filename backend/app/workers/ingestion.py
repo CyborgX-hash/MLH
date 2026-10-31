@@ -24,7 +24,7 @@ from app.services.github.files import select_files
 
 log = logging.getLogger(__name__)
 
-STAGES = ["metadata", "issues", "issue_comments", "pull_requests", "discussions", "commits", "code"]
+STAGES = ["metadata", "issues", "issue_comments", "pull_requests", "discussions", "commits", "code", "links"]
 STAGE_LABELS = {
     "queued": "Waiting to start",
     "metadata": "Repository connected",
@@ -34,6 +34,7 @@ STAGE_LABELS = {
     "discussions": "Fetching discussions",
     "commits": "Fetching commits",
     "code": "Fetching code",
+    "links": "Linking related records",
     "done": "Processing completed",
     "failed": "Processing failed",
 }
@@ -305,6 +306,12 @@ class Sync:
                 delete(SourceFile).where(SourceFile.repository_id == self.repo.id, SourceFile.path.not_in(keep))
             )
         return counts
+
+    def links(self) -> Dict[str, Any]:
+        """Uses only stored data (no GitHub requests), so it also runs after earlier stages partially failed."""
+        from app.services.linking.detector import rebuild_links
+
+        return rebuild_links(self.db, self.repo)
 
     # ------------------------------------------------------------------ helpers
 
