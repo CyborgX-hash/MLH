@@ -1,0 +1,808 @@
+{
+  "schema_version": 1,
+  "tool_version": "0.1.0",
+  "meta": {
+    "pep": 695,
+    "backend": "heuristic",
+    "threads": [
+      "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646"
+    ],
+    "source_thread": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646"
+  },
+  "decisions": [
+    {
+      "decision_id": "DEC-bffea0fd5a",
+      "title": "That’s something we can fix if/when the PEP is",
+      "status": "accepted",
+      "summary": "That’s something we can fix if/when the PEP is accepted.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 3,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/3",
+          "quote": "That’s something we can fix if/when the PEP is accepted.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-ceffae90a2",
+      "title": "Okay, that",
+      "status": "accepted",
+      "summary": "Okay, that makes sense!",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 5,
+          "author": "NeilGirdhar",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/5",
+          "quote": "Okay, that makes sense!",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-b12ad799ff",
+      "title": "Awesome, yeah, that",
+      "status": "accepted",
+      "summary": "Awesome, yeah, that makes sense.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 5,
+          "author": "NeilGirdhar",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/5",
+          "quote": "Awesome, yeah, that makes sense.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-cab4ab5ea2",
+      "title": "FWIW reuse of type as the soft keyword myself",
+      "status": "accepted",
+      "summary": "FWIW I like the reuse of type as the soft keyword myself.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 10,
+          "author": "gpshead",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/10",
+          "quote": "FWIW I like the reuse of type as the soft keyword myself.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-c993bcaf00",
+      "title": "if the PEP is this will happen) or has your opinion on implementing this changed",
+      "status": "accepted",
+      "summary": "if the PEP is accepted this will happen) or has your opinion on implementing this changed?",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 15,
+          "author": "Gobot1234",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/15",
+          "quote": "if the PEP is accepted this will happen) or has your opinion on implementing this changed?",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-7a7c85ac33",
+      "title": "It will require a rewrite by someone other than myself if the PEP is",
+      "status": "accepted",
+      "summary": "It will require a rewrite by someone other than myself if the PEP is accepted.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 16,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/16",
+          "quote": "It will require a rewrite by someone other than myself if the PEP is accepted.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-b41ee5e9b5",
+      "title": "Ah right, that",
+      "status": "accepted",
+      "summary": "Ah right, that makes sense",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 17,
+          "author": "Gobot1234",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/17",
+          "quote": "Ah right, that makes sense",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-c5ab104e63",
+      "title": "15r10nk, a decorator-based syntax was considered and",
+      "status": "rejected",
+      "summary": "@15r10nk, a decorator-based syntax was considered and rejected.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 19,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/19",
+          "quote": "@15r10nk, a decorator-based syntax was considered and rejected.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-1aa40fbb8a",
+      "title": "syntax proposals overall, and I’m supportive of Python eventually adopting syntax like this for its ",
+      "status": "accepted",
+      "summary": "I like the syntax proposals overall, and I’m supportive of Python eventually adopting syntax like this for its typing system.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 22,
+          "author": "AlexWaygood",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/22",
+          "quote": "I like the syntax proposals overall, and I’m supportive of Python eventually adopting syntax like this for its typing system.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-2fea79c719",
+      "title": "Everything else still fits the overall language model, and MyType: TypeAlias = list[str | int] is at",
+      "status": "deferred",
+      "summary": "Everything else still fits the overall language model, and MyType: TypeAlias = list[str | int] is at least understandable for newcomers as “create some variable with a value of some type” - no matter how it can be used later.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 25,
+          "author": "sterliakov",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/25",
+          "quote": "Everything else still fits the overall language model, and MyType: TypeAlias = list[str | int] is at least understandable for newcomers as “create some variable with a value of some type” - no matter how it can be used later.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-73af442ab3",
+      "title": "Basically, it just to me",
+      "status": "accepted",
+      "summary": "Basically, it just makes sense to me.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 26,
+          "author": "jcgoble3",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/26",
+          "quote": "Basically, it just makes sense to me.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-4c7d4068a6",
+      "title": "I haven’t drilled down into details, but the overall syntax idea is a from me",
+      "status": "accepted",
+      "summary": "I haven’t drilled down into details, but the overall syntax idea is a +1 from me.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 26,
+          "author": "jcgoble3",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/26",
+          "quote": "I haven’t drilled down into details, but the overall syntax idea is a +1 from me.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-b181eca4c3",
+      "title": "The same goes for __infer_variance__ on TypeVar proposed later in the PEP, but not the proposed __ty",
+      "status": "deferred",
+      "summary": "(The same goes for __infer_variance__ on TypeVar proposed later in the PEP, but not the proposed __type_variables__ attribute on classes/functions/typealiases.)",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 28,
+          "author": "thomas",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/28",
+          "quote": "(The same goes for __infer_variance__ on TypeVar proposed later in the PEP, but not the proposed __type_variables__ attribute on classes/functions/typealiases.)",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-efe47c444c",
+      "title": "A declaration (declaring something to be used later) is something completely different than a specia",
+      "status": "deferred",
+      "summary": "A declaration (declaring something to be used later) is something completely different than a specialization (narrowing down choices), so it’s quite natural and indeed useful that the syntax used for these two concepts is different as well.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 33,
+          "author": "malemburg",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/33",
+          "quote": "A declaration (declaring something to be used later) is something completely different than a specialization (narrowing down choices), so it’s quite natural and indeed useful that the syntax used for these two concepts is different as well.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-11b88d0702",
+      "title": "100 lines later",
+      "status": "deferred",
+      "summary": "# 100 lines later",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 47,
+          "author": "mdrissi",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/47",
+          "quote": "# 100 lines later",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-cba6a0af64",
+      "title": "Though for the record, d := at the time on this same basis - that it makes it harder to read Python ",
+      "status": "rejected",
+      "summary": "Though for the record, I opposed := at the time on this same basis - that it makes it harder to read Python code.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 51,
+          "author": "steve.dower",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/51",
+          "quote": "Though for the record, I opposed := at the time on this same basis - that it makes it harder to read Python code.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-47300c5814",
+      "title": "And in any case to the idea that Python needs IDE support to be usable (I had enough of that with co",
+      "status": "rejected",
+      "summary": "And in any case I strongly object to the idea that Python needs IDE support to be usable (I had enough of that with commercial Java environments).",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 52,
+          "author": "pf_moore",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/52",
+          "quote": "And in any case I strongly object to the idea that Python needs IDE support to be usable (I had enough of that with commercial Java environments).",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-24e898bdfe",
+      "title": "I think you are fully welcome to give feedback as one of many that would encounter the syntax in fut",
+      "status": "accepted",
+      "summary": "I think you are fully welcome to give feedback as one of many that would encounter the syntax in future if accepted.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 57,
+          "author": "mdrissi",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/57",
+          "quote": "I think you are fully welcome to give feedback as one of many that would encounter the syntax in future if accepted.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-fd3b6768f3",
+      "title": "That won’t work (literally",
+      "status": "deferred",
+      "summary": "That won’t work (literally) because decorators don’t introduce names, so referencing those type hints later would lead to a NameError.",
+      "reasons": [
+        {
+          "text": "because decorators don’t introduce names, so referencing those type hints later would lead to a NameError.",
+          "evidence": [
+            {
+              "post_id": 58,
+              "author": "brettcannon",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/58",
+              "quote": "That won’t work (literally) because decorators don’t introduce names, so referencing those type hints later would lead to a NameError.",
+              "verbatim": true
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 58,
+          "author": "brettcannon",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/58",
+          "quote": "That won’t work (literally) because decorators don’t introduce names, so referencing those type hints later would lead to a NameError.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-9cee6f38b2",
+      "title": "The decorator idea is mentioned in “ ideas” in the PEP",
+      "status": "rejected",
+      "summary": "The decorator idea is mentioned in “Rejected ideas” in the PEP:",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 63,
+          "author": "tmk",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/63",
+          "quote": "The decorator idea is mentioned in “Rejected ideas” in the PEP:",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-643c7d94ce",
+      "title": "This idea was",
+      "status": "rejected",
+      "summary": "This idea was rejected because such forms would be confused with regular decorators, and they would not compose well with existing decorators.",
+      "reasons": [
+        {
+          "text": "because such forms would be confused with regular decorators, and they would not compose well with existing decorators.",
+          "evidence": [
+            {
+              "post_id": 63,
+              "author": "tmk",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/63",
+              "quote": "This idea was rejected because such forms would be confused with regular decorators, and they would not compose well with existing decorators.",
+              "verbatim": true
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 63,
+          "author": "tmk",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/63",
+          "quote": "This idea was rejected because such forms would be confused with regular decorators, and they would not compose well with existing decorators.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-af70a57eef",
+      "title": "separate line idea if it is possible",
+      "status": "accepted",
+      "summary": "I really like the separate line idea if it is possible.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 77,
+          "author": "NeilGirdhar",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/77",
+          "quote": "I really like the separate line idea if it is possible.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-e32a1e0d64",
+      "title": "Okay, I’ve sufficiently buried the lede, so here it is: I would be very surprised if the Steering Co",
+      "status": "accepted",
+      "summary": "Okay, I’ve sufficiently buried the lede, so here it is: I would be very surprised if the Steering Council accepted PEP 695.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 81,
+          "author": "hauntsaninja",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/81",
+          "quote": "Okay, I’ve sufficiently buried the lede, so here it is: I would be very surprised if the Steering Council accepted PEP 695.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-b09a481886",
+      "title": "Defer syntax changes until the dust has settled on autovariance and PEP 696 (defaults for type varia",
+      "status": "deferred",
+      "summary": "Defer syntax changes until the dust has settled on autovariance and PEP 696 (defaults for type variables), or reject the syntax changes outright",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 81,
+          "author": "hauntsaninja",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/81",
+          "quote": "Defer syntax changes until the dust has settled on autovariance and PEP 696 (defaults for type variables), or reject the syntax changes outright",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-fa346af7f4",
+      "title": "I think if PEP 695 is for effectively a superset of the reasons PEP 677 was , this would be somewhat",
+      "status": "rejected",
+      "summary": "I think if PEP 695 is rejected for effectively a superset of the reasons PEP 677 was rejected, this would be somewhat frustrating, on both “sides”.",
+      "reasons": [
+        {
+          "text": "On the typing “side”, because a lot of effort and ingenuity is spent on PEPs like this and because these changes have the potential to help users (of typing).",
+          "evidence": [
+            {
+              "post_id": 81,
+              "author": "hauntsaninja",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/81",
+              "quote": "On the typing “side”, because a lot of effort and ingenuity is spent on PEPs like this and because these changes have the potential to help users (of typing).",
+              "verbatim": true
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 81,
+          "author": "hauntsaninja",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/81",
+          "quote": "I think if PEP 695 is rejected for effectively a superset of the reasons PEP 677 was rejected, this would be somewhat frustrating, on both “sides”.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-7bcd86c565",
+      "title": "being ergonomic focussed (PEP 637 was also rejected, but the SC did say the typing argument was the ",
+      "status": "rejected",
+      "summary": "Syntax changes should look more like PEP 637 rather than being ergonomic focussed (PEP 637 was also rejected, but the SC did say the typing argument was the strongest argument for that change) (addresses point 2 and point 3 of PEP 677 rejection)",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 81,
+          "author": "hauntsaninja",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/81",
+          "quote": "Syntax changes should look more like PEP 637 rather than being ergonomic focussed (PEP 637 was also rejected, but the SC did say the typing argument was the strongest argument for that change) (addresses point 2 and point 3 of PEP 677 rejection)",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-56d9347aaf",
+      "title": "Syntax changes should look more like PEP 637",
+      "status": "rejected",
+      "summary": "Syntax changes should look more like PEP 637 rather than being ergonomic focussed (PEP 637 was also rejected, but the SC did say the typing argument was the strongest argument for that change) (addresses point 2 and point 3 of PEP 677 rejection)",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 81,
+          "author": "hauntsaninja",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/81",
+          "quote": "Syntax changes should look more like PEP 637 rather than being ergonomic focussed (PEP 637 was also rejected, but the SC did say the typing argument was the strongest argument for that change) (addresses point 2 and point 3 of PEP 677 rejection)",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-30fe151582",
+      "title": "Syntax changes make use of PEG features (mentioned in PEP 677 rejection) (addresses point 4 of PEP 6",
+      "status": "rejected",
+      "summary": "Syntax changes should not make use of PEG features (mentioned in PEP 677 rejection) (addresses point 4 of PEP 677 rejection)",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 81,
+          "author": "hauntsaninja",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/81",
+          "quote": "Syntax changes should not make use of PEG features (mentioned in PEP 677 rejection) (addresses point 4 of PEP 677 rejection)",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-0452d1b4df",
+      "title": "The decorator idea seems to have been under the premise that it cannot be done",
+      "status": "rejected",
+      "summary": "The decorator idea seems to have been rejected under the premise that it cannot be done.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 86,
+          "author": "ntessore",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/86",
+          "quote": "The decorator idea seems to have been rejected under the premise that it cannot be done.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-d80e730575",
+      "title": "For the scoping, for example, one should at least consider PEP 649 which appears to solve that issue",
+      "status": "accepted",
+      "summary": "For the scoping, for example, one should at least consider PEP 649 which appears to solve that issue easily, if accepted.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 86,
+          "author": "ntessore",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/86",
+          "quote": "For the scoping, for example, one should at least consider PEP 649 which appears to solve that issue easily, if accepted.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-9565695f8b",
+      "title": "This has some of the same drawbacks as the idea PEP 695: Prefix Clause, especially regarding scope c",
+      "status": "rejected",
+      "summary": "This has some of the same drawbacks as the rejected idea PEP 695: Prefix Clause, especially regarding scope clarity.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 87,
+          "author": "xmw",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/87",
+          "quote": "This has some of the same drawbacks as the rejected idea PEP 695: Prefix Clause, especially regarding scope clarity.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-08dd83a008",
+      "title": "But it my super important and not at all contrived class, as far as I understand",
+      "status": "rejected",
+      "summary": "But it would break my super important and not at all contrived class, as far as I understand.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 97,
+          "author": "ntessore",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/97",
+          "quote": "But it would break my super important and not at all contrived class, as far as I understand.",
+          "verbatim": true
+        },
+        {
+          "post_id": 98,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/98",
+          "quote": "But it would break my super important and not at all contrived class, as far as I understand.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-0b4b11964e",
+      "title": "I’m so excited to see it was and can’t wait to see it implemented",
+      "status": "accepted",
+      "summary": "I’m so excited to see it was accepted and can’t wait to see it implemented!",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 101,
+          "author": "UltimateLobster",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/101",
+          "quote": "I’m so excited to see it was accepted and can’t wait to see it implemented!",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-7d6f907daa",
+      "title": "Are “run-time type aliases” a for some reason",
+      "status": "rejected",
+      "summary": "Are “run-time type aliases” a bad idea for some reason?",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 117,
+          "author": "tmk",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/117",
+          "quote": "Are “run-time type aliases” a bad idea for some reason?",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-ea6cb09dcb",
+      "title": "This has the added benefit that type checkers will not specialize the class, allowing it to be speci",
+      "status": "deferred",
+      "summary": "This has the added benefit that type checkers will not specialize the class, allowing it to be specialized later based on the context in which it is used.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 120,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/120",
+          "quote": "This has the added benefit that type checkers will not specialize the class, allowing it to be specialized later based on the context in which it is used.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-2bfe89bb3e",
+      "title": "However, PEP 695 has already been and implemented in Python 3.12",
+      "status": "accepted",
+      "summary": "However, PEP 695 has already been accepted and implemented in Python 3.12.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 131,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/131",
+          "quote": "However, PEP 695 has already been accepted and implemented in Python 3.12.",
+          "verbatim": true
+        },
+        {
+          "post_id": 132,
+          "author": "nmsmith",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/132",
+          "quote": "PEP 695 has already been accepted and implemented in Python 3.12.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-aa028a6e73",
+      "title": "I have no idea whether there’s any point in debating a PEP that’s already been",
+      "status": "accepted",
+      "summary": "I have no idea whether there’s any point in debating a PEP that’s already been accepted.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 133,
+          "author": "NeilGirdhar",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/133",
+          "quote": "I have no idea whether there’s any point in debating a PEP that’s already been accepted.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-7fdcf7cfc5",
+      "title": "But then you’d have to keep type[..] around for other cases, and it’s usually a to have two ways of ",
+      "status": "rejected",
+      "summary": "But then you’d have to keep type[..] around for other cases, and it’s usually a bad idea to have two ways of doing things.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 133,
+          "author": "NeilGirdhar",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/133",
+          "quote": "But then you’d have to keep type[..] around for other cases, and it’s usually a bad idea to have two ways of doing things.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-6d18574547",
+      "title": "I’d happily accept whatever gets decided, and I’m absolutely thrilled that this PEP was",
+      "status": "accepted",
+      "summary": "I’d happily accept whatever gets decided, and I’m absolutely thrilled that this PEP was accepted.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 133,
+          "author": "NeilGirdhar",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/133",
+          "quote": "I’d happily accept whatever gets decided, and I’m absolutely thrilled that this PEP was accepted.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    }
+  ]
+}

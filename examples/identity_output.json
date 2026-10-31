@@ -1,0 +1,33 @@
+[
+  {
+    "confidence": 1.0,
+    "signals": [],
+    "accounts": [
+      "discourse:bob_roe"
+    ]
+  },
+  {
+    "confidence": 0.95,
+    "signals": [
+      "link"
+    ],
+    "accounts": [
+      "github:bobby",
+      "discourse:bobroe"
+    ]
+  },
+  {
+    "confidence": 0.98,
+    "signals": [
+      "email",
+      "handle",
+      "link",
+      "name"
+    ],
+    "accounts": [
+      "github:jdoe",
+      "discourse:jane_d",
+      "mailing-list:j.doe"
+    ]
+  }
+]

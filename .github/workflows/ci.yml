@@ -1,15 +1,18 @@
-name: CI Workflow
+name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
 
 jobs:
-  validate:
-    name: Submission Deliverables & Schema Validation
+  test:
+    name: Install, test and validate (Python ${{ matrix.python }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.10", "3.12"]
 
     steps:
       - name: Checkout repository
@@ -18,24 +21,28 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python }}
 
-      - name: Verify Required Deliverables
+      - name: Install the project and its dependencies
         run: |
-          echo "Verifying mandatory hackathon deliverables..."
-          test -f LICENSE || (echo "Missing LICENSE" && exit 1)
-          test -f HACKATHON.md || (echo "Missing HACKATHON.md" && exit 1)
-          test -f README.md || (echo "Missing README.md" && exit 1)
-          test -f .github/pull_request_template.md || (echo "Missing PR template" && exit 1)
-          test -f examples/sample_input.json || (echo "Missing examples/sample_input.json" && exit 1)
-          test -f examples/sample_output.json || (echo "Missing examples/sample_output.json" && exit 1)
-          echo "All required deliverables are present."
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
 
-      - name: Validate Example JSON Payloads
+      - name: Run the unit tests
+        run: python -m pytest -q
+
+      - name: Validate - required deliverables exist
         run: |
-          echo "Validating syntax of sample inputs and outputs in examples/..."
-          for file in examples/*.json; do
-            echo "Checking $file..."
-            python -m json.tool "$file" > /dev/null || exit 1
+          for f in LICENSE HACKATHON.md README.md .github/pull_request_template.md \
+                   examples/sample_input.json examples/sample_output.json; do
+            test -f "$f" || { echo "missing $f"; exit 1; }
           done
-          echo "All JSON files in examples/ are valid."
+
+      - name: Validate - end-to-end pipeline on a bundled thread (offline, no model)
+        run: |
+          decisionlens extract tests/fixtures/mini_thread.json -o /tmp/decisions.json --backend heuristic
+          decisionlens search /tmp/decisions.json "memory leak in a global cache" --embeddings tfidf
+          decisionlens pr /tmp/decisions.json --files parser/cache.py --text "add a global cache" --embeddings tfidf
+
+      - name: Validate - committed example outputs are well-formed and fully cited
+        run: python scripts/validate_examples.py

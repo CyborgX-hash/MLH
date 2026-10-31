@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "decisionlens"
+version = "0.1.0"
+description = "Recover engineering decisions, rejected alternatives and their reasoning from open-source discussions, and link them to code."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+dependencies = []
+
+[project.optional-dependencies]
+embeddings = ["sentence-transformers>=2.2"]
+dev = ["pytest>=7"]
+
+[project.scripts]
+decisionlens = "decisionlens.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["decisionlens*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

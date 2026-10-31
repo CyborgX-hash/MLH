@@ -1,0 +1,35 @@
+{
+  "pep": 695,
+  "ground_truth_rejected_ideas": 5,
+  "predicted_rejected_decisions": 14,
+  "recovered": 2,
+  "recall": 0.4,
+  "precision": 0.143,
+  "f1": 0.211,
+  "reason_overlap": 0.178,
+  "match_threshold": 0.2,
+  "matches": [
+    {
+      "ground_truth": "Prefix Clause",
+      "recovered_decision": "This idea was",
+      "idea_similarity": 0.398,
+      "reason_similarity": 0.356
+    },
+    {
+      "ground_truth": "Explicit Variance",
+      "recovered_decision": "15r10nk, a decorator-based syntax was considered and",
+      "idea_similarity": 0.243,
+      "reason_similarity": 0.0
+    }
+  ],
+  "missed": [
+    "Angle Brackets",
+    "Bounds Syntax",
+    "Name Mangling"
+  ],
+  "pep_title": "Type Parameter Syntax",
+  "backend": "heuristic",
+  "threads": [
+    "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646"
+  ]
+}

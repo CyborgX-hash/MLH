@@ -1,75 +1,1731 @@
 {
-  "_meta": {
-    "status": "illustrative_expected_output",
-    "description": "Illustrative structured technical decision record demonstrating the target output schema of the Open Source Decision Intelligence extraction pipeline (Problem 06).",
-    "pipeline_stage": "AI Decision Extraction & Classification",
-    "proposed_extraction_models": [
-      "GPT-4o-mini (Decision & Reasoning Extraction)",
-      "sentence-transformers/all-MiniLM-L6-v2 (Embedding & Semantic Indexing)"
-    ]
+  "schema_version": 1,
+  "tool_version": "0.1.0",
+  "meta": {
+    "source_thread": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+    "title": "PEP 695: Type Parameter Syntax",
+    "posts": 140,
+    "backend": "ollama:gemma3:1b"
   },
-  "decision_record": {
-    "record_id": "DEC-2024-0012",
-    "title": "Adoption of Two-Tier Hybrid Caching (In-Process W-TinyLFU + Async Redis L2)",
-    "status": "ACCEPTED",
-    "category": "Architecture & Performance",
-    "consensus_timestamp": "2024-03-14T17:45:00Z",
-    "context": {
-      "problem_statement": "Hot partition lookups at 85k ops/sec overwhelmed Postgres read-replicas, demanding a low-latency caching layer with strict P99 < 2ms SLA and bounded memory footprint.",
-      "discussion_source": {
-        "platform": "github_discussion",
-        "repository": "commit-crimes/event-stream-core",
-        "discussion_id": "DISC-2024-8841",
-        "url": "https://github.com/commit-crimes/event-stream-core/discussions/482",
-        "primary_consensus_lead": "sarah_backend_lead"
-      }
-    },
-    "chosen_approach": {
-      "name": "Two-Tier Hybrid Cache (Proposal C)",
-      "description": "In-process bounded W-TinyLFU (Window Tiny LFU) L1 cache capped at 512MB heap per worker, backed by an asynchronous Redis L2 cache for secondary fallback and invalidation broadcasting.",
-      "justification": "Satisfies strict < 2ms P99 latency SLA with 98% hit rate at sub-millisecond local speed while avoiding memory exhaustion and cross-process thrashing.",
-      "trade_offs_accepted": [
-        "Slightly higher local memory utilization (512MB limit per worker).",
-        "Eventual consistency across worker caches during async L2 invalidation window (<50ms)."
-      ]
-    },
-    "rejected_alternatives": [
-      {
-        "alternative_name": "Shared External Redis Cluster (Proposal A)",
-        "proposed_by": "raj_infrastructure",
-        "rejection_reason": "Failed latency SLA: network roundtrip added 4.2ms to P99 latency (exceeding 2ms budget). Worker reconnect storms caused buffer bloat during network partition simulations.",
-        "evidence_reference": "https://github.com/commit-crimes/event-stream-core/discussions/482#msg-003"
-      },
-      {
-        "alternative_name": "Unbounded Process-Local LRU Map (Proposal B)",
-        "proposed_by": "alex_core_dev",
-        "rejection_reason": "High risk of Out-Of-Memory (OOM) crashes under high-cardinality flash crowds; poor cache efficiency due to frequency bias and cache thrashing (previously reproduced in PR #310).",
-        "evidence_reference": "https://github.com/commit-crimes/event-stream-core/discussions/482#msg-005"
-      }
-    ],
-    "code_references": [
-      {
-        "file_path": "ingestion/routing/cache_manager.py",
-        "reference_type": "implementation",
-        "symbol": "PartitionCacheManager"
-      },
-      {
-        "file_path": "docs/architecture/decisions/ADR-0012.md",
-        "reference_type": "documentation",
-        "symbol": "ADR-0012"
-      }
-    ],
-    "retrieval_metadata": {
-      "semantic_tags": [
-        "caching",
-        "w-tinylfu",
-        "redis",
-        "latency-optimization",
-        "eviction-policy",
-        "event-ingestion"
+  "decisions": [
+    {
+      "decision_id": "DEC-068ac3e89c",
+      "title": "Type Parameter Syntax",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [
+        {
+          "text": "Doesn’t prevent leveraging existing mechanisms",
+          "evidence": [
+            {
+              "post_id": 24,
+              "author": "erictraut",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/24",
+              "quote": "If you find that those mechanisms are more flexible for exploring extensions to the type system, PEP 695 does not prevent you from leveraging these existing mechanisms.",
+              "verbatim": false
+            }
+          ]
+        },
+        {
+          "text": "Provides flexibility for exploring extensions to the type system.",
+          "evidence": [
+            {
+              "post_id": 24,
+              "author": "erictraut",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/24",
+              "quote": "If you find that those mechanisms are more flexible for exploring extensions to the type system, PEP 695 does not prevent you from leveraging these existing mechanisms.",
+              "verbatim": false
+            }
+          ]
+        },
+        {
+          "text": "Rust variance is reasonable and documented well. Haskell’s generics are complex and esoteric.",
+          "evidence": [
+            {
+              "post_id": 54,
+              "author": "mdrissi",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/54",
+              "quote": "Haskell has far more complex type system features related to generics that I am curious about, but are reasonable to call esoteric.",
+              "verbatim": false
+            }
+          ]
+        },
+        {
+          "text": "The focus is on bringing variance closer to where it's used, making it more implicit.",
+          "evidence": [
+            {
+              "post_id": 56,
+              "author": "ambv",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/56",
+              "quote": "The innovation seems to be bringing the definition of typevarlikes closer to where they are used, and making variance implicit (which IIUC is already possible without changing syntax).",
+              "verbatim": false
+            }
+          ]
+        }
       ],
-      "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
-      "embedding_vector_dimensions": 384
+      "evidence": [
+        {
+          "post_id": 1,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/1",
+          "quote": "It proposes to add an improved syntax for specifying type parameters within a generic class, function, or type alias.",
+          "verbatim": true
+        },
+        {
+          "post_id": 24,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/24",
+          "quote": "It’s also important to note that this PEP doesn’t deprecate the current mechanisms for defining TypeVars or generic classes, functions, and type aliases. Those mechanisms can live side by side with the new syntax.",
+          "verbatim": true
+        },
+        {
+          "post_id": 54,
+          "author": "mdrissi",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/54",
+          "quote": "is a type error, but this code is safe",
+          "verbatim": true
+        },
+        {
+          "post_id": 86,
+          "author": "ntessore",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/86",
+          "quote": "See above, I had the same idea to hack it with globals and this can indeed be done.\nBut the ‘how’ isn’t the point (yet). The decorator idea seems to have been rejected under the premise that it cannot be done. Seeing how it can be done, it should be given more consideration, including some effort to find a nice syntax both within what is currently possible and by introducing new syntax (which this PEP is doing anyway) that isn’t special-casing but might benefit the whole language.\nAfterwards, there is still time to reject the idea on the basis that there truly isn’t a workable implementation. For the scoping, for example, one should at least consider PEP 649 which appears to solve that issue easily, if accepted.",
+          "verbatim": true
+        },
+        {
+          "post_id": 103,
+          "author": "Jelle",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/103",
+          "quote": "Yes, it should go into 3.12, and yes, that means we should start implementing it soon. Hopefully @erictraut can submit his draft implementation and we can iterate on that.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-2f31525b24",
+      "title": "Highlighting Consistency",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 3,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/3",
+          "quote": "An earlier draft of the PEP disallowed name conflicts between type parameters and other names (local variables, etc.). Guido pointed out that there is no precedent for this in Python, which allows inner scopes to define new names that overlap with the names in outer scopes.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-121aabfed9",
+      "title": "Type Alias Syntax",
+      "status": "accepted",
+      "summary": "The PEP proposes a new syntax for type aliases, addressing the challenge of representing covariance and contravariance in a more understandable manner. It suggests that the type variable itself is not inherently covariant or contravariant, but rather the relationship between the parameterised type and its type parameters.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 3,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/3",
+          "quote": "I presume you’re referring to syntax highlighting in pylance. That’s something we can fix if/when the PEP is accepted.",
+          "verbatim": true
+        },
+        {
+          "post_id": 4,
+          "author": "layday",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/4",
+          "quote": "I believe they are referring to the highlighting in the PEP. type is highlighted the way it is because it’s a built-in; the highlighting wasn’t changed for the PEP.",
+          "verbatim": true
+        },
+        {
+          "post_id": 6,
+          "author": "Melendowski",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/6",
+          "quote": "What are the thoughts on an new keyword such as typedef, instead of making type even more confusing, given its already dual purpose, to not only function as returning the literal type of an object but also serves to create new classes.",
+          "verbatim": true
+        },
+        {
+          "post_id": 7,
+          "author": "tmk",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/7",
+          "quote": "<keyword> <varname> = <value>",
+          "verbatim": true
+        },
+        {
+          "post_id": 8,
+          "author": "cdce8p",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/8",
+          "quote": "I don’t think that would work well. Whereas module names are often short and have a clear syntax (names separated with a .), type aliases can get much more complex and often span multiple lines. That’s one of the reasons I use aliases, simple / short ones can just be inlined.",
+          "verbatim": true
+        },
+        {
+          "post_id": 64,
+          "author": "oscarbenjamin",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/64",
+          "quote": "You can use a more descriptive name but the real problem is that it does not make sense conceptually to say that the type variable itself is contravariant or covariant.",
+          "verbatim": false
+        },
+        {
+          "post_id": 82,
+          "author": "brettcannon",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/82",
+          "quote": "I won’t vote to accept something that tries to overload what the decorator syntax means in any magical way (i.e. if it isn’t just like any other decorator and thus just a thing you import for typing, I can’t support it).",
+          "verbatim": true
+        },
+        {
+          "post_id": 123,
+          "author": "tmk",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/123",
+          "quote": "A type alias is a one-to-one mapping, so I think there’s no need to worry about inheritance and LSP here.",
+          "verbatim": false
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-ee39950107",
+      "title": "Type Alias - Import Module",
+      "status": "open",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 7,
+          "author": "tmk",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/7",
+          "quote": "Maybe it could instead be modeled after import module as mod? Something like this? alias (list[T] | set[T]) as ListOrSet[T]",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-5528af6fa3",
+      "title": "Name(..., ctx=Store())",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [
+        {
+          "text": "Makes it easier for static analysis tools like pyflakes and pylint to implement.",
+          "evidence": [
+            {
+              "post_id": 9,
+              "author": "cdce8p",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/9",
+              "quote": "That would make it easier for static analysis tools like pyflakes and pylint which use the ast, to implement.",
+              "verbatim": false
+            }
+          ]
+        },
+        {
+          "text": "The Name node also includes the precise position (of the name alone) which would make error highlighting easier.",
+          "evidence": [
+            {
+              "post_id": 9,
+              "author": "cdce8p",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/9",
+              "quote": "The Name node also includes the precise position (of the name alone) which would make error highlighting easier.",
+              "verbatim": true
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 9,
+          "author": "cdce8p",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/9",
+          "quote": "GitHub fields: ```python\nassignee = None\nclosed_at = None\ncreated_at = <Date 2021-04-30.22:49:51.192>\nlabels = ['3.10']\ntitle = 'change representation of match as / capture as `Name(..., ctx=Store())`'\nupdated_at = <Date 2021-08-08.10:38:09.417>\nuser = 'https://github.com/asottile'\n```",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-1786668d00",
+      "title": "Explicit Type Declarations",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [
+        {
+          "text": "Offers a more intuitive and familiar syntax for developers coming from other languages.",
+          "evidence": [
+            {
+              "post_id": 19,
+              "author": "erictraut",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/19",
+              "quote": "All else being equal, it’s better to choose a syntax that looks familiar to developers coming from other languages.",
+              "verbatim": false
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 19,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/19",
+          "quote": "And finally, a decorator-based syntax would look significantly different than any other language that we surveyed in the appendix of the PEP.",
+          "verbatim": false
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-6c0704635d",
+      "title": "TypeVarDict Integration",
+      "status": "rejected",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 21,
+          "author": "tmk",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/21",
+          "quote": "I’m a bit concerned that the proposed syntax seems to preclude the possibility of ever adding something like a TypeVarDict to Python (because the syntax **Tdict is being taken by ParamSpec). I think you said before that there doesn’t seem to be a use case for TypeVarDict, but what about something like a pandas dataframe?",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-a122ba9494",
+      "title": "Column-Level Typing",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 23,
+          "author": "a-reich",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/23",
+          "quote": "It would be amazing to properly support column-level typing for pandas, which is one of the most heavily used python libraries (and there are several others with similar data structures, eg pyarrow, cuDF, dask, polars…).",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-557065f293",
+      "title": "Subtyping DataFrame with TypedDict",
+      "status": "open",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 23,
+          "author": "a-reich",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/23",
+          "quote": "It would be amazing to properly support column-level typing for pandas, which is one of the most heavily used python libraries (and there are several others with similar data structures, eg pyarrow, cuDF, dask, polars…).",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-d1aab1a55f",
+      "title": "Type Variable Support",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [
+        {
+          "text": "Addresses the concern about overloading Python with typing",
+          "evidence": [
+            {
+              "post_id": 25,
+              "author": "sterliakov",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/25",
+              "quote": "The main reason “for myself” is that I hate overloading python with typing-specific syntax.",
+              "verbatim": false
+            }
+          ]
+        },
+        {
+          "text": "Since there are different approaches available to achieve this goal, authors will get to choose the balance, but I can’t see a way that anyone finds these easier to read without also being fairly experienced at typing, and that feels like a loss.",
+          "evidence": [
+            {
+              "post_id": 30,
+              "author": "steve.dower",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/30",
+              "quote": "Since there are different approaches available to achieve this goal, authors will get to choose the balance, but I can’t see a way that anyone finds these easier to read without also being fairly experienced at typing, and that feels like a loss.[1]",
+              "verbatim": true
+            }
+          ]
+        },
+        {
+          "text": "The argument about it being ‘confusing’ to use angular brackets for declarations vs. square brackets for specialization seems to be missing some context - at least for me to understand it.",
+          "evidence": [
+            {
+              "post_id": 33,
+              "author": "malemburg",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/33",
+              "quote": "The argument about it being ‘confusing’ to use angular brackets for declarations vs. square brackets for specialization seems to be missing some context - at least for me to understand it.",
+              "verbatim": true
+            }
+          ]
+        },
+        {
+          "text": "Addresses the issue of excessive information density.",
+          "evidence": [
+            {
+              "post_id": 35,
+              "author": "ambv",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/35",
+              "quote": "The core issue for me, I have to conclude, is the rather unprecedented density of information that would end up in a function and/or class signature.",
+              "verbatim": false
+            }
+          ]
+        },
+        {
+          "text": "T",
+          "evidence": [
+            {
+              "post_id": 84,
+              "author": "carljm",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/84",
+              "quote": "Yes, the expression after the @ in decorator syntax is evaluated before the decorated function/class.",
+              "verbatim": true
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 25,
+          "author": "sterliakov",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/25",
+          "quote": "I understand that I’m very late to the party, but some time ago Alex Waygood told me that all opinions count for PEPs like this, so please let me try. To begin with, my attitude towards this proposal is very negative. The main reason ‘for myself’ is that I hate overloading python with typing-specific syntax. It’s very typescript-ish, and I personally dislike how TypeScript programs look and feel. Both type declarations and generic functions syntax look very unpleasant to my eyes.",
+          "verbatim": true
+        },
+        {
+          "post_id": 30,
+          "author": "steve.dower",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/30",
+          "quote": "I’m not looking forward to having to work through code that tries to use these extensively, and I am fully expectant that I will have to work through such code in order to provide feedback on readability, maintainability, and correctness.",
+          "verbatim": true
+        },
+        {
+          "post_id": 77,
+          "author": "NeilGirdhar",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/77",
+          "quote": "I really like the separate line idea if it is possible. I agree with Lukasz’s point about ‘the rather unprecedented density of information that would end up in a function and/or class signature’. If there is a way to do it on a separate line, I think that ideally we would use the exact same notation for classes, functions, and type variables.",
+          "verbatim": true
+        },
+        {
+          "post_id": 84,
+          "author": "carljm",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/84",
+          "quote": "Yes, the expression after the @ in decorator syntax is evaluated before the decorated function/class.",
+          "verbatim": false
+        },
+        {
+          "post_id": 137,
+          "author": "nmsmith",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/137",
+          "quote": "I’ve consulted with the developers of Mojo. They agree that the : syntax is incompatible with their syntax for dependent typing, however they believe that they can resolve this problem by just using their own syntax for type annotations (rather than Python’s syntax), if need be.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-78fa94d0f5",
+      "title": "Usability Issues - Newcomers",
+      "status": "rejected",
+      "summary": "",
+      "reasons": [
+        {
+          "text": "Parallels existing language features (type variables, generics)",
+          "evidence": [
+            {
+              "post_id": 26,
+              "author": "jcgoble3",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/26",
+              "quote": "As for the “one obvious way to do it” complaint immediately above, I would argue this proposal is the obvious way – it closely parallels how type variables and generics are done in many other languages, and frankly when I started doing static typing in my own code I was surprised that this wasn’t supported, and found the idea of subclassing Generic and manually instantiating TypeVars to be a kludge.",
+              "verbatim": false
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 26,
+          "author": "jcgoble3",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/26",
+          "quote": "As a mostly-lurker (brought here by Thomas’s call for input), here’s my two cents at a high level: it’s clean and simple, and the proposed syntax is unlikely to ever be used for anything else. As for the ‘one obvious way to do it’ complaint immediately above, I would argue this proposal is the obvious way – it closely parallels how type variables and generics are done in many other languages, and frankly when I started doing static typing in my own code I was surprised that this wasn’t supported, and found the idea of subclassing Generic and manually instantiating TypeVars to be a kludge.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-bc6e9f1b68",
+      "title": "dunder attributes",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [
+        {
+          "text": "They aren't going to collide with anything else on the object, and they’re not special hooks for the interpreter. They’re just normal data for TypeAlias objects.",
+          "evidence": [
+            {
+              "post_id": 28,
+              "author": "thomas",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/28",
+              "quote": "They aren't going to collide with anything else on the object, and they’re not special hooks for the interpreter. They’re just normal data for TypeAlias objects.",
+              "verbatim": true
+            }
+          ]
+        },
+        {
+          "text": "They are just data for TypeAlias objects - no special purpose.",
+          "evidence": [
+            {
+              "post_id": 28,
+              "author": "thomas",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/28",
+              "quote": "They’re just normal data for TypeAlias objects.",
+              "verbatim": false
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 28,
+          "author": "thomas",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/28",
+          "quote": "They’re just normal data for TypeAlias objects.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-ac6c5af443",
+      "title": "angular brackets",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [
+        {
+          "text": "The angular bracket notation used in many other languages to Python is a natural fit for this type of syntax.",
+          "evidence": [
+            {
+              "post_id": 33,
+              "author": "malemburg",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/33",
+              "quote": "I second @zware and @steve.dower in that I’m not really looking forward to having to read such code, but when I need to, I’d much prefer the angular bracket notation used in many other languages to the proposed square bracket notation which looks too much like the subscript notation in Python.",
+              "verbatim": false
+            }
+          ]
+        },
+        {
+          "text": "It would be immediately clear, that whatever is in those brackets has a special meaning, which is definitely new to Python and requires special knowledge to be understood.",
+          "evidence": [
+            {
+              "post_id": 33,
+              "author": "malemburg",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/33",
+              "quote": "With the angular brackets, it would be immediately clear, that whatever is in those brackets has a special meaning, which is definitely new to Python and requires special knowledge to be understood.",
+              "verbatim": true
+            }
+          ]
+        },
+        {
+          "text": "A declaration (declaring something to be used later) is something completely different than a specialization (narrowing down choices), so it’s quite natural and indeed useful that the syntax used for these two concepts is different as well.",
+          "evidence": [
+            {
+              "post_id": 33,
+              "author": "malemburg",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/33",
+              "quote": "A declaration (declaring something to be used later) is something completely different than a specialization (narrowing down choices), so it’s quite natural and indeed useful that the syntax used for these two concepts is different as well.",
+              "verbatim": true
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 34,
+          "author": "pf_moore",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/34",
+          "quote": "I agree with pretty much everything @zware @steve.dower and @malemburg have said.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-4365cf0bb0",
+      "title": "consistent with existing TypeVar attributes",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 31,
+          "author": "Jelle",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/31",
+          "quote": "Using dunders for the new TypeVar attribute is consistent with existing TypeVar attributes like __covariant__. I don’t really care which way we go, but it’s good to remain consistent within one object, and removing the underscores would cause needless churn.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-1b086c2627",
+      "title": "avoiding complex syntax",
+      "status": "rejected",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 33,
+          "author": "malemburg",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/33",
+          "quote": "The parser issue can surely be resolved by running .strip() on whatever is defined in the angular brackets.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-433a418264",
+      "title": "consider the user-facing documentation",
+      "status": "deferred",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 34,
+          "author": "pf_moore",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/34",
+          "quote": "I find the PEP itself to be highly technical and extremely difficult for someone who’s not a typing specialist to follow (which probably explains at least some of the lack of feedback). I note that there’s no ‘how to teach this’ section in the PEP - I think it would be very informative to see what the user-facing documentation of this feature is expected to look like.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-6bb8e34a14",
+      "title": "type soft keyword",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 35,
+          "author": "ambv",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/35",
+          "quote": "So, the analogy only goes so far there, too, and in the end, I don’t think using triangle brackets solves the issue.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-ae9c4ed2ec",
+      "title": "as",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [
+        {
+          "text": "Consistent with Python's history:  Similar to how type aliases are declared historically.",
+          "evidence": [
+            {
+              "post_id": 42,
+              "author": "erictraut",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/42",
+              "quote": "It’s also consistent with how type aliases are declared historically in Python (e.g.",
+              "verbatim": false
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 42,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/42",
+          "quote": "Using as is an idea that didn’t come up in any of the lengthy syntax discussions we had in the typing forums when discussing this PEP.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-ae9c4ed2ec",
+      "title": "as",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [
+        {
+          "text": "Consistency with Python's history: Similar to how type aliases are declared historically.",
+          "evidence": [
+            {
+              "post_id": 42,
+              "author": "erictraut",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/42",
+              "quote": "It’s also consistent with how type aliases are declared historically in Python (e.g.",
+              "verbatim": false
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 42,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/42",
+          "quote": "Using as is an idea that didn’t come up in any of the lengthy syntax discussions we had in the typing forums when discussing this PEP.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-97c9b66087",
+      "title": "Use `TypeVar` for the type variable, making it more explicit and reusable.",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [
+        {
+          "text": "Facilitates understanding of the type variable's meaning.",
+          "evidence": [
+            {
+              "post_id": 25,
+              "author": "sterliakov",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/25",
+              "quote": "Such type variable can be documented (even with a docstring in a common format supported by Sphinx+Napoleon and other doc processors), explaining its usage and meaning within the package.",
+              "verbatim": false
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 44,
+          "author": "pf_moore",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/44",
+          "quote": "For what it’s worth, I agree with @ambv here - the version with explicit named type variables is much easier to read, even though it basically only removes [R, **P] in favour of a couple of explicit assignments. And I can look up ParamSpec to find out the semantics of P, whereas in [R, **P] I don’t have the first clue what to research to understand the syntax.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-5c913eb17d",
+      "title": "Introduce a `Message` class to represent the type variable, making it more easily identifiable and reusable across different functions/classes.",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 47,
+          "author": "mdrissi",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/47",
+          "quote": "I think this is mainly due to variance. Whether type variable is covariant/contravariant matters sometimes but is irrelevant in other usages that it’s fairly easy to get them mixed up. This pep does offer separate solution to that of automatically infer variance that would be helpful and is independent of syntax change.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-b52adf9630",
+      "title": "Use `TypeVar` with a bound (e.g., `Message`) to ensure the variable's meaning is tied to its context.",
+      "status": "accepted",
+      "summary": "How is this different from using a class or function from a different module or further up a file?  This pep does offer separate solution to that of automatically infer variance that would be helpful and is independent of syntax change.  I think the one other place where having definition tied to function/class matters is making scoping clearer.  T = TypeVar(",
+      "reasons": [
+        {
+          "text": "I do hit this issue less with them as usually you can name variable more meaningful then T",
+          "evidence": [
+            {
+              "post_id": 47,
+              "author": "mdrissi",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/47",
+              "quote": "I do hit this issue less with them as usually you can name variable more meaningful then T.",
+              "verbatim": true
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 32,
+          "author": "Jelle",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/32",
+          "quote": "I feel the post would be better if it also showed the existing syntax to do the same thing (with T = TypeVar(\"T\")).",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-6d185feacb",
+      "title": "Use a class or function from a different module or further up a file, with a clear scope for the type variable.",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 47,
+          "author": "mdrissi",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/47",
+          "quote": "I think this is mainly due to variance. Whether type variable is covariant/contravariant matters sometimes but is irrelevant in other usages that it’s fairly easy to get them mixed up. This pep does offer separate solution to that of automatically infer variance that would be helpful and is independent of syntax change.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-f0a9a02e44",
+      "title": "Consider defining the type variable next to the function/class it's associated with.  This simplifies scoping.",
+      "status": "accepted",
+      "summary": "So I accept that explicit assignment is a bit more verbose, as well as that it’s not typical in strongly-typed languages. But Python has optional typing, so there are going to be compromises.  And you haven’t addressed my other point about discoverability - with types being optional in Python, and advanced type constructs having no runtime effect, the typical user is much less likely to be familiar with type syntax, so being able to easily look up the meaning of a type annotation is much more important (IMO).  And to address the inevitable response that if you don’t use types (and hence don’t know about them) you won’t need to understand them - in my experience a pretty common scenario is a project mandating type annotations (because of the maintenance benefits).  Return the JSON object.",
+      "reasons": [
+        {
+          "text": "I do hit this issue less with them as usually you can name variable more meaningful then T",
+          "evidence": [
+            {
+              "post_id": 47,
+              "author": "mdrissi",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/47",
+              "quote": "I do hit this issue less with them as usually you can name variable more meaningful then T.",
+              "verbatim": true
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 48,
+          "author": "pf_moore",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/48",
+          "quote": "OK, that makes some sense to me. As P is simply a placeholder, there’s little information in P = ParamSpec(",
+          "verbatim": true
+        },
+        {
+          "post_id": 47,
+          "author": "mdrissi",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/47",
+          "quote": "I think this is mainly due to variance. Whether type variable is covariant/contravariant matters sometimes but is irrelevant in other usages that it’s fairly easy to get them mixed up. This pep does offer separate solution to that of automatically infer variance that would be helpful and is independent of syntax change.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-64af1e18ad",
+      "title": "As |as|",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 53,
+          "author": "Glenn",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/53",
+          "quote": "(OK, I don’t use typing, I’m relying on the promise that it is optional)",
+          "verbatim": false
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-7dd39a9894",
+      "title": "Mutability",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 56,
+          "author": "ambv",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/56",
+          "quote": "If a function accepts an immutable iterable of floats, you can pass a list of ints to it just fine because there is no risk anything will break. If that same function would accept a mutable collection of floats, it would potentially be mutating that collection. So if it put a float at the end of your list of ints, it would no longer be a list of ints, right?",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-3b30d5355a",
+      "title": "Decorators",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 58,
+          "author": "brettcannon",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/58",
+          "quote": "That seems like a naming problem, though; why can’t you use a more descriptive name in that case instead of T?",
+          "verbatim": false
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-21a3f11f49",
+      "title": "Prefix Forms for Type Variables",
+      "status": "accepted",
+      "summary": "The PEP proposes improving the ability to declare static types for future Python development, emphasizing the importance of type safety and library functionality. It discusses the fear of simplifying Python through type declarations and suggests that this will improve developer experience. The PEP also considers the benefits of strong typing in language design.",
+      "reasons": [
+        {
+          "text": "Addresses the need for static typing in Python.",
+          "evidence": [
+            {
+              "post_id": 125,
+              "author": "nmsmith",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/125",
+              "quote": "About Mojo: Mojo is a programming language that extends Python with static typing and Rust-like memory safety.",
+              "verbatim": false
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 61,
+          "author": "UltimateLobster",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/61",
+          "quote": "I just want to add to this discussion the importance of improving the ability to declare static types for the future of python. I’ve seen a lot of people talking about the fear they have from ruining python’s simplicity. But you must take into consideration the simplicity that comes from having libraries with good typings. Even if the average user will not declare complex types on a daily basis, the ability for big libraries to do so, will make the user’s experience easier when the IDE will warn them of bugs (pymongo can have type checking for valid mongo queries that is based on the collection type for example). The easier programming experience of the user side is part of what makes a language ‘simple’ and ‘easy to use’.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-d768cd4ed8",
+      "title": "Variance is relevant to the question of understanding the type variable T",
+      "status": "rejected",
+      "summary": "Variance allows the TypeVar to be used without explicitly declaring it in the code.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 66,
+          "author": "oscarbenjamin",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/66",
+          "quote": "Oh, I missed that it is in the PEP:  type ListOrSet[T] = list[T] | set[T]\nThis does introduce the type variable T so that the TypeVar is not needed.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-87a5c7b5b9",
+      "title": "Variance is relevant to the question of understanding and using the `myfunction` function",
+      "status": "rejected",
+      "summary": "The use of `__coannotations__` simplifies the function's logic, reducing the need for explicit type annotations.",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 68,
+          "author": "ntessore",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/68",
+          "quote": "With the __coannotations__ magic, that would probably not even have to touch global scope.",
+          "verbatim": true
+        },
+        {
+          "post_id": 70,
+          "author": "davidism",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/70",
+          "quote": "I can’t find any mention in either the PEP or this topic of ‘slice’. Doesn’t this [T: str] syntax conflict with how slices are parsed, or at least how they’re read by developers?",
+          "verbatim": true
+        },
+        {
+          "post_id": 71,
+          "author": "mdrissi",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/71",
+          "quote": "My response to that was prior variance discussion here,",
+          "verbatim": true
+        },
+        {
+          "post_id": 73,
+          "author": "mdrissi",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/73",
+          "quote": "From my view I feel like I agree with you there is learning trade off. I wasn’t trying to disagree that learning impact on first encountering it. My view is I think benefit from usage in existing files that often use generics is worth that trade off and the trade off is comparable to most other syntactic changes.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-0908ca0e0f",
+      "title": "Separate Line for Functions",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 77,
+          "author": "NeilGirdhar",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/77",
+          "quote": "If there is a way to do it on a separate line, I think that ideally we would use the exact same notation for classes, functions, and type variables.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-7ab147276b",
+      "title": "Nested Type Variable Declaration",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 79,
+          "author": "NeilGirdhar",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/79",
+          "quote": "I think it’s problematic because of the reason Eric gave PEP 695: Type Parameter Syntax - #19 by erictraut",
+          "verbatim": false
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-f61ea40844",
+      "title": "Generic Class Syntax",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 81,
+          "author": "hauntsaninja",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/81",
+          "quote": "The syntax changes thus target the places where you’d bind a type variable, mirroring precedent in other languages.",
+          "verbatim": false
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-45f43a5582",
+      "title": "Decorator Evaluation Context",
+      "status": "rejected",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 84,
+          "author": "carljm",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/84",
+          "quote": "The expression after the @ in decorator syntax is evaluated before the decorated function/class. That’s not typically what we mean by ‘evaluating a decorator,’ though; typically we mean ‘calling the decorator – the result of evaluating the decorator expression – with the decorated function/class.’",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-cfefb93a0a",
+      "title": "Type Comments (# type: ...)",
+      "status": "open",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 89,
+          "author": "tusharc",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/89",
+          "quote": "Hi, I am a long-time lurker and created an account to express my support for this proposal. I know that one user’s perspective is unlikely to make a difference in such a long and complex discussion, but I do believe that this PEP makes generics and type variables much easier to work with than they are today.\nMost important to me is that, under PEP 695, parameters are declared exactly when they are needed and their usage is localized to there and there alone. This is addressed in the PEP as the second paragraph of Points of Confusion: \nThe scoping rules for type variables are difficult to understand. Type variables are typically allocated within the global scope, but their semantic meaning is valid only when used within the context of a generic class, function, or type alias. A single runtime instance of a type variable may be reused in multiple generic contexts, and it has a different semantic meaning in each of these contexts. This PEP proposes to eliminate this source of confusion by declaring type parameters at a natural place within a class, function, or type alias declaration statement.\nI find this to be most compelling.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-1569766e2a",
+      "title": "Hide instantiation with magic",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 91,
+          "author": "tmk",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/91",
+          "quote": "If the main objection is that the proposed syntax is too “magical” then I think this might be a good compromise.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-6ba253f10b",
+      "title": "Implement 'where' as soft keyword",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 91,
+          "author": "tmk",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/91",
+          "quote": "Also, instead of re-purposing “with”, it could be done with “where” as a soft keyword:",
+          "verbatim": false
+        },
+        {
+          "post_id": 98,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/98",
+          "quote": "But it would break my super important and not at all contrived class, as far as I understand. This PEP has no impact on how : is interpreted in the grammar today. That’s true for your code sample above or any other code that works today.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-b4a1fb3ef9",
+      "title": "Implement mandatory bound specification",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 94,
+          "author": "davidism",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/94",
+          "quote": "This never got addressed.",
+          "verbatim": true
+        },
+        {
+          "post_id": 91,
+          "author": "tmk",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/91",
+          "quote": "If the main objection is that the proposed syntax is too “magical” then I think this might be a good compromise.",
+          "verbatim": true
+        },
+        {
+          "post_id": 98,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/98",
+          "quote": "This PEP has no impact on how : is interpreted in the grammar today. That’s true for your code sample above or any other code that works today.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-53a93129df",
+      "title": "Consider decorators as an alternative",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 92,
+          "author": "emily",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/92",
+          "quote": "On behalf of the Steering Council, we’d like to report that we are happy to accept PEP 695. Thanks to everyone for the reinvigorated discussion in the last few weeks – I look forward to this step forward for typing in Python.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-666874d7b0",
+      "title": "GitHub - python/steering-council: Communications from the Steering Council repo",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 103,
+          "author": "Jelle",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/103",
+          "quote": "There is no set schedule; the SC is a small group of volunteers who do things when they have the time to do so.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-0a481aa270",
+      "title": "Merge current main branch into prototype",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 105,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/105",
+          "quote": "My earlier prototype is in this branch, but it implements an older version of the spec (prior to incorporating input about scoping rules). The cpython compiler code has also changed significantly in the past year, so I don’t think it’s worth trying to carry the prototype forward in its entirety.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-539a1d2425",
+      "title": "Enable issues on CPython fork",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 111,
+          "author": "Jelle",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/111",
+          "quote": "Would you mind enabling issues on your CPython fork at GitHub - erictraut/cpython: The Python programming language?",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-6c9ed1a314",
+      "title": "Implement TypeVar and co in C",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 112,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/112",
+          "quote": "Thanks Jelle. I just enabled issues and discussions in my fork.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-8161ceeec2",
+      "title": "Change to type constraint syntax",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 109,
+          "author": "bedlamzd",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/109",
+          "quote": "Indeed, thank you!",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-aa8a2c032d",
+      "title": "Consider PEP 696 (Type defaults for TypeVarLIkes)",
+      "status": "deferred",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 114,
+          "author": "Jelle",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/114",
+          "quote": "This was discussed exhaustively in the lead-up to the PEP, and the PEP contains a survey of the syntax in other languages. : is reasonably common in other languages, and that’s what we ended up with.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-a38af554ca",
+      "title": "Suggest a change to the proposed syntax",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 114,
+          "author": "Jelle",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/114",
+          "quote": "This was discussed exhaustively in the lead-up to the PEP, and the PEP contains a survey of the syntax in other languages. : is reasonably common in other languages, and that’s what we ended up with.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-44237487cd",
+      "title": "run-time type aliases",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 117,
+          "author": "tmk",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/117",
+          "quote": "It seems the type alias created by type X = Y can only be used in annotations and not as a class.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-143c4689f6",
+      "title": "Callable type aliases",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [
+        {
+          "text": "This aligns with the design philosophy of PEP 613, which deprecates the existing typing.TypeAlias introduced in PEP 613.",
+          "evidence": [
+            {
+              "post_id": 117,
+              "author": "tmk",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/117",
+              "quote": "We propose to deprecate the existing typing.TypeAlias introduced in PEP 613.",
+              "verbatim": false
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 118,
+          "author": "guido",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/118",
+          "quote": "Probably new style type aliases should be made callable, similar to types.GenericAlias.",
+          "verbatim": false
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-ec21704177",
+      "title": "Implement __call__ as returning its argument unchanged",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [
+        {
+          "text": "This aligns with the design philosophy of PEP 613, which deprecates the existing typing.TypeAlias introduced in PEP 613.",
+          "evidence": [
+            {
+              "post_id": 117,
+              "author": "tmk",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/117",
+              "quote": "We propose to deprecate the existing typing.TypeAlias introduced in PEP 613.",
+              "verbatim": false
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 121,
+          "author": "Jelle",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/121",
+          "quote": "Implement __call__ as returning its argument unchanged\nThis would make type aliases work similarly to NewType. It’s simple and fast.\nIt could unlock syntax like this for NewType in the future, removing the need to repeat the name and allowing for lazy evaluation of the supertype: \ntype NT = NewType[int] \nOn the negative side, this would work differently from existing assignment-based type aliases in that the value would not be converted in any way.\nIn Thomas’s example, List(x*2 for x in range(3)) would return a generator expression at runtime, not a list.",
+          "verbatim": true
+        },
+        {
+          "post_id": 122,
+          "author": "NeilGirdhar",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/122",
+          "quote": "Besides union types, abstract types also cannot be constructed. That’s why I think it’s generally an error to conflate type[SomeClass] with Callable[..., SomeClass], which is what calling a type does.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-6af1821115",
+      "title": "Implement __call__ as return self.__value__(arg)",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 121,
+          "author": "Jelle",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/121",
+          "quote": "That would make the List() call indeed turn the value into a list, but as Alex called out, it means calling the type alias would work only for simple aliases, not e.g.",
+          "verbatim": false
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-d507f9cba3",
+      "title": "Provide parameter definition",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [
+        {
+          "text": "This aligns with the design philosophy of PEP 613, which deprecates the existing typing.TypeAlias introduced in PEP 613.",
+          "evidence": [
+            {
+              "post_id": 117,
+              "author": "tmk",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/117",
+              "quote": "We propose to deprecate the existing typing.TypeAlias introduced in PEP 613.",
+              "verbatim": false
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 122,
+          "author": "NeilGirdhar",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/122",
+          "quote": "Consider your list example. I guess the reason you’re making a type alias is so that you can change the container type? Then, I think you need two lines of code: \ntype OurContainer = list[Any] \nmake_container: Callable[[Iterable[Any]], OurContainer] = list\n\nI don’t think this redundancy is so bad because these two lines are really two different things that only happen to have the same value.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-4eae2ec397",
+      "title": "Nested Class",
+      "status": "rejected",
+      "summary": "",
+      "reasons": [
+        {
+          "text": "It aligns with the existing type system's design.",
+          "evidence": [
+            {
+              "post_id": 24,
+              "author": "erictraut",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/24",
+              "quote": "If you find that those mechanisms are more flexible for exploring extensions to the type system, PEP 695 does not prevent you from leveraging these existing mechanisms.",
+              "verbatim": false
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 125,
+          "author": "nmsmith",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/125",
+          "quote": "The issue relates to the use of the : symbol to denote a subtyping relationship between types.",
+          "verbatim": false
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-665ad7785f",
+      "title": "Literal Types",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 126,
+          "author": "tmk",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/126",
+          "quote": "Regarding the dependent types: you can still achieve this with Literal types.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-af4ec62dc4",
+      "title": "Bare Literals",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [
+        {
+          "text": "It addresses a potential issue with string literals and forward references.",
+          "evidence": [
+            {
+              "post_id": 126,
+              "author": "tmk",
+              "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/126",
+              "quote": "(It wouldn’t be safe for string literals because they could be confused with forward references.",
+              "verbatim": false
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "post_id": 126,
+          "author": "tmk",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/126",
+          "quote": "Regarding your other points, I’m not familiar enough with lower bounds to comment on that.",
+          "verbatim": false
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-235a7259cb",
+      "title": "Type Bounds",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 131,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/131",
+          "quote": "The good news is that all of the issues you raised in your feedback were considered and discussed. I’ll try to address each of them in turn.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-1883137b7d",
+      "title": "Compatibility with Existing Syntax",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 131,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/131",
+          "quote": "The good news is that all of the issues you raised in your feedback were considered and discussed. I’ll try to address each of them in turn.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-5831073c70",
+      "title": "Consideration of Existing Features",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 131,
+          "author": "erictraut",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/131",
+          "quote": "The good news is that all of the issues you raised in your feedback were considered and discussed. I’ll try to address each of them in turn.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-b2136cfb42",
+      "title": "hassubclass",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 132,
+          "author": "nmsmith",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/132",
+          "quote": "Python offers two different functions for testing these things, because they are not the same concept!",
+          "verbatim": false
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-ae886b6615",
+      "title": "forward compatibility",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 136,
+          "author": "nmsmith",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/136",
+          "quote": "Just to re-iterate: I don’t really mind what syntax is chosen, as long as it is forward compatible, as I’ve talked about. If people find <: too noisy, then < is a reasonable second choice.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-5e49ff6233",
+      "title": "use Mojo's syntax",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 135,
+          "author": "NeilGirdhar",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/135",
+          "quote": "Yes, sure. I think “obvious” might be different for different people. And everything becomes obvious after you get used to it—which is why I’ll happily accept whatever is decided.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-aa927c01a1",
+      "title": "Introduce a `typing.type` type alias for type parameters",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 138,
+          "author": "brettcannon",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/138",
+          "quote": "The key way to change something like this after Python has reached beta is for a groundswell of support to make the change, lest we break people already using the syntax to prepare for Python 3.12 final’s release.",
+          "verbatim": true
+        },
+        {
+          "post_id": 139,
+          "author": "gwerbin",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/139",
+          "quote": "I see some discussion about the type soft keyword, but no serious discussion of alternatives to it.",
+          "verbatim": true
+        },
+        {
+          "post_id": 142,
+          "author": "ajoino",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/142",
+          "quote": "Beyond the fact that this is unlikely to happen because of compatibility reasons, this has seemingly nothing to do with PEP 695.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
+    },
+    {
+      "decision_id": "DEC-2911787a6a",
+      "title": "Refactor the syntax to avoid using `: within square brackets",
+      "status": "accepted",
+      "summary": "",
+      "reasons": [],
+      "evidence": [
+        {
+          "post_id": 140,
+          "author": "Jelle",
+          "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/140",
+          "quote": "Yes, it’s too late.  It doesn’t conflict in the grammar, because PEP 695 syntax doesn’t appear in places where you could use a slice.",
+          "verbatim": true
+        }
+      ],
+      "code_refs": [],
+      "source_url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+      "source_title": "PEP 695: Type Parameter Syntax"
     }
-  }
+  ]
 }

@@ -1,0 +1,9 @@
+retrieval backend: tfidf
+0.413  [rejected] Variance is relevant to the question of understanding the type variable T  (DEC-d768cd4ed8)
+        source: https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/66
+0.150  [accepted] Type Parameter Syntax  (DEC-068ac3e89c)
+        reason: Doesn’t prevent leveraging existing mechanisms
+        reason: Provides flexibility for exploring extensions to the type system.
+        source: https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/1
+0.104  [rejected] Variance is relevant to the question of understanding and using the `myfunction` function  (DEC-87a5c7b5b9)
+        source: https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/68

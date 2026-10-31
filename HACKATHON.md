@@ -32,27 +32,27 @@ Our objective is to build an intelligent knowledge recovery platform that automa
 
 ## AI Models and Justification
 
-> **Implementation Status Note:** The models listed below are **proposed architectural choices** planned for the intelligence and extraction pipeline. They are not claimed to be fully integrated into production at this stage.
+Only open-weight models are used. Each entry states plainly whether it is integrated and used today.
 
-### 1. GPT-4o-mini
-- **Status:** Proposed / Planned Model
-- **Intended Purpose:**
-  - **Decision Extraction:** Parsing natural language discussion threads to isolate technical consensus from conversational chatter.
-  - **Discussion Summarization:** Generating concise summaries of complex technical debates and trade-offs.
-  - **Classification of Approaches:** Distinguishing between accepted solutions, rejected alternatives, and deferred proposals.
-  - **Reasoning Extraction:** Identifying explicit rationales, performance implications, and trade-offs behind each decision.
-- **Reason for Selection:**
-  - Superior reasoning capability for structured information extraction from long developer dialogues.
-  - Cost-effective and fast inference suitable for scanning extensive issue and PR histories.
-  - Strong adherence to strict JSON extraction schemas.
+### 1. gemma3:1b (Google Gemma 3, open weights), served locally by Ollama
+- **Status:** Integrated and used. This is the default extraction model (`decisionlens extract --model gemma3:1b`). The committed example `examples/sample_output.json` was produced by it.
+- **What it does:** Reads chunks of a discussion thread and returns candidate decisions as schema-constrained JSON: idea, stance (accepted, rejected, deferred, open), reasons, cited post and quote.
+- **Why we chose it:** Runs on a laptop CPU through Ollama, supports JSON-schema-constrained output, and the open weights keep all data local. It processes a 140-post thread in about 4.5 minutes.
+- **Known limit:** Its recall on long threads is low (see `examples/README.md`). The pipeline accepts any Ollama model through `--model`.
 
-### 2. sentence-transformers/all-MiniLM-L6-v2
-- **Status:** Proposed / Planned Model
-- **Intended Purpose:**
-  - **Text Embeddings:** Generating dense vector representations of extracted decision summaries, contexts, and technical keywords.
-  - **Semantic Search:** Enabling conceptual search across historical decisions rather than rigid keyword matching.
-  - **Similarity-Based Retrieval:** Powering real-time recommendation of historical decisions for newly opened pull requests and issues.
-- **Reason for Selection:**
-  - Fast, lightweight embedding generation with 384-dimensional dense vectors.
-  - Capable of running locally or at the edge with minimal resource overhead.
-  - High semantic retrieval accuracy for developer terminology and code-adjacent technical prose.
+### 2. qwen2.5:1.5b (Alibaba Qwen 2.5, open weights), served locally by Ollama
+- **Status:** Integrated and used as the alternative extraction model (`--model qwen2.5:1.5b`). Its run on the same thread is committed for comparison.
+- **Why we chose it:** Strong instruction following and structured-output behaviour for its size; a second model family to compare against.
+
+### 3. sentence-transformers/all-MiniLM-L6-v2 (open weights)
+- **Status:** Integrated in code as an optional dependency (`pip install -e ".[embeddings]"`). It is used for semantic search and PR matching when installed. **The committed examples and CI use the built-in TF-IDF fallback instead**, so this model did not produce any committed output.
+- **Why we chose it:** Small (384-dimensional), fast on CPU, good semantic retrieval quality for technical prose.
+
+### Planned (not yet integrated)
+- **Qwen3-8B** (open weights) through a configurable OpenAI-compatible provider, for the DeciTrace web platform. It will be listed as integrated only when it is.
+
+### Not an AI model
+- The `heuristic` backend is a deterministic cue-phrase extractor used for offline CI runs and tests. It is reported as `heuristic` in every output and is never presented as a model.
+
+## AI Coding Assistants
+- Claude Code (Anthropic) helped write the code, tests and documentation.

@@ -1,60 +1,1127 @@
 {
-  "discussion_id": "DISC-2024-8841",
-  "repository": "commit-crimes/event-stream-core",
-  "source_type": "github_discussion",
-  "url": "https://github.com/commit-crimes/event-stream-core/discussions/482",
-  "title": "RFC: In-Memory Caching and Buffer Eviction Architecture for Event Ingestion",
-  "category": "Architecture & Performance",
-  "created_at": "2024-03-12T09:15:00Z",
-  "updated_at": "2024-03-14T17:45:00Z",
-  "participants": [
-    { "username": "sarah_backend_lead", "role": "maintainer" },
-    { "username": "raj_infrastructure", "role": "contributor" },
-    { "username": "elena_perf", "role": "member" },
-    { "username": "alex_core_dev", "role": "member" }
-  ],
-  "messages": [
+  "source": "discourse",
+  "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646",
+  "title": "PEP 695: Type Parameter Syntax",
+  "posts": [
     {
-      "message_id": "msg-001",
-      "author": "sarah_backend_lead",
-      "timestamp": "2024-03-12T09:15:00Z",
-      "body": "As event throughput reaches 85k ops/sec, our hot partition lookups are overwhelming the primary Postgres read-replicas. We need to decide on a standardized in-memory caching tier and eviction policy for the ingestion pipeline before v2.4 ships."
+      "post_id": 1,
+      "author": "erictraut",
+      "created_at": "2022-12-04T17:13:27.030Z",
+      "text": "PEP 695 is posted.\n\nIt proposes to add an improved syntax for specifying type parameters within a generic class, function, or type alias. It also introduces a new statement for declaring type aliases.\n\nThis PEP has already gone through several cycles of discussions in the typing-sig forum and public (virtual) meet-ups in the Python typing community. Feedback from those discussions has been incorporated. We’re interested in getting feedback from the broader Python-dev community.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/1",
+      "reply_to": null
     },
     {
-      "message_id": "msg-002",
-      "author": "raj_infrastructure",
-      "timestamp": "2024-03-12T10:30:00Z",
-      "body": "Proposal A: Let's deploy an external Redis Cluster shared across ingestion workers. It gives us centralized cache invalidation out of the box and simplifies horizontal scaling across worker nodes."
+      "post_id": 2,
+      "author": "NeilGirdhar",
+      "created_at": "2022-12-04T18:41:56.592Z",
+      "text": "This an incredible step forward!\n\nI’m just curious, but why is this allowed:\n\nS = 0\ndef outer1[S](): # Type variable given same name as name from enclosing scope.\n S = 1 # Ordinary variable given same name as type variable from enclosing type scope.\n\nIt’s incredibly confusing to me. Does it serve a useful purpose to allow this? I ask because it’s a lot easier to allow something in the future than it is to disallow it.\n\nI know this is minor, but the syntax highlighting for the new type soft keyword is confusing. Its use seems to be analogous to class or def, so ideally it should be green like them. (Initially, I didn’t like the syntax, but once I saw the analogy to class and def, I loved it.)",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/2",
+      "reply_to": null
     },
     {
-      "message_id": "msg-003",
-      "author": "elena_perf",
-      "timestamp": "2024-03-12T14:10:00Z",
-      "body": "Benchmarked Proposal A under peak load. The network roundtrip to Redis added 4.2ms to our P99 latency budget (budget is 2ms). During network partition simulations, worker reconnect storms caused buffer bloat. I strongly advise against an external network hop for L1 partition routing."
+      "post_id": 3,
+      "author": "erictraut",
+      "created_at": "2022-12-04T21:12:26.551Z",
+      "text": "An earlier draft of the PEP disallowed name conflicts between type parameters and other names (local variables, etc.). Guido pointed out that there is no precedent for this in Python, which allows inner scopes to define new names that overlap with the names in outer scopes. The proposal was amended to be consistent with existing scoping rules in Python.\n\nI presume you’re referring to syntax highlighting in pylance. That’s something we can fix if/when the PEP is accepted. The current implementation is a proof of concept.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/3",
+      "reply_to": 2
     },
     {
-      "message_id": "msg-004",
-      "author": "alex_core_dev",
-      "timestamp": "2024-03-13T11:00:00Z",
-      "body": "Proposal B: What about a process-local unbounded in-memory LRU map? Zero network overhead and sub-microsecond access time."
+      "post_id": 4,
+      "author": "layday",
+      "created_at": "2022-12-04T21:34:34.709Z",
+      "text": "I believe they are referring to the highlighting in the PEP. type is highlighted the way it is because it’s a built-in; the highlighting wasn’t changed for the PEP. Highlighters will need to distinguish between type as a keyword and type as a built-in. Has an alternative like “alias” or “typealias” been considered? (Not that I’m particularly qualified to comment, but I personally don’t like “type” being used to mean something significantly different than the built-in. I do love everything else about this PEP )",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/4",
+      "reply_to": 2
     },
     {
-      "message_id": "msg-005",
-      "author": "sarah_backend_lead",
-      "timestamp": "2024-03-13T16:20:00Z",
-      "body": "A naive LRU map was previously tried in PR #310 and caused Out-Of-Memory (OOM) crashes during flash crowds when high cardinality keys thrash the working set. It also doesn't handle frequency bias well."
+      "post_id": 5,
+      "author": "NeilGirdhar",
+      "created_at": "2022-12-04T21:52:16.374Z",
+      "text": "Okay, that makes sense! I guess that maybe type checkers or linters will warn about this?\n\nAwesome, yeah, that makes sense.\n\nAlso, just want to say that this is a really well-written PEP. It’s really cool how variance can be inferred. I always had to look up covariant and contravariant, and it’ll be nice not to have to do that anymore!",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/5",
+      "reply_to": 3
     },
     {
-      "message_id": "msg-006",
-      "author": "elena_perf",
-      "timestamp": "2024-03-14T10:00:00Z",
-      "body": "Proposal C: Two-Tier Hybrid Strategy. Use in-process W-TinyLFU (Window Tiny LFU) bounded cache with a fixed 512MB heap limit per worker for 98% hit rates at sub-millisecond latency. Back it with an optional asynchronous Redis L2 for secondary fallback and cross-process broadcast invalidation."
+      "post_id": 6,
+      "author": "Melendowski",
+      "created_at": "2022-12-04T22:11:17.508Z",
+      "text": "What are the thoughts on an new keyword such as typedef, instead of making type even more confusing, given its already dual purpose, to not only function as returning the literal type of an object but also serves to create new classes.\n\nEdit: I think typedef is a good choice given the purpose in C, which is an alias to an existing type. Given the purpose of the pep and how it would it like to deprecate typing.TypeAlias I believe it to be fitting.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/6",
+      "reply_to": null
     },
     {
-      "message_id": "msg-007",
-      "author": "sarah_backend_lead",
-      "timestamp": "2024-03-14T17:45:00Z",
-      "body": "Consensus reached. We will adopt Proposal C (Two-Tier Hybrid Cache with in-process W-TinyLFU L1 and async Redis L2). Proposal A (pure Redis) is rejected due to P99 network latency SLA breaches. Proposal B (unbounded LRU) is rejected due to OOM risk and thrashing. I will document this in ADR-0012 and update ingestion/routing/cache_manager.py."
+      "post_id": 7,
+      "author": "tmk",
+      "created_at": "2022-12-04T23:00:23.119Z",
+      "text": "I also think that the new type alias syntax has the most potential for bike shedding. I don’t think this pattern appears anywhere in Python?\n\n<keyword> <varname> = <value>\n\nMaybe it could instead be modeled after import module as mod? Something like this?\n\nalias (list[T] | set[T]) as ListOrSet[T]\n\nEDIT:\n\nCan also be multi-line of course:\n\nalias (\n dict[str, Json] | list[Json] | str | int | float | bool | None\n) as Json\n\nBut I also see that type is a good choice for a new (soft) keyword because it’s already the name of a built-in function. So maybe this instead\n\ntype dict[str, int] as MyDict",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/7",
+      "reply_to": null
+    },
+    {
+      "post_id": 8,
+      "author": "cdce8p",
+      "created_at": "2022-12-04T23:34:08.661Z",
+      "text": "I don’t think that would work well. Whereas module names are often short and have a clear syntax (names separated with a .), type aliases can get much more complex and often span multiple lines. That’s one of the reasons I use aliases, simple / short ones can just be inlined.\n\nWith that, I think it would be more difficult to identify the alias name at the end.\n\nI slightly prefer type as it’s shorter. Even with the dual purpose, I don’t think it’s an issue differentiating between the soft keyword and other uses.\n\nIt also better matches the existing soft keywords match and case IMO.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/8",
+      "reply_to": 7
+    },
+    {
+      "post_id": 9,
+      "author": "cdce8p",
+      "created_at": "2022-12-04T23:57:16.855Z",
+      "text": "Can the ast representation be adjusted to use Name(..., ctx=Store()) instead of identifier? That would make it easier for static analysis tools like pyflakes and pylint which use the ast, to implement. The Name node also includes the precise position (of the name alone) which would make error highlighting easier.\n\nThere was a related discussion for identifier in match blocks. Although nobody has gotten around to changing it yet. Probably not that important anymore as most tools have added workarounds in the mean time.\n\n github.com/python/cpython\n\n change representation of match as / capture as `Name(..., ctx=Store())`\n\n opened 10:49PM - 30 Apr 21 UTC\n\n 341ce0e2-bdbb-4bd4-99e6-746f11201a3f\n\n 3.10\n\nBPO | [43994](https://bugs.python.org/issue43994)\n--- | :---\nNosy | @gvanrossum,… @ncoghlan, @asottile, @brandtbucher, @freundTech, @cdce8p\n\n<sup>*Note: these values reflect the state of the issue at the time it was migrated and might not reflect the current state.*</sup>\n\n<details><summary>Show more details</summary><p>\n\nGitHub fields:\n```python\nassignee = None\nclosed_at = None\ncreated_at = <Date 2021-04-30.22:49:51.192>\nlabels = ['3.10']\ntitle = 'change representation of match as / capture as `Name(..., ctx=Store())`'\nupdated_at = <Date 2021-08-08.10:38:09.417>\nuser = 'https://github.com/asottile'\n```\n\nbugs.python.org fields:\n```python\nactivity = <Date 2021-08-08.10:38:09.417>\nactor = 'cdce8p'\nassignee = 'none'\nclosed = False\nclosed_date = None\ncloser = None\ncomponents = []\ncreation = <Date 2021-04-30.22:49:51.192>\ncreator = 'Anthony Sottile'\ndependencies = []\nfiles = []\nhgrepos = []\nissue_num = 43994\nkeywords = []\nmessage_count = 10.0\nmessages = ['392531', '392547', '392548', '392552', '392562', '392565', '392566', '392568', '392571', '392612']\nnosy_count = 6.0\nnosy_names = ['gvanrossum', 'ncoghlan', 'Anthony Sottile', 'brandtbucher', 'freundTech', 'cdce8p']\npr_nums = []\npriority = 'high'\nresolution = None\nstage = None\nstatus = 'open'\nsuperseder = None\ntype = None\nurl = 'https://bugs.python.org/issue43994'\nversions = ['Python 3.10']\n```\n\n</p></details>",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/9",
+      "reply_to": null
+    },
+    {
+      "post_id": 10,
+      "author": "gpshead",
+      "created_at": "2022-12-05T04:52:34.783Z",
+      "text": "FWIW I like the reuse of type as the soft keyword myself.\n\nIntroducing a new term is hard. But because this is already a built-in most (not all) code has avoided ever using it as a variable name so the potential for confusion on that front is less. There will be confusion about its magic sometimes keyword sometimes built-in status but I don’t expect many people will be surprised at that.\n\nAs a prefix it does have the smell of a var or let prefix style keyword that some other languages use but I don’t find this to be a problem given it’s use case is solely typing related.\n\nI haven’t tried thinking of alternatives.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/10",
+      "reply_to": 6
+    },
+    {
+      "post_id": 11,
+      "author": "hauntsaninja",
+      "created_at": "2022-12-05T07:12:17.478Z",
+      "text": "One thing people who haven’t been following closely might want to be aware of is the interaction with PEP 696 (default values for TypeVars). There is some discussion in this section of PEP 696.\n\nAlthough it was anticipated, PEP 696 wasn’t a PEP at the time of PEP 695’s writing. I think the additional new syntax involved is quite obvious, but I’m not sure how the Steering Council orders decisions on these things.\n\nI always had to look up covariant and contravariant, and it’ll be nice not to have to do that anymore!\n\nI agree that automatic inference of variance in definitions is nice (like with generic protocols today!), but do note that users will still need to reason about variance to understand the type errors they get — so I can’t promise you’ll never have to look up those terms",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/11",
+      "reply_to": null
+    },
+    {
+      "post_id": 12,
+      "author": "srittau",
+      "created_at": "2022-12-05T09:23:25.782Z",
+      "text": "One advantage of using type instead of something more specific such as typedef is that the keyword can be used for other type-related thing in the future. For example we could have:\n\nfrom foo type import X\n\ninstead of\n\nfrom typing import TYPE_CHECKING, Protocol\nif TYPE_CHECKING:\n from foo import X",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/12",
+      "reply_to": null
+    },
+    {
+      "post_id": 13,
+      "author": "_builtin.self",
+      "created_at": "2022-12-07T13:06:34.009Z",
+      "text": "When is the __type_variables__ member of a class populated? Will what the values stored in __type_variables__ be modifiable if I write a metaclass?",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/13",
+      "reply_to": null
+    },
+    {
+      "post_id": 14,
+      "author": "erictraut",
+      "created_at": "2022-12-07T22:35:04.859Z",
+      "text": "The __type_variables__ member would be populated at the same time as __name__, __module__, and __qualname__.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/14",
+      "reply_to": 13
+    },
+    {
+      "post_id": 15,
+      "author": "Gobot1234",
+      "created_at": "2023-01-09T15:55:32.941Z",
+      "text": "I’ve been playing around with the fork and I’m sorry if you’ve already answered this but you mention\n\nSeveral classes in the typing module that are currently implemented in Python must be reimplemented in C. This includes: TypeVar , TypeVarTuple , ParamSpec , Generic , and Union . The new class TypeAliasType (described above) also must be implemented in C\n\nCurrently it looks to me like this isn’t the case, is this something that was deemed not worth the time investment (for now i.e. if the PEP is accepted this will happen) or has your opinion on implementing this changed?",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/15",
+      "reply_to": null
+    },
+    {
+      "post_id": 16,
+      "author": "erictraut",
+      "created_at": "2023-01-09T18:50:06.510Z",
+      "text": "The current fork is just a proof of concept. It will require a rewrite by someone other than myself if the PEP is accepted. The current fork doesn’t allow for PEP 696’s use of earlier TypeVars in the list to be used in default type expressions, for example.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/16",
+      "reply_to": 15
+    },
+    {
+      "post_id": 17,
+      "author": "Gobot1234",
+      "created_at": "2023-01-09T19:01:44.722Z",
+      "text": "Ah right, that makes sense",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/17",
+      "reply_to": 16
+    },
+    {
+      "post_id": 18,
+      "author": "15r10nk",
+      "created_at": "2023-01-10T16:42:10.697Z",
+      "text": "I have maybe an alternative syntax.\n\ndef generic(*e):\n def w(f):\n return f\n return w\n\n@generic(T:=int)\ndef foo(value: T):\n print(value)\n\nfoo(5) # ok\nfoo(\"test\") # wrong typing\n\nI don’t know if it meets all the requirements in the PEP but I think it might be an alternative syntax which is backward compatible.\n\nThe drawback is that T in this example is declared at module scope and it is not enforced that the arguments of generic are walrus expressions.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/18",
+      "reply_to": null
+    },
+    {
+      "post_id": 19,
+      "author": "erictraut",
+      "created_at": "2023-01-10T17:00:09.711Z",
+      "text": "@15r10nk, a decorator-based syntax was considered and rejected. The problem is that decorators are not evaluated until after the decorated object. That means T in your example would not be defined at the time the def foo statement is executed by the interpreter.\n\nAs you pointed out, this approach also declares T at the module scope, so there is no proper scope enforcement — which is one of the goals of the PEP.\n\nAnd finally, a decorator-based syntax would look significantly different than any other language that we surveyed in the appendix of the PEP. It’s OK for Python to be different if there’s a good reason. But such differences create friction for developers who are coming from other languages. All else being equal, it’s better to choose a syntax that looks familiar to developers coming from other languages.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/19",
+      "reply_to": 18
+    },
+    {
+      "post_id": 20,
+      "author": "15r10nk",
+      "created_at": "2023-01-10T17:35:20.781Z",
+      "text": "I agree to your points except the first one, because don’t know where this undefined state should be.\n\nscript:\n\nfrom inspect import signature\n\ndef generic(*e):\n def w(f):\n\n return f\n\n return w\n\ndef test_signature(f):\n print(signature(f))\n return f\n\n@test_signature\n@generic(T := int)\n@test_signature\ndef foo(value: T):\n print(value)\n\nfoo(5)\nfoo(\"a\")\n\noutput (Python 3.10.8):\n\n(value: int)\n(value: int)\n5\na\n\nBut you might be right. In the long term it would be better to have an explicit direct syntax to express the intend. The only benefit here would be the backward compatibility, which has no value in the long term. for the great work and thank you for your reply.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/20",
+      "reply_to": null
+    },
+    {
+      "post_id": 21,
+      "author": "tmk",
+      "created_at": "2023-02-04T15:04:08.666Z",
+      "text": "I’m a bit concerned that the proposed syntax seems to preclude the possibility of ever adding something like a TypeVarDict to Python (because the syntax **Tdict is being taken by ParamSpec). I think you said before that there doesn’t seem to be a use case for TypeVarDict, but what about something like a pandas dataframe? Each column doesn’t only have its own type – it also has its own name:\n\n>>> df = pd.DataFrame(data={\"col1\": [1.5, 2.3], \"col2\": [True, False]})\n>>> df.dtypes\ncol1 float64\ncol2 bool\ndtype: object\n>>> df.loc[:, \"col1\"]\n0 1.5\n1 2.3\nName: col1, dtype: float64\n\nSo, it seems to me like if you really want to model this with types, you need a TypeVarDict. It might look something like this (using the Map operator that was originally part of PEP 646; Map[List, (int, bool)]==(List[int], List[bool])):\n\nTdict = TypeVarDict(\"Tdict\")\n\nclass DataFrame[**Tdict]:\n def __init__(self, data: Map[List, Tdict]): ...\n @property\n def loc(self) -> Map[Series, Tdict]: ...\n\nCols = TypedDict(\"Cols\", {\"col1\": numpy.float64, \"col2\": bool})\n\ndf: DataFrame[Cols] = DataFrame(\n data={\"col1\": [1.5, 2.3], \"col2\": [True, False]})\ncol1: Series[numpy.float64] = df.loc[\"col1\"]\n\nI’m not necessarily saying it’s a good idea, but why not allow the future possibility?",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/21",
+      "reply_to": null
+    },
+    {
+      "post_id": 22,
+      "author": "AlexWaygood",
+      "created_at": "2023-02-04T15:24:56.151Z",
+      "text": "This speaks to a general concern I have about this PEP. I like the syntax proposals overall, and I’m supportive of Python eventually adopting syntax like this for its typing system. But Python’s typing system is still evolving rapidly — I don’t feel like I have any ability to predict which new features might be proposed and/or adopted for Python 3.13. It’s currently pretty easy for us to add new features to the typing system, but adopting this PEP raises the possibility that a lot more typing features might require syntax changes in order to be well integrated into the existing typing system. We’ve already seen examples of this with PEP 696, where one of the questions asked has been “What would the proposed syntax look like if PEP 695 were adopted?”\n\nI feel like I’d prefer to see Python’s typing system stabilise somewhat before we enshrine the current system (or something like it) in a series of syntax changes that will be very hard to reverse or change in the future.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/22",
+      "reply_to": 21
+    },
+    {
+      "post_id": 23,
+      "author": "a-reich",
+      "created_at": "2023-02-04T16:48:08.949Z",
+      "text": "It would be amazing to properly support column-level typing for pandas, which is one of the most heavily used python libraries (and there are several others with similar data structures, eg pyarrow, cuDF, dask, polars…).\n\nThat said, IMO it’s not clear yet that the approach you describe is the only natural or best one. There might be others that work well without the specific **TypeVarDict syntax. I can think of simple workarounds, like subtyping the DataFrame class with one that has a TypedDict to keep track of types for each key.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/23",
+      "reply_to": 21
+    },
+    {
+      "post_id": 24,
+      "author": "erictraut",
+      "created_at": "2023-02-04T17:31:10.538Z",
+      "text": "Early proposals for this PEP were discussed in a series of “typing meetups”, and the topic of future extensibility was brought up during those discussions. The proposal in the PEP attempts to retain flexibility for future expansion.\n\nThe PEP also includes a survey of generic support in other other programming languages. This was done in part to anticipate potential future extensions in the Python type system. For example, PEP 696 (default TypeVar values) was anticipated through this exercise, and the proposed PEP 695 syntax accommodates default TypeVar values in a natural way.\n\nIt’s also important to note that this PEP doesn’t deprecate the current mechanisms for defining TypeVars or generic classes, functions, and type aliases. Those mechanisms can live side by side with the new syntax. If you find that those mechanisms are more flexible for exploring extensions to the type system, PEP 695 does not prevent you from leveraging these existing mechanisms.\n\nAlex raised a general concern about waiting for the Python type system to stabilize. I think we can probably agree that the type functionality used for the most common uses cases is pretty well baked at this time. Newer PEPs (like 646 and 696) are filling in gaps for increasingly esoteric and specialized use cases. New explorations and innovations should continue, but there are parts of the type system that are well-baked and have widespread usage. I think we should strive to make these parts easier to use and accessible to more Python developers. That’s what PEP 695 is trying to achieve.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/24",
+      "reply_to": null
+    },
+    {
+      "post_id": 25,
+      "author": "sterliakov",
+      "created_at": "2023-03-12T02:00:25.367Z",
+      "text": "I understand that I’m very late to the party, but some time ago Alex Waygood told me that all opinions count for PEPs like this, so please let me try.\n\nTo begin with, my attitude towards this proposal is very negative. The main reason “for myself” is that I hate overloading python with typing-specific syntax. It’s very typescript-ish, and I personally dislike how TypeScript programs look and feel. Both type declarations and generic functions syntax look very unpleasant to my eyes. Again, this is just my opinion, please don’t treat it as a sign of disrespect or something like that - and this doesn’t count anyway, I guess.\n\nThis PEP doesn’t violate PEP-484’s promise not to make typing “mandatory, even by convention” - but goes in that direction. The more typing-specific syntax we add, the higher the chance that people will treat annotations as a necessity, even in one-time throwaway scripts that don’t benefit from typing at all.\n\nHowever, I have also noticed a few possible usability issues:\n\nDifficulties for newcomers: currently the typing-specific syntax is limited to annotations, a few dunders (like __class_getitem__ and __annotations__ - but dunders are already part of python core design) and an asterisk for Unpack in py3.11+ (which fits existing syntax very well). Everything else still fits the overall language model, and MyType: TypeAlias = list[str | int] is at least understandable for newcomers as “create some variable with a value of some type” - no matter how it can be used later. type MyType = list[str | int] is not that easy, especially for those who learn python as their first language. def fn[_T](x: _T) -> _T will be even more surprising, if one meets it preparing for algorithms exam. It will become harder to learn by reading real production code because the required entry level will be higher.\n\nLoss of TypeVar semantic meaning. In some cases modules can define a type variable with a descriptive name and reuse it (see django-stubs). Such type variable can be documented (even with a docstring in a common format supported by Sphinx+Napoleon and other doc processors), explaining its usage and meaning within the package. If that type variable is referred to by some mypy plugin, documentation is even more important: it can explain what substitutions happen on behalf of that plugin. Such usage is supported by the ecosystem: here’s a sphinx plugin targeting specifically type variables documentation. I see that current TypeVar is not being deprecated, but I’d suppose that projects will prefer to stick to one of the possible spellings to avoid compatibility issues (see last bullet).\n\ntype usage. type is already a builtin with several context-dependent meanings. It can be type(smth) to get a __class__, type(name, bases, attrs) to create a new type, and something: type or something: type[SomeThing] in annotations (the distinction between bare and parametrized type is a separate problem). Adding a fourth role of a soft keyword to it can become a large source of confusion. Also, despite it being builtin, many (many!) projects are using it as a variable name, including mypy itself.\n\nInfrastructure support. PEP484 support and PEP3107 annotations were wanted by the whole community, because there was no reasonable way to annotate variables and arguments before - and thus they got quick tooling support. PEP695 doesn’t seem to attract similar attention (please adjust if I’m wrong here), and this makes me suspect that tooling support will not come very soon. Type checkers will have to support this, of course, but I’m sure that most flake8 plugins or sphinx extensions won’t adhere quickly. This means that many early adopters will give up without the ability to rely on the infrastructure they’re used to.\n\nExtending “generic function” concept (this looks a bit scary to me). Many languages have a concept of generic function such that it can be called as fn[int](x). In Rust, for example, such functions are used a lot for conversions (like std::convert::Into) and some other scenarios. However, the type system after PEP695 still forbids this - and I bet that many people will begin using def fn[T](x: int) -> T to achieve something similar. Currently functions do not have a special indication of being generic, and such mistake is more difficult to make.\n\nThere should be one-- and preferably only one --obvious way - and now both TypeVar and [T] will coexist, and people will have to know that these forms are not fully compatible. I still see people use NoReturn as a return type annotation for functions without explicit return statement - will the presence of “explicit” and “implicit” type variables be easier to understand? I don’t think so.\n\nThank you for your time.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/25",
+      "reply_to": null
+    },
+    {
+      "post_id": 26,
+      "author": "jcgoble3",
+      "created_at": "2023-03-27T13:29:52.544Z",
+      "text": "As a mostly-lurker (brought here by Thomas’s call for input), here’s my two cents at a high level: it’s clean and simple, and the proposed syntax is unlikely to ever be used for anything else.\n\nAs for the “one obvious way to do it” complaint immediately above, I would argue this proposal is the obvious way – it closely parallels how type variables and generics are done in many other languages, and frankly when I started doing static typing in my own code I was surprised that this wasn’t supported, and found the idea of subclassing Generic and manually instantiating TypeVars to be a kludge.\n\nBasically, it just makes sense to me. I haven’t drilled down into details, but the overall syntax idea is a +1 from me.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/26",
+      "reply_to": null
+    },
+    {
+      "post_id": 27,
+      "author": "dumbpotato",
+      "created_at": "2023-03-27T14:17:59.770Z",
+      "text": "This is what matters to me the most here. Having used Typescript(and I know the comparison isn’t fair) the code you have to write to get to even a simple generic function has a lot of boilerplate and I always found it unnecessarily complex and verbose.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/27",
+      "reply_to": 26
+    },
+    {
+      "post_id": 28,
+      "author": "thomas",
+      "created_at": "2023-03-27T14:19:46.135Z",
+      "text": "(Posting as myself, not for the rest of the Steering Council.)\n\nFrom the “Runtime Type Alias Class” section:\n\nAt runtime, a type statement will generate an instance of typing.TypeAliasType. This class represents the type. Its attributes include:\n\n__name__ is a str representing the name of the type alias\n\n__parameters__ is a tuple of TypeVar, TypeVarTuple, or ParamSpec objects that parameterize the type alias if it is generic\n\n__value__ is the evaluated value of the type alias\n\nWhy are these dunder attributes? They aren’t going to collide with anything else on the object, and they’re not special hooks for the interpreter. They’re just normal data for TypeAlias objects. (The same goes for __infer_variance__ on TypeVar proposed later in the PEP, but not the proposed __type_variables__ attribute on classes/functions/typealiases.)",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/28",
+      "reply_to": null
+    },
+    {
+      "post_id": 29,
+      "author": "zware",
+      "created_at": "2023-03-27T14:22:50.569Z",
+      "text": "Just to give my $0.02 as an experienced Python developer who has not yet even tried to get into typing: the given examples barely look like Python to me, and at first glance I have no idea what they do. That said, they also look more legible than the “before” examples in the PEP. I suppose that means that if this is a significant need in the typing world the proposed solution is probably fine, but I’m not looking forward to having to dive into some thoroughly-typed codebase to try to make sense of what it’s doing.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/29",
+      "reply_to": null
+    },
+    {
+      "post_id": 30,
+      "author": "steve.dower",
+      "created_at": "2023-03-27T15:02:48.869Z",
+      "text": "I have much the same position as @zware, with the additional background that I have dived into typing a bit, and work with a lot of people who assume that it is required to be correct (or idiomatic) Python.\n\nI’m not looking forward to having to work through code that tries to use these extensively, and I am fully expectant that I will have to work through such code in order to provide feedback on readability, maintainability, and correctness. Since there are different approaches available to achieve this goal, authors will get to choose the balance, but I can’t see a way that anyone finds these easier to read without also being fairly experienced at typing, and that feels like a loss.[1]\n\nCompared to explicitly named type aliases, which are definitely harder to write and maintain, but I think serve the reader better than integrating the type straight into the signature. ↩︎",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/30",
+      "reply_to": null
+    },
+    {
+      "post_id": 31,
+      "author": "Jelle",
+      "created_at": "2023-03-27T15:24:04.866Z",
+      "text": "Using dunders for the new TypeVar attribute is consistent with existing TypeVar attributes like __covariant__. I don’t really care which way we go, but it’s good to remain consistent within one object, and removing the underscores would cause needless churn.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/31",
+      "reply_to": 28
+    },
+    {
+      "post_id": 32,
+      "author": "Jelle",
+      "created_at": "2023-03-27T15:27:59.123Z",
+      "text": "@thomas I just saw Community consensus on PEP 695. I feel the post would be better if it also showed the existing syntax to do the same thing (with T = TypeVar(\"T\")). Some people here are writing that this syntax would look unfamiliar to them, which is fair, but I wonder if they would have the same reaction to the current Generic[T] syntax.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/32",
+      "reply_to": null
+    },
+    {
+      "post_id": 33,
+      "author": "malemburg",
+      "created_at": "2023-03-27T15:35:16.612Z",
+      "text": "I second @zware and @steve.dower in that I’m not really looking forward to having to read such code, but when I need to, I’d much prefer the angular bracket notation used in many other languages to the proposed square bracket notation which looks too much like the subscript notation in Python.\n\nWith the angular brackets, it would be immediately clear, that whatever is in those brackets has a special meaning, which is definitely new to Python and requires special knowledge to be understood.\n\nExamples:\n\nclass ClassA<T>:\n def method1(self) -> T:\n ...\n\ndef func<T>(a: T, b: T) -> T:\n ...\n\nThe angular bracket notation has long meant “template” in other languages (IIRC, C++ was the first to introduce this concept) and will also be better understood by programmers coming from those languages to Python.\n\nI don’t quite follow the reasoning in the PEP on why not to use angular brackets…\n\nThe parser issue can surely be resolved by running .strip() on whatever is defined in the angular brackets.\n\nThe argument about it being “confusing” to use angular brackets for declarations vs. square brackets for specialization seems to be missing some context - at least for me to understand it. A declaration (declaring something to be used later) is something completely different than a specialization (narrowing down choices), so it’s quite natural and indeed useful that the syntax used for these two concepts is different as well.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/33",
+      "reply_to": 30
+    },
+    {
+      "post_id": 34,
+      "author": "pf_moore",
+      "created_at": "2023-03-27T20:20:17.329Z",
+      "text": "I agree with pretty much everything @zware @steve.dower and @malemburg have said.\n\nIn addition, I find the PEP itself to be highly technical and extremely difficult for someone who’s not a typing specialist to follow (which probably explains at least some of the lack of feedback). I note that there’s no “how to teach this” section in the PEP - I think it would be very informative to see what the user-facing documentation of this feature is expected to look like. If it can’t be explained in terms the typical Python programmer will understand, that suggests it needs something doing to it to make it achieve the benefits it claims - according to the PEP itself, this is potentially going to be used in 14% of modules using typing.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/34",
+      "reply_to": 29
+    },
+    {
+      "post_id": 35,
+      "author": "ambv",
+      "created_at": "2023-03-28T15:18:28.112Z",
+      "text": "I refrained from posting so far because despite being a big static typing enthusiast, I’m not crazy about the chosen syntax here. I really don’t want to derail progress on typing, and this issue in particular, but I’m afraid the overloading of square brackets has gone too far in this case, I believe.\n\nUsing triangle brackets, suggested by @malemburg, makes it read better to me as the new construct at least makes it evident that this is special “templating” syntax. However, templating in C++ is effectively context-dependent code generation to handle multiple types. That’s not what type variables are for in Python. So, the analogy only goes so far there, too, and in the end, I don’t think using triangle brackets solves the issue.\n\nThe core issue for me, I have to conclude, is the rather unprecedented density of information that would end up in a function and/or class signature. For more complex signatures this would inevitably have to be split over many lines, and at that point, it’s no better than using a separate type variable declaration. My intuition here is that sparse is better than dense.\n\nHowever, I do love the type soft keyword in this PEP. I think it’s comparatively uncontroversial and could be used for more than just unions, as presented in the PEP:\n\n# A non-generic type alias\ntype IntOrStr = int | str\n\n# A generic type alias\ntype ListOrSet[T] = list[T] | set[T]\n\n# A type alias that includes a forward reference\ntype AnimalOrVegetable = Animal | \"Vegetable\"\n\n# A generic self-referential type alias\ntype RecursiveList[T] = T | list[RecursiveList[T]]\n\nI wonder if it wouldn’t be enough if this syntax could also handle defining all TypeVarLikes. Would that constitute enough of formal syntax for generics that the PEP is calling for?",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/35",
+      "reply_to": null
+    },
+    {
+      "post_id": 36,
+      "author": "ajoino",
+      "created_at": "2023-03-28T19:39:35.516Z",
+      "text": "I think the way the soft keyword type is described in the PEP looks out of place in Python.\n\nAll other occurrences of keyword statement/expression that I can think of don’t have a =, like\n\ndef foo(...):\n ...\n\nclass Bar:\n ...\n\ntry:\n ...\nexcept BazError as baz_err:\n ...\n\nWhile the first two examples are dissimilar to the proposed syntax, the last example is perhaps more relevant.\n\nFurthermore, in the PEP it’s written that the new type soft keyword is “[s]imilar to class and def statements […]”, which is only half true IMO since neither of those involve =.\n\nI think it would make the proposal more in-line with other Python statements if the = is dropped and some other syntax is used. Two alternative syntaxes, using @ambv’s examples\n\ntype IntOrStr: int | str\n\ntype list[T] | set[T] as ListOrSet[T]\n\n(I went over the thread again and saw the second example of mine was proposed by @tmk here.)\n\nI haven’t thought too hard about it, and I’m very sure I would come to accept the proposed syntax quickly, but I didn’t see the choice of syntax discussed much in the PEP nor in this thread beyond the post I mentioned earlier and one response to it.\n\nTo the PEP author @erictraut is there a particular reason you went with using =, and likewise is there a particular reason why you decided not to use a =-free syntax?",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/36",
+      "reply_to": null
+    },
+    {
+      "post_id": 37,
+      "author": "Jelle",
+      "created_at": "2023-03-28T19:45:23.973Z",
+      "text": "A type alias definition like type X = int | str is naturally read as “the type X is int or str”, which maps nicely to PEP 695’s syntax. I would read type X: int | str as “type X is of type int or str”, which isn’t quite correct.\n\nOther languages such as TypeScript and Haskell also use this syntax, reinforcing the point that it’s natural to use = here.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/37",
+      "reply_to": 36
+    },
+    {
+      "post_id": 38,
+      "author": "ntessore",
+      "created_at": "2023-03-28T19:51:05.151Z",
+      "text": "Seeing the type X = Y syntax, I just had the most amazing idea; what if we also wrote all other type annotations as int X = Y …\n\nPS: On a more serious note, it should be\n\nX: type = int | str",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/38",
+      "reply_to": 37
+    },
+    {
+      "post_id": 39,
+      "author": "ajoino",
+      "created_at": "2023-03-28T19:56:54.660Z",
+      "text": "Yeah I agree that first example syntax I used is strange, but the second one with as I think looks nicer in Python than the proposed syntax in the PEP. Do you have any thoughts on about using as instead of =?",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/39",
+      "reply_to": 37
+    },
+    {
+      "post_id": 40,
+      "author": "ambv",
+      "created_at": "2023-03-28T20:21:54.176Z",
+      "text": "I don’t think using a = in the same expression as a keyword is somehow unpythonic. That ship has sailed with assignment expressions. But even before that we’ve had things like:\n\na = yield b\nx = lambda: None\n\nWe can definitely bikeshed the type statement syntax but I’m more interested in hearing a retort to my (and others’) reservations.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/40",
+      "reply_to": null
+    },
+    {
+      "post_id": 41,
+      "author": "erictraut",
+      "created_at": "2023-03-28T20:44:49.906Z",
+      "text": "Can you elaborate on what you mean by “unprecedented density of information”?\n\nFor reference, here’s an example of the existing syntax and proposed new syntax for a typical generic class.\n\n# Existing syntax\nclass Foo(Generic[T]): ...\n\n# New syntax (proposed)\nclass Foo[T]: ...",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/41",
+      "reply_to": 40
+    },
+    {
+      "post_id": 42,
+      "author": "erictraut",
+      "created_at": "2023-03-28T20:54:58.282Z",
+      "text": "As Jelle mentioned, the syntax form type X = int | str reads naturally and consistent with type alias declaration forms in other popular languages. It’s also consistent with how type aliases are declared historically in Python (e.g. X = int | str and X: TypeAlias = int | str), so it should feel natural to current Python users.\n\nUsing as is an idea that didn’t come up in any of the lengthy syntax discussions we had in the typing forums when discussing this PEP. I think it’s an interesting idea, but I see it as problematic because it moves the type variables to the end of the statement. This is inconsistent with the proposed class and def variants. I find it difficult to read because I need to scan to the end of the statement to first determine which symbols are type variables. With the proposed syntax, I can simply scan from left to right, and the information needed to understand the statement is presented in that order.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/42",
+      "reply_to": 39
+    },
+    {
+      "post_id": 43,
+      "author": "ambv",
+      "created_at": "2023-03-28T20:56:52.355Z",
+      "text": "Sure! There’s a new use of square brackets in the proposal, particularly in the case of callables that can lead to very cryptic function signatures. One example would be the decorator from PEP 612:\n\ndef with_request[R, **P](f: Callable[Concatenate[Request, P], R]) -> Callable[P, R]:\n ...\n\nIn this example I feel that:\n\nthe first square brackets throw off intuition on how to read a signature, it’s surprising to see the square brackets;\n\nit’s not immediately clear what **P is;\n\nthis signature is already 84 characters long even though it’s using single-character typevarlikes and just one function argument.\n\nThe end result is that it’s harder to read this sort of function signature than it was before. It’s additional information inserted into the mix. In contrast, the following existing “bolted on” syntax solves all three problems:\n\nP = ParamSpec(\"P\")\nR = TypeVar(\"R\")\n\ndef with_request(f: Callable[Concatenate[Request, P], R]) -> Callable[P, R]:\n ...",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/43",
+      "reply_to": 41
+    },
+    {
+      "post_id": 44,
+      "author": "pf_moore",
+      "created_at": "2023-03-28T21:07:14.260Z",
+      "text": "For what it’s worth, I agree with @ambv here - the version with explicit named type variables is much easier to read, even though it basically only removes [R, **P] in favour of a couple of explicit assignments. And I can look up ParamSpec to find out the semantics of P, whereas in [R, **P] I don’t have the first clue what to research to understand the syntax.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/44",
+      "reply_to": 43
+    },
+    {
+      "post_id": 45,
+      "author": "mdrissi",
+      "created_at": "2023-03-28T21:20:03.755Z",
+      "text": "I think primary issue with current syntax is type variables/paramspecs often are many lines away from definition and reused across several functions/classes that it becomes easy to get lost where they come from. If you have your paramspec 3 lines away from your function then I agree change looks smaller benefit. When you have 100 lines away or in a different file then defining it separately becomes more confusing. Especially for any type variables that use other arguments (bound/variance). Today type variable may have arguments important for its meaning but not even be on same screen as function/class where you use it.\n\nOne option is always define it next to function/class in which case you’d got a lot of duplicate definitions. While generic types may be less common across typing files, for files that do use them they tend to have many of them near each other.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/45",
+      "reply_to": 43
+    },
+    {
+      "post_id": 46,
+      "author": "zware",
+      "created_at": "2023-03-28T21:23:23.147Z",
+      "text": "How is this different from using a class or function from a different module or further up a file?\n\n(To be clear, this is a legitimate question, not a snarky retort or anything like that. Remember that I know nothing about typing )",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/46",
+      "reply_to": 45
+    },
+    {
+      "post_id": 47,
+      "author": "mdrissi",
+      "created_at": "2023-03-28T21:34:59.641Z",
+      "text": "I think this is mainly due to variance. Whether type variable is covariant/contravariant matters sometimes but is irrelevant in other usages that it’s fairly easy to get them mixed up. This pep does offer separate solution to that of automatically infer variance that would be helpful and is independent of syntax change.\n\nT = TypeVar(\"T\", covariant=True)\n\nclass Foo(Generic[T]): # Here covariance is important\n ...\n\ndef my_sum(x: list[T]) -> str: # Here covariance has no meaning at all.\n ...\n\nOther ways type variable can have meaning is bounds/constraints. I do hit this issue less with them as usually you can name variable more meaningful then T. Like there I would instead have,\n\nMessageT = TypeVar(\"MessageT\", bound=Message)\n\nI think the one other place where having definition tied to function/class matters is making scoping clearer.\n\nT = TypeVar(\"T\")\n\nclass Foo(Generic[T]):\n ... # 100 lines later\n def combine(self, x: T, y: T) -> T:\n ...\n\nvs\n\nT = TypeVar(\"T\")\n\nclass Foo:\n ... # 100 lines later\n def combine(self, x: T, y: T) -> T:\n ...\n\nhave two very different meanings. In first the type variable is scoped to class but in second it is independent of Foo and combine function can always be used generically. If type variable where defined like,\n\nclass Foo:\n def combine<T>(self, x: T, y: T) -> T:\n ...\n\nthen it’s explicit that combine’s T is generic on it’s own.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/47",
+      "reply_to": 46
+    },
+    {
+      "post_id": 48,
+      "author": "pf_moore",
+      "created_at": "2023-03-28T21:39:29.476Z",
+      "text": "OK, that makes some sense to me. As P is simply a placeholder, there’s little information in P = ParamSpec(\"P\") beyond \"this is a ParamSpec, and that’s not something you’d reuse in the same sense that you reuse a global function or class. But conversely, as it’s a throwaway name, what’s wrong with duplicating it before each function/class declaration? It’s a temporary name, just like a temporary local variable.\n\nSo I accept that explicit assignment is a bit more verbose, as well as that it’s not typical in strongly-typed languages. But Python has optional typing, so there are going to be compromises. And you haven’t addressed my other point about discoverability - with types being optional in Python, and advanced type constructs having no runtime effect, the typical user is much less likely to be familiar with type syntax, so being able to easily look up the meaning of a type annotation is much more important (IMO).\n\nAnd to address the inevitable response that if you don’t use types (and hence don’t know about them) you won’t need to understand them - in my experience a pretty common scenario is a project mandating type annotations (because of the maintenance benefits) but typical contributors having little familiarity with typing. So far from being a case of “if you use them, people will know how they work”, complex, difficult to understand types can risk being a deterrent for community contributions to a project.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/48",
+      "reply_to": 45
+    },
+    {
+      "post_id": 49,
+      "author": "mdrissi",
+      "created_at": "2023-03-28T21:46:55.038Z",
+      "text": "For discoverability my work pattern is mainly in an IDE where I rely on hovering over variables/objects to see more about them. For vscode I know if hover over P/T it’ll show a hint it’s type variable/paramspec and let me click to see where it’s defined. I’d guess other IDEs like pycharm have similar support while some editors may lack it.\n\nOtherwise I’m unsure of discoverability for syntax. How do people discover meaning := expression? That feels comparable to me with introducing syntax. I find it from reading python release notes + teammates teaching me, but I’m aware that both are things a beginning may lack.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/49",
+      "reply_to": 48
+    },
+    {
+      "post_id": 50,
+      "author": "ntessore",
+      "created_at": "2023-03-28T21:49:01.628Z",
+      "text": "I think both of these forms are horrible compared to this:\n\ndef with_request(f):\n ...\n\nSo what is the best way back to that while retaining the type information? One thing that I might have missed in the discussion would be a C++ inspired decorator (exact syntax debatable):\n\n@generic[R, **P]\ndef with_request(f: ...) -> ...:\n ...\n\nI think that takes some of the information density out of the signature, while not separating the declaration of R and P potentially thousands of lines from their use.\n\nThe real ugliness in this specific example comes from the callable syntax. Now this strays far off topic, but if you also imagine some Callable shorthand (exact syntax debatable), you get something almost readable for such a complex annotation:\n\n@generic[R, **P]\ndef with_request(f: (Request, **P) -> R) -> (P -> R):\n ...",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/50",
+      "reply_to": 43
+    },
+    {
+      "post_id": 51,
+      "author": "steve.dower",
+      "created_at": "2023-03-28T21:50:48.132Z",
+      "text": "The difference here is that you need to understand := to accurately read Python code.[1] Because types have no runtime behaviour, you can ignore them when reading code (at least when you can assume the code works). They’re there so that the machine can validate your changes to the code, and also to help reduce the amount of reading you need to do in order to make a correct change.\n\nThough for the record, I opposed := at the time on this same basis - that it makes it harder to read Python code. ↩︎",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/51",
+      "reply_to": 49
+    },
+    {
+      "post_id": 52,
+      "author": "pf_moore",
+      "created_at": "2023-03-28T21:52:31.615Z",
+      "text": "This is typically where I lose interest in typing discussions. I accept that technically co/contra-variance may be important, but in my experience, no-one except “typing experts” use or understand those terms. Rust has a strong type system, with extensive use of generics, and I don’t recall ever seeing covariance mentioned in the documentation of how Rust’s types work. If Python generic types require you to be familiar with this terminology, then to be blunt, you’ve lost a big chunk of your audience right there. I basically can’t understand any of the rest of your post, although I can (of course) go and look up the docs on TypeVar and covariant. But if all I have is [R, **P] style syntax, I have nothing to look up even.\n\nSo all I’m getting in any practical sense at this point is “this is all too complicated, don’t use it”. And that’s coming from a fan of Rust’s typing system, and someone who read Haskell’s typing system and thought “that’s quite cool”. So anything but a “typing skeptic” \n\nA lot of my work involves doing PR reviews in github’s interface - where there’s no IDE support. And in any case I strongly object to the idea that Python needs IDE support to be usable (I had enough of that with commercial Java environments).\n\nThey are familiar with it, typically. That’s my point about typing being optional. If it’s embedded in syntax which isn’t intuitive or easily discoverable, it’s no longer optional - you have to be familiar with it or you’re stuck.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/52",
+      "reply_to": 47
+    },
+    {
+      "post_id": 53,
+      "author": "Glenn",
+      "created_at": "2023-03-28T22:15:39.000Z",
+      "text": "On 3/28/2023 2:05 PM, Eric Traut :\n\n[erictraut] Eric Traut https://discuss.python.org/u/erictraut\n\nMarch 28\n\nJacob Nilsson:\n\nDo you have any thoughts on about using |as| instead of |=|?\n\nAs Jelle mentioned, the syntax form |type X = int | str| reads naturally\n\nand consistent with type alias declaration forms in other popular\n\nlanguages. It’s also consistent with how type aliases are declared\n\nhistorically in Python (e.g. |X = int | str| and |X: TypeAlias = int |\n\nstr>), so it should feel natural to current Python users.\n\nThis doesn’t look at all natural to this current Python user.\n\n(OK, I don’t use typing, I’m relying on the promise that it is optional)",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/53",
+      "reply_to": 42
+    },
+    {
+      "post_id": 54,
+      "author": "mdrissi",
+      "created_at": "2023-03-28T22:16:45.630Z",
+      "text": "I think main disagreement is variance is reasonable concept for typing intermediate to learn and is documented well in mypy’s usage. Understanding why this code,\n\ndef foo(x: list[float]) -> None:\n ...\n\ny = [1]\nfoo(x)\n\nis a type error, but this code is safe\n\ndef foo(x: Iterable[float]) -> None:\n ...\n\ny = [1]\nfoo(x)\n\nis safe I think is something python typing user will hit early. It is common place for confusion, but I do view it as fundamental and place where new prs often will need some help to learn when to prefer list vs Sequence or dict vs Mapping. I do think for newer type features that rely heavily on generics it is necessary to learn prior typing concepts first. The rest of this comments a bit more on theory/rust/haskell side and less relevant to python variance question.\n\nRust has variance and common types like Cell vs Vec behave differently because of it. Haskell has far more complex type system features related to generics that I am curious about, but are reasonable to call esoteric. On Haskell side current generic types in python can roughly be called non-higher order, non-higher kind, and non-dependent types. Haskell has support for first two (third in progress) with higher kinded types probably being one of the longest typing discussion threads.\n\nFunctors, Applicatives, Monads, and many other type classes in Haskell strongly rely on higher kinded type support to work. Why are functors/monads (many confusing tutorials) a major thing in haskell but not in other languages? One big reason is that very few languages have complex enough generics to support monad like usage. There is a python library that tries to partially emulate them. I looked for a few links to haskell pages explaining HKT/higher order types and sorta came empty for a good explanation. The python typing discussion on it is probably better explanation for higher kinds then more theory pages. My guess is one day python may consider higher kinds, but is pretty unlikely to do dependent types/higher rank types.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/54",
+      "reply_to": 52
+    },
+    {
+      "post_id": 55,
+      "author": "pf_moore",
+      "created_at": "2023-03-28T22:37:03.809Z",
+      "text": "OK. I don’t know why one is safe and the other isn’t (BTW, I assume the call site has a typo and should be passing y). I can do some research and find out (I consider explaining it to me to be off-topic for this thread, so I’m happy to go and find out for myself). But right now, it’s not a distinction that I can immediately grasp.\n\nWhere does that leave me? Am I unqualified to have a view on this PEP? And that’s not sarcasm - I genuinely don’t know. I came here because @thomas called for more input, but I know I have limited understanding of Python’s typing, which is why I’d not provided feedback before now. I assumed that the call for feedback implied that the SC wanted the discussion to not be just between typing experts.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/55",
+      "reply_to": 54
+    },
+    {
+      "post_id": 56,
+      "author": "ambv",
+      "created_at": "2023-03-28T22:45:54.697Z",
+      "text": "Long story short the distinction is in mutability. If a function accepts an immutable iterable of floats, you can pass a list of ints to it just fine because there is no risk anything will break. If that same function would accept a mutable collection of floats, it would potentially be mutating that collection. So if it put a float at the end of your list of ints, it would no longer be a list of ints, right?\n\nI don’t think people should be discouraged from opining on matters that will affect them, and the look & feel of function signatures affect everybody who uses Python.\n\nThat being said, it’s for sure helpful to understand context on why extra features are needed in typing and what they allow to express that was impossible or hard to express before.\n\nIn the case of PEP 695 I don’t think any entirely new form of expression is enabled by the proposed syntax. The innovation seems to be bringing the definition of typevarlikes closer to where they are used, and making variance implicit (which IIUC is already possible without changing syntax).",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/56",
+      "reply_to": 55
+    },
+    {
+      "post_id": 57,
+      "author": "mdrissi",
+      "created_at": "2023-03-28T22:49:43.128Z",
+      "text": "I think you are fully welcome to give feedback as one of many that would encounter the syntax in future if accepted. The example is not meant to be a criticism of anyone’s choice of usage of typing. I do think value of new generic syntax will come more to users who do follow that example and similar examples in mypy page. This is mainly for generic specific syntax (<T>, [T]). So I guess one question is does new syntax feel comparable enough to old that if it mainly benefits subset of typing users it would be good? I also don’t know what percent of typing users that is.\n\nSimilar recent typing pep is variadic generics pep. That pep also adds an advanced generics feature I expect fewer to use. It comes with a syntax change but it is smaller change and one unlikely most would hit. Pep behind paramspecs is also similar in I expect most code uses them relatively rarely but it is necessary for some functions to have good type inference.\n\nI think other changes in pep (type alias + auto variance) are orthogonal here and may have value to broader user base.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/57",
+      "reply_to": 55
+    },
+    {
+      "post_id": 58,
+      "author": "brettcannon",
+      "created_at": "2023-03-29T00:58:43.427Z",
+      "text": "That seems like a naming problem, though; why can’t you use a more descriptive name in that case instead of T?\n\nThat won’t work (literally) because decorators don’t introduce names, so referencing those type hints later would lead to a NameError. Basically you would have to update the parser to special-case your @generic and that isn’t acceptable in my opinion.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/58",
+      "reply_to": 47
+    },
+    {
+      "post_id": 59,
+      "author": "mdrissi",
+      "created_at": "2023-03-29T01:13:39.896Z",
+      "text": "You can. In more full examples the type variable may already have meaningful name for another reason though. I often works with type variables representing callable like things with names like\n\nInputT = TypeVar('InputT')\nOutputT = TypeVar('OutputT')\n\nUsually InputT is covariant, sometimes it can’t be. You could then,\n\nInputT # Or maybe InputT_inv although never seen invariant suffix.\nInputT_co\n\nis one way to resolve it. It’s sorta like having all your variable names have type as suffix like Hungrarian style. I do see people write _co/_contra suffix so it is common way to handle with it.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/59",
+      "reply_to": 58
+    },
+    {
+      "post_id": 60,
+      "author": "jeanas",
+      "created_at": "2023-03-29T02:14:30.581Z",
+      "text": "The languages with type declarations that I have experience with have separate namespaces for values and types.\n\nOCaml:\n\n# type ty = int;;\ntype ty = int\n# let ty : ty = 5;;\nval ty : ty = 5\n\nRust:\n\nfn main() {\n type ty = u64;\n let ty : ty = 5;\n dbg!(ty);\n}\n\nThese both work.\n\nSo does the C code\n\ntypedef int ty;\nty main() {\n ty ty = 5;\n return ty;\n}\n\nand the C++ code\n\nusing ty = int;\nty main() {\n ty ty = 5;\n return ty;\n}\n\nThe criticism I could formulate on this PEP is that it gives a feeling of similarity with other languages with the type syntax, but at the same time, other languages use that syntax to add definitions to a separate namespace, that of types, while the PEP’s doesn’t.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/60",
+      "reply_to": null
+    },
+    {
+      "post_id": 61,
+      "author": "UltimateLobster",
+      "created_at": "2023-03-29T07:48:22.095Z",
+      "text": "I just want to add to this discussion the importance of improving the ability to declare static types for the future of python. I’ve seen a lot of people talking about the fear they have from ruining python’s simplicity.\n\nBut you must take into consideration the simplicity that comes from having libraries with good typings. Even if the average user will not declare complex types on a daily basis, the ability for big libraries to do so, will make the user’s experience easier when the IDE will warn them of bugs (pymongo can have type checking for valid mongo queries that is based on the collection type for example). The easier programming experience of the user side is part of what makes a language “simple” and “easy to use”.\n\nI’m not saying we shouldn’t try to make these syntaxes as simple and pretty as possible, but as long as we’re careful it will be cost-effective in the long run.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/61",
+      "reply_to": null
+    },
+    {
+      "post_id": 62,
+      "author": "steven.daprano",
+      "created_at": "2023-03-29T08:19:45.000Z",
+      "text": "I don’t think that the distance is an issue. The distance factor is exactly the same for functions and classes, but that is no problem.\n\nIf there is a problem with current syntax, I don’t think it is the code difference that is to blame.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/62",
+      "reply_to": 45
+    },
+    {
+      "post_id": 63,
+      "author": "tmk",
+      "created_at": "2023-03-29T09:32:13.145Z",
+      "text": "The decorator idea is mentioned in “Rejected ideas” in the PEP:\n\nWe likewise considered prefix forms that looked like decorators (e.g., @using(S, T)). This idea was rejected because such forms would be confused with regular decorators, and they would not compose well with existing decorators. Furthermore, decorators are logically executed after the statement they are decorating, so it would be confusing for them to introduce symbols (type parameters) that are visible within the “decorated” statement, which is logically executed before the decorator itself.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/63",
+      "reply_to": 50
+    },
+    {
+      "post_id": 64,
+      "author": "oscarbenjamin",
+      "created_at": "2023-03-29T09:57:37.598Z",
+      "text": "You can use a more descriptive name but the real problem is that it does not make sense conceptually to say that the type variable itself is contravariant or covariant. Suppose we have this:\n\nT = TypeVar('T', covariant=True)\nS = TypeVar('S', contravariant=True)\n\nclass ClassA(Generic[T, S]):\n ...\n\nclass ClassB(Generic[T, S]):\n ...\n\nIt does not make sense here to say that either T or S is innately covariant or contravariant as a type variable. Rather the question is whether the parametrised type ClassA[T, S] is covariant or contravariant in its type parameters T or S. It could be that ClassA is covariant in T and contravariant in S but the reverse or something else might hold for ClassB. So the property of covariance is actually a relationship between the parametrised type and its type parameters. Conceptually it would make more sense to place this at the class statement like:\n\nclass ClassA(Generic[Covariant[T], Contravariant[S]]):\n ...\n\nThis PEP sort of leans towards that except with the suggestion that the covariance or contravariance would be inferred from the rest of the class body. So I think the suggestion is that you would do:\n\nT = TypeVar('T', infer_variance=True)\nS = TypeVar('S', infer_variance=True)\n\nclass ClassA[T, S]:\n ...\n\nclass ClassB[T, S]:\n ...\n\nThen a checker would figure out the variances for ClassA[T, S] and ClassB[T, S] by looking at the attributes and methods of the classes.\n\nIdeally you would just do away with the TypeVar declarations altogether. The syntax in this PEP should mean that in the main places where a type variable is used there is a syntax and a scope to introduce the type variable without needing a separate TypeVar statement. There are basically three places where you might use a type variable:\n\nFunction signature\n\nClass statement\n\nType alias\n\nThe syntax in this PEP makes it possible to introduce the type variable without prior declaration in the first two of these (def func[T](...) and class A[T](...): ... but not for type aliases because the type statement itself doesn’t provide a way to do it. Doing it for a type alias would I guess look something like:\n\ntype[T] ListOrSet[T] = list[T] | set[T]\n\nHere the syntax type[T] can introduce the type variable.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/64",
+      "reply_to": 58
+    },
+    {
+      "post_id": 65,
+      "author": "pf_moore",
+      "created_at": "2023-03-29T10:11:22.451Z",
+      "text": "Thanks. I was misled by the fact that isinstance(1, float) is False. But I forgot that typing treats ints as substitutable for floats (for reasons that I will understand if I go and look them up, but which never seem obvious to me…)\n\nOK, but I’m not sure how variance is relevant to my point. Your message where you introduced variance into the discussion:\n\nwasn’t obviously a response to anything in particular (maybe that’s Discourse’s threading not being clear enough?) but in the context of what I thought we were discussing, it didn’t seem to answer my point that I think\n\ndef with_request[R, **P](f: Callable[Concatenate[Request, P], R]) -> Callable[P, R]:\n ...\n\nis harder to understand and harder to look up if you’re trying to understand it than\n\nR = TypeVar(\"R\")\nP = ParamSpec(\"P\")\n\ndef with_request(f: Callable[Concatenate[Request, P], R]) -> Callable[P, R]:\n ...\n\nCan you explain how variance is relevant to that question? Or if it isn’t, then respond to that point, please? (I already covered your previous response regarding duplication of assignments).",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/65",
+      "reply_to": 47
+    },
+    {
+      "post_id": 66,
+      "author": "oscarbenjamin",
+      "created_at": "2023-03-29T10:32:40.222Z",
+      "text": "Oh, I missed that it is in the PEP:\n\ntype ListOrSet[T] = list[T] | set[T]\n\nThis does introduce the type variable T so that the TypeVar is not needed.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/66",
+      "reply_to": 64
+    },
+    {
+      "post_id": 67,
+      "author": "ambv",
+      "created_at": "2023-03-29T10:36:09.503Z",
+      "text": "Because of the numeric tower: https://peps.python.org/pep-0484/#the-numeric-tower.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/67",
+      "reply_to": 65
+    },
+    {
+      "post_id": 68,
+      "author": "ntessore",
+      "created_at": "2023-03-29T13:25:54.079Z",
+      "text": "Both of these issues are not insurmountable:\n\nfrom typing import TypeVar\n\ndef generic(*typespec):\n unset = object()\n glbls = globals()\n store = {t.__name__: glbls.get(t.__name__, unset) for t in typespec}\n for t in typespec:\n glbls[t.__name__] = t\n def decorator(function):\n for name, value in store.items():\n if value is unset:\n del glbls[name]\n else:\n glbls[name] = value\n return function\n return decorator\n\n@generic(TypeVar('T'))\ndef myfunction(x: T):\n ...\n\nWith the __coannotations__ magic, that would probably not even have to touch global scope.\n\nOf course we haven’t really won anything by still needing to write out the TypeVar('T') here, so this is really only addressing the points made above.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/68",
+      "reply_to": 58
+    },
+    {
+      "post_id": 69,
+      "author": "davidism",
+      "created_at": "2023-03-29T15:34:05.985Z",
+      "text": "I’m going to echo what some others are saying about this and other typing concepts being confusing. I consider myself an expert Python programmer, and I’m still regularly confused by typing despite spending many, many days studying and adding it in my libraries. This new syntax is confusing, and it takes so many pages to describe and justify that I just can’t follow it, despite really trying.\n\nFor regular users of Python, typing is optional, so if there are confusing constructs or difficult to type areas, they can mostly be ignored and go unused. But for better or worse, typing is not optional for maintainers, because users constantly ask for type annotations.\n\nIt also makes it that much harder for a regular user to contribute to libraries. They’ll have to be reading or adding all these confusing constructs that that they likely aren’t using in their own code, all to get CI to pass. This is the state of things now, let alone also adding this new syntax.\n\nThe more complex typing becomes, the more likely I am to either get something wrong trying to use it, or to just throw up my hands and ignore it, benefiting no one. I would much rather see more effort go towards “how can we make typing fit easily with and accept real Python code” rather than adding more syntax.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/69",
+      "reply_to": null
+    },
+    {
+      "post_id": 70,
+      "author": "davidism",
+      "created_at": "2023-03-29T15:37:28.645Z",
+      "text": "I can’t find any mention in either the PEP or this topic of “slice”. Doesn’t this [T: str] syntax conflict with how slices are parsed, or at least how they’re read by developers?",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/70",
+      "reply_to": null
+    },
+    {
+      "post_id": 71,
+      "author": "mdrissi",
+      "created_at": "2023-03-29T17:26:38.783Z",
+      "text": "My response to that was prior variance discussion here,\n\nFor discoverability my work pattern is mainly in an IDE where I rely on hovering over variables/objects to see more about them. For vscode I know if hover over P/T it’ll show a hint it’s type variable/paramspec and let me click to see where it’s defined. I’d guess other IDEs like pycharm have similar support while some editors may lack it.\n\nOtherwise I’m unsure of discoverability for syntax. How do people discover meaning := expression? That feels comparable to me with introducing syntax. I find it from reading python release notes + teammates teaching me, but I’m aware that both are things a beginning may lack.\n\nI can add if that’s not enough that yes I agree new syntax is less explicit then ParamSpec/TypeVar for discoverability and that when encountered first few times will be less easy to lookup then existing syntax.\n\nThere is major difference on typing usage in python vs other languages. Python type hints can be used heavily at runtime. Pydantic, cattrs, and typeguard are all libraries that do heavy runtime type introspection. Having types live in separate namespace/world could work for static type checkers but would not cooperate well with runtime type usage.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/71",
+      "reply_to": 65
+    },
+    {
+      "post_id": 72,
+      "author": "pf_moore",
+      "created_at": "2023-03-29T18:53:12.580Z",
+      "text": "OK, I responded to that here. And others have made the same point. I don’t know if there’s anything further to discuss here - it looks like you simply disagree with me, and at this point I don’t think there’s much more I can add. I hope the PEP gets modified to take into account the feedback from the various experienced Python users with a casual level of typing knowledge who have commented here, but I don’t know how likely that is. It’s frankly rather too hard to engage with the discussions for me to do much else.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/72",
+      "reply_to": 71
+    },
+    {
+      "post_id": 73,
+      "author": "mdrissi",
+      "created_at": "2023-03-29T19:09:45.645Z",
+      "text": "From my view I feel like I agree with you there is learning trade off. I wasn’t trying to disagree that learning impact on first encountering it. My view is I think benefit from usage in existing files that often use generics is worth that trade off and the trade off is comparable to most other syntactic changes.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/73",
+      "reply_to": 72
+    },
+    {
+      "post_id": 74,
+      "author": "NeilGirdhar",
+      "created_at": "2023-03-29T19:33:16.395Z",
+      "text": "I think people who don’t write a lot of typing code may not realize how much of a pain it is to have to write type variables everywhere, check that they’re right, etc.\n\nBut code is also about readers, and this brings another point (sorry for the giant edit) that I think may have been missed from the discussion (although it’s mentioned in the PEP) is how the new syntax is significantly more logical the previous syntax. Type variables have an intuitive scope no matter how you declare them. Even if you declare a type variable the old way:\n\nT = TypeVar('T')\n\nit doesn’t have any real meaning outside some generic object. And it can take significant effort for the reader to figure out what that object is. Consider:\n\nclass X(Generic[T]):\n def f(self, a: T) -> None: ...\n def g(self, b: U) -> None: ...\n\nHere, T is scoped to the class X, and is meaningful anywhere inside it, but U is scoped to the function g, and is only meaningful inside it. While T’s scope is made obvious by inheriting from Generic[T], U’s scope is not obvious, and the reader has to carefully check every enclosing function and class.\n\nIdeally, the declaration should be right beside the start of the scope in which it’s valid. And while there is a reasonable place to do that for classes (in the inheritance list), there is currently no such place for functions. And ideally, that point for functions would be before the signature because the signature depends on the type variables.\n\nAlso, ideally, whatever notation we choose for functions should be the same for classes just to reduce cognitive load.\n\nThis PEP satisfies all of these things:\n\nit defines type variables at the scope in which they are valid,\n\nit defines function-scoped type variables before the signature, and\n\nit uses the same notation for generic classes, functions, and type variables.\n\nI understand the desire for conservatism, and I think we should definitely explore other possibilities, but so far, I think this notation seems to be the most logical to me from a typing perspective.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/74",
+      "reply_to": 73
+    },
+    {
+      "post_id": 75,
+      "author": "oscarbenjamin",
+      "created_at": "2023-03-29T21:49:00.168Z",
+      "text": "Maybe the PEP could benefit from having a larger example comparing the existing and proposed syntax. Many of the complaints above would apply equally to both but I agree that the new proposed syntax is a significant improvement.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/75",
+      "reply_to": 74
+    },
+    {
+      "post_id": 76,
+      "author": "brettcannon",
+      "created_at": "2023-03-30T00:33:14.985Z",
+      "text": "True, but this is also a side-effect of our habit of reusing TypeVars throughout a module instead of creating them as necessary per function/scope when details like variance come into play.\n\nCould a where clause be possible? That would push what would have been in the brackets to a separate line.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/76",
+      "reply_to": 64
+    },
+    {
+      "post_id": 77,
+      "author": "NeilGirdhar",
+      "created_at": "2023-03-30T00:59:20.124Z",
+      "text": "I really like the separate line idea if it is possible. I agree with Lukasz’s point about “the rather unprecedented density of information that would end up in a function and/or class signature”.\n\nIf there is a way to do it on a separate line, I think that ideally we would use the exact same notation for classes, functions, and type variables.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/77",
+      "reply_to": 76
+    },
+    {
+      "post_id": 78,
+      "author": "uranusjr",
+      "created_at": "2023-03-30T07:38:45.777Z",
+      "text": "Personally I tend to agree somewhat to both sides here: The current TypeVar and ParamSpec etc. declarations are a practical issue, but eliminating those declarations entirely is also problematic. I think that’s why the decorator syntax seems appropriate.\n\nFor what it is worth, I actually feel the @generic(TypeVar(\"T\")) idea does win something since it does eliminate those global variables. It’s a bit verbose (even more characters in the current way) but IMO having more words is not necessarily an issue; you can pretty easily skip those decoreator lines mentally so they are less likely to become noise. If using a decorator is still considered problematic (not unreasonable since most decorators do have meaning and you can’t just skip all @ lines), perhaps a syntax to embed it into the declaration line would be possible? Something like this\n\ndef myfunction(x: X, y: Y) -> tuple[X, Y] with TypeVar(\"X\"), TypeVar(\"Y\"):\n ...\n\nclass Foo(list[T]) with TypeVar(\"T\"):\n ...\n\nThe exact syntax can be discussed, the main idea I want to raise is embedding type variable declarations into the construct declaration may be a viable approach.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/78",
+      "reply_to": null
+    },
+    {
+      "post_id": 79,
+      "author": "NeilGirdhar",
+      "created_at": "2023-03-30T08:20:53.145Z",
+      "text": "I think it’s problematic because of the reason Eric gave PEP 695: Type Parameter Syntax - #19 by erictraut\n\nHow about on the other side of the declaration and do you really need to import TypeVar for this?\n\nwith type X: int, Y, *T, **P\ndef my_function(x: X, ...): ...\n\nStill, I think the PEP’s notation has one other elegance to it: When you declare a class like this:\n\nclass C[T]: ...\n\nyou use it in code like this:\n\nc = C[T]()\n\nSo the notation mirrors exactly how you use it. Maybe to reduce density, linters or type-checkers could flag high complexity and beg authors to break things up? Because it is unfortunate for very simple definitions to need two lines.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/79",
+      "reply_to": 78
+    },
+    {
+      "post_id": 80,
+      "author": "ntessore",
+      "created_at": "2023-03-30T09:04:24.730Z",
+      "text": "But as I pointed out above, I don’t think that has really been considered in full.\n\nThat just isn’t true, the decorator is evaluated before the function. The function is then evaluated and passed to the decorator.\n\nSee my example above. You can probably make this tightly scoped within the new __coannotations__, too.\n\nThe decorators look almost exactly like C++ template<> syntax to me.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/80",
+      "reply_to": null
+    },
+    {
+      "post_id": 81,
+      "author": "hauntsaninja",
+      "created_at": "2023-03-31T18:28:12.801Z",
+      "text": "Thoughts on PEP 695, rejection of PEP 677 and the future of typing syntax\n\nSince @thomas / the Steering Council asked the community for more thoughts on PEP 695, I thought I’d write something up.\n\nFirst and foremost, I think PEP 695 is really well thought through, and I admire all the effort and cleverness that went into it. I think the scoping challenges were formidable and the proposed solution addresses them well. The new syntax for generic classes and functions overall feels natural to me as a user of typed Python.\n\nSummary of PEP 695\n\nI saw a couple messages on Discord and here about the PEP being hard to follow, so here’s a quick summary of the PEP (still contains jargon, but is at least shorter). PEP 695 comprises of three things:\n\nA new syntax for generic classes and functions\n\nA new syntax for type aliases\n\nA way for type checkers to automatically infer variance of type variables\n\nHow do these things relate / why is this one PEP instead of two or three?\n\nThe new syntax isn’t just syntactic sugar, but an effort to clarify the scoping of type variables.\n\nType variables are conceptually meaningless outside of a scope that binds them. However, today’s syntax for type variables confuses that fact. This is particularly confusing when the type variable has properties attached (like variance or bounding), because those aren’t properties of the type variable itself, as much as properties of the class, function or alias that binds them.\n\nThe syntax changes thus target the places where you’d bind a type variable, mirroring precedent in other languages. The automatic inference of variance is primarily a usability improvement, but is part of this PEP because including it means we don’t need new syntax to explicitly express variance.\n\nRejection of PEP 677\n\nOkay, I’ve sufficiently buried the lede, so here it is: I would be very surprised if the Steering Council accepted PEP 695. The Steering Council is largely the same as when it discussed PEP 677 (syntax for callable types). Every reason for rejecting PEP 677 applies to this PEP as well, except often stronger.\n\nPEP 677 rejection notice. I excerpt the points below, as per my interpretation, but click through to the notice if unfamiliar.\n\nLet’s go through the reasons the SC provided for rejecting PEP 677:\n\nWe feel we need to be cautious when introducing new syntax.\n\n[…] A feature for use only in a fraction of type annotations, not something every Python user uses\n\nThis still clearly applies.\n\nWith PEP 677, you could have argued that it’s intuitive and mirrors existing Python syntax, that it’s a smaller change, that it’s easier for users to ignore. But PEP 695 changing how functions and classes can be declared is a big deal… It’s amongst the more personal changes you can make to a language. I expect Python users to have feelings about PEP 695 syntax.\n\nAnd while I think the SC was wrong on PEP 677, they are absolutely right to be wary of syntax changes.\n\nFor example, the small syntax change in PEP 646 maybe flew under the radar, but now it’s causing a little bit of trouble for PEP 649.\n\nPEP 695’s estimate is use in 14% of files with typing. I measured prevalence of TypeVar on the corpus of GitHub - hauntsaninja/mypy_primer: Run mypy and pyright over millions of lines of code . This is 127 projects (often name brand) that use typing in CI and close to ten million lines of code. It depends on how you count, but Callable was used in about 22% of files with typing and TypeVar was used in about 9%. PEP 696 (defaults for type variables) could change how much generics are used, but that remains to be seen.\n\nWhile the current Callable[x, y] syntax is not loved, it does work.\n\nThis PEP isn’t enabling authors to express anything they cannot already.\n\n[…] We can imagine a future where the syntax would desire to be expanded upon.\n\nUnlike PEP 677, which was just sugar, PEP 695 does make generics conceptually clearer. But it’s still true that the syntax changes in PEP 695 do not enable things that aren’t already expressible. (For what it’s worth, this should be a point of pride. It’s great that users on all Python versions can typically benefit immediately from new typing features)\n\nWhile type variables are relatively mature, I think they are still more susceptible to future changes than PEP 677 (there was basically only one direction to take PEP 677, which is the extended syntax that PEP 677 discussed). For example, PEP 696 would involve a (straightforward) syntax addition to PEP 695. PEP 695 itself is adding automatic variance. One could imagine future kinds of TypeVarLike’s (things like ParamSpec). Or maaaybe even a future where we model mutability explicitly, which would have implications for variance.\n\nIn line with past SC guidance, we acknowledge challenges when syntax\n\ndesires do not align between typing and Python itself.\n\n[…] shifts us further in the direction of typing being its own mini-language\n\nChanging function and class declarations for a typing specific feature doesn’t assuage this fear.\n\nWe did not like the visual and cognitive consequence of multiple -> tokens in a def\n\nThe odds of someone proposing a syntax change that people aren’t concerned about the visual and cognitive consequences of is lower than the odds of Python no longer being dynamically typed \n\nWhile I think the syntax is better than the status quo and blends quite nicely into existing typed Python, I empathise with worries about a relatively implicit way of defining symbols or more soft keywords and the overloading of type.\n\nAnd of course, the Steering Council may have additional concerns that are more specific to PEP 695 (I can think of a few that might come up).\n\nFuture of typing syntax\n\nGiven the above, my best guess is that the SC will:\n\nAsk for automatic variance inference to be its own PEP and then accept that PEP (variance is confusing, this is a thing that helps, it’s low burden for type checkers to implement since we already have it as part of PEP 544)\n\nDefer syntax changes until the dust has settled on autovariance and PEP 696 (defaults for type variables), or reject the syntax changes outright\n\nThe rest of this section is written assuming this outcome.\n\nI think if PEP 695 is rejected for effectively a superset of the reasons PEP 677 was rejected, this would be somewhat frustrating, on both “sides”. On the typing “side”, because a lot of effort and ingenuity is spent on PEPs like this and because these changes have the potential to help users (of typing). On the Steering Council “side” because it sucks to say no to a lot of well thought through work that benefits some users but may have global costs — especially if saying no for similar reasons to previous proposals.\n\nI’d love more guidance from the Steering Council on syntax changes, particularly syntax changes that are aimed at ergonomic benefit. The rejection reasons for PEP 677 are quite broad:\n\nre point 1, every syntax change will be a syntax change\n\nre point 2, as mentioned, it should be a point of pride and strength that we can typically find kludgy ways to express things without new syntax. I found this point confusing at the time of PEP 677 too, especially since IMO PEP 677 did a good job anticipating future extensions: see Mailman 3 [Python-Dev] Re: PEP 677 (Callable Type Syntax): Rejection notice. - Python-Dev - python.org and the reply\n\nre point 3, seems to rule out most syntax changes that are about typing ergonomics.\n\nre point 4, every syntax change will have visual and cognitive consequences. This is subjective and it’s unclear a priori what the Steering Council’s bar here is.\n\nI understand that it’s hard to give guidance here and it’s important to preserve optionality in both ways (to reject things for subjective reasons or accept things that in some ways contradict previous rejections).\n\nTo make things more concrete, here are a few random ideas that could be in the guidance action space:\n\nSyntax changes targeting typing ergonomics should only touch parts of the type system that have not been changed in X years (addresses point 2 of PEP 677 rejection)\n\nSyntax changes should look more like PEP 637 rather than being ergonomic focussed (PEP 637 was also rejected, but the SC did say the typing argument was the strongest argument for that change) (addresses point 2 and point 3 of PEP 677 rejection)\n\nSyntax changes should not make use of PEG features (mentioned in PEP 677 rejection) (addresses point 4 of PEP 677 rejection)\n\nSyntax changes that likely affect <X% of Python files are unlikely to be considered (addresses point 3 of PEP 677 rejection)\n\nFinally, and this is getting off topic, I think there’s often a nebulous desire expressed for typed Python to feel more cohesive with untyped Python (I think SC might even have said something on these lines, but I can’t find the source). I’d love opinions from everyone on what that means and recommendations on how to go about it (maybe in another thread), for instance:\n\nOn the typing side, this often results in a desire for ergonomic syntax, because ergonomic syntax is a way for something to feel native and cohesive.\n\nFor some users, cohesion means the ability to blur lines between runtime and static type checking. There are limits to what is even theoretically possible here, but for what it’s worth I think we’ve made good strides in recent years to make things more introspectable and future proof the runtime aspects of typing.\n\nFor some users, cohesion means powerful static type checking primitives that look more like writing Python than writing a declarative DSL.\n\nFor some users, cohesion could just mean better resources and documentation. Most non-typing features of Python have a decade (or two) headstart on typing features when it comes to building these resources.\n\nFor some developers, cohesion could mean building static analysis libraries that are easy to build tooling or custom static analysis on top of.\n\nFinally, for some people, maybe this is just a polite way to say “this stuff looks different, get off my lawn” But don’t worry, we’ll win you over",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/81",
+      "reply_to": null
+    },
+    {
+      "post_id": 82,
+      "author": "brettcannon",
+      "created_at": "2023-03-31T23:26:19.849Z",
+      "text": "Just FYI, as an SC member, I won’t vote to accept something that tries to overload what the decorator syntax means in any magical way (i.e. if it isn’t just like any other decorator and thus just a thing you import for typing, I can’t support it).",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/82",
+      "reply_to": 80
+    },
+    {
+      "post_id": 83,
+      "author": "ntessore",
+      "created_at": "2023-04-01T00:22:47.803Z",
+      "text": "I’m very glad to hear it, but I don’t understand the context. Are decorators — and I mean the symbol mydecorator in @mydecorator, or the function another() in @another(), or the expression in @lambda x: x recently — not always evaluated before their decorated functions? Why would that be magical if used for marking generic functions and classes without introducing a syntax change? I’m not being deliberately obtuse.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/83",
+      "reply_to": 82
+    },
+    {
+      "post_id": 84,
+      "author": "carljm",
+      "created_at": "2023-04-01T01:07:13.034Z",
+      "text": "Yes, the expression after the @ in decorator syntax is evaluated before the decorated function/class. That’s not typically what we mean by “evaluating a decorator,” though; typically we mean “calling the decorator – the result of evaluating the decorator expression – with the decorated function/class.” The purpose and typical use of decorator syntax is not for evaluating the decorator expression itself to have side effects.\n\nSo how would you bind names in a decorator to be used solely within the definition of the decorated function/class? The only possibility I can see is that evaluating the decorator expression has the globally visible side effect of binding names in the global scope, which the decorator then (again as a global side effect) deletes from the global scope when the decorator actually runs on the decorated thing. I think this is technically possible today, but I certainly wouldn’t advocate for it, and I think it would be reasonable to describe it as “overloading the decorator syntax in a magical way.”",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/84",
+      "reply_to": 83
+    },
+    {
+      "post_id": 85,
+      "author": "mdrissi",
+      "created_at": "2023-04-01T01:50:27.705Z",
+      "text": "Here’s fuller example starting with full order relevant pieces execute.\n\ndef generic(t):\n print(\"C\")\n def _func(f):\n print(\"D\")\n return f\n\n return _func\n\n@generic(print(\"A\"))\ndef foo(x: print(\"B\")):\n print(\"E\")\n return x\n\nfoo(1)\n\nThis prints A → B → C → D → E. In particular the annotation for x is printed before decorator runs at all. If you instead had @generic(TypeVar(\"T\")) the decorator does not have opportunity to execute before x’s annotation is run. So even with stack frame/manipulating globals/function namespace you can’t define T at right time. If you delayed annotation evaluation you may be able to, but having a feature that requires from __future__ import annotations/co_annotations like behavior is warning sign as it is easiest to work with runtime type annotations when nothing special happens to them and I wouldn’t expect decorator to require future import to be usable.\n\nThe next issue is desired scope/validity of T. The goal with new syntax is for,\n\ndef foo[T](x: T):\n def _g(x: T) -> T:\n ...\n return _g \n\nto be valid, but\n\ndef foo[T](x: T):\n ...\n\nprint(T)\n\nto be an error. So T must exist at time of annotation of function’s arguments (too early for decorator), exist inside of function’s scope, and not exist outside of function.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/85",
+      "reply_to": 83
+    },
+    {
+      "post_id": 86,
+      "author": "ntessore",
+      "created_at": "2023-04-01T07:22:38.451Z",
+      "text": "See above, I had the same idea to hack it with globals and this can indeed be done.\n\nBut the “how” isn’t the point (yet). The decorator idea seems to have been rejected under the premise that it cannot be done. Seeing how it can be done, it should be given more consideration, including some effort to find a nice syntax both within what is currently possible and by introducing new syntax (which this PEP is doing anyway) that isn’t special-casing but might benefit the whole language.\n\nAfterwards, there is still time to reject the idea on the basis that there truly isn’t a workable implementation. For the scoping, for example, one should at least consider PEP 649 which appears to solve that issue easily, if accepted.\n\nPS: On the other point,\n\nI do not agree with that statement universally. I think everyone is aware that a decorator-function-call @mydecorator() does something before it takes the function. Whether or not introducing the typevars, which live in the magic place of type annotations, is a side-effect is debatable. Particularly when that side-effect is only for the duration of the function definition, which again is doable as in my example above.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/86",
+      "reply_to": 84
+    },
+    {
+      "post_id": 87,
+      "author": "xmw",
+      "created_at": "2023-04-01T09:44:32.258Z",
+      "text": "Is it possible to use type comments (# type: ...) for PEP 695 instead? These have the advantage of being both non-intrusive (minimal or no effect on either runtime code and readability, no changes to standard Python syntax) and recognised by the compiler already.\n\nThe following is a syntax error when parsed with ast.parse(<source code>, type_comments=True), because type: ... is not allowed to be on a single line on its own:\n\n# type: int\n\nThis leaves an opportunity to use the line above a function or class declaration (or either on top or below @decorators) as a place to bind type variables to the definition underneath.\n\nProposed syntax (taken from various examples in PEP 695):\n\n# Upper bound\n# type: [T: str]\nclass ClassA:\n def method1(self) -> T: ...\n\n# Type variable in function signature\n# type: [T]\ndef func(a: T, b: T) -> T: ...\n\n# Constrained type specification (string quotes omitted for forward reference)\n# type: [T: (ForwardReference, bytes)]\nclass ClassB: ...\n\n# Parameterisation\n# type: [T]\nclass ClassA(BaseClass[T], param=Foo[T]): ...\n\nThis has some of the same drawbacks as the rejected idea PEP 695: Prefix Clause, especially regarding scope clarity. However, some of the feedback on this thread about the information-denseness of the current proposal suggests that there is a fine balance between clarity of scope and a flood of square brackets appearing in a class or function declaration, and there’s not much consensus on where to draw the line.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/87",
+      "reply_to": null
+    },
+    {
+      "post_id": 88,
+      "author": "Jelle",
+      "created_at": "2023-04-01T15:15:42.407Z",
+      "text": "The comment would not bind the name T, so this would not work without changes to the compiler. And if we’re changing the compiler, we shouldn’t do it to introduce syntax that looks like a comment.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/88",
+      "reply_to": 87
+    },
+    {
+      "post_id": 89,
+      "author": "tusharc",
+      "created_at": "2023-04-03T02:44:08.342Z",
+      "text": "Hi, I am a long-time lurker and created an account to express my support for this proposal. I know that one user’s perspective is unlikely to make a difference in such a long and complex discussion, but I do believe that this PEP makes generics and type variables much easier to work with than they are today.\n\nMost important to me is that, under PEP 695, parameters are declared exactly when they are needed and their usage is localized to there and there alone. This is addressed in the PEP as the second paragraph of Points of Confusion:\n\nThe scoping rules for type variables are difficult to understand. Type variables are typically allocated within the global scope, but their semantic meaning is valid only when used within the context of a generic class, function, or type alias. A single runtime instance of a type variable may be reused in multiple generic contexts, and it has a different semantic meaning in each of these contexts. This PEP proposes to eliminate this source of confusion by declaring type parameters at a natural place within a class, function, or type alias declaration statement.\n\nI find this to be most compelling.\n\nIt’s confusing to declare a type variable in the global scope and have its meaning potentially change wherever it’s used.\n\nIt’s confusing that, despite this, the “bounds” of a type variable sometimes have to be defined ahead of time, but then also only narrowed by the type checker when the type variable is used.\n\nIt’s confusing that T = TypeVar(\"T\") can refer to a class-scoped type parameter in one place and a function-scoped one in another, or that it can be imported into another module and take on semantics that are further detached from its declaration.\n\nPEP 695 makes this all much clearer. As a user of typed Python, this example from the PEP is anecdotally very common:\n\n# Here is an example of a generic function today.\nfrom typing import TypeVar\n\n_T = TypeVar(\"_T\")\n\ndef func(a: _T, b: _T) -> _T:\n ...\n\n# And the new syntax.\ndef func[T](a: T, b: T) -> T:\n ...\n\nThe new syntax more closely mirrors that found in other languages (described in the Appendix). It is more obvious with the new syntax that T is meaningful in the function, but not outside.\n\nThe post that I’m replying to says: “The new syntax for generic classes and functions overall feels natural to me as a user of typed Python.” I wholeheartedly agree. Having talked to developers IRL who are more familiar with other languages, this new syntax makes more intuitive sense in that way, too.\n\nFinally, I believe the case for new syntax is stronger here than it was in PEP 677; there, the proposed syntax was conceptually equivalent to the existing syntax. PEP 695, by contrast, clarifies longstanding conceptual confusion about type variables and generics. It’s not “just” syntax—this is a meaningful improvement for users of typed Python.\n\nI hope the SC accepts it.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/89",
+      "reply_to": 81
+    },
+    {
+      "post_id": 90,
+      "author": "tusharc",
+      "created_at": "2023-04-03T02:55:25.736Z",
+      "text": "(Apologies for the double post—my previous one was already long, and this is a reply to a post much further up.)\n\nThis was my experience (and that of coworkers who were unfamiliar with this) as well. Having to inherit from Generic and declare TypeVar is surprising and kludgey. This, in contrast, feels like the “one—and preferably only one” way to do this, or the way that things “should” work. This is especially true when considering the survey of other languages in the Appendix.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/90",
+      "reply_to": 27
+    },
+    {
+      "post_id": 91,
+      "author": "tmk",
+      "created_at": "2023-04-03T16:58:35.323Z",
+      "text": "If the main objection is that the proposed syntax is too “magical” then I think this might be a good compromise.\n\nI do think it’s probably okay to hide the instantiation of the TypeVars behind some magic, though.\n\nA proposal in a similar vein:\n\nclass A(Generic[T]) with (T: Any):\n def __init__(self): ...\n\ndef reduce(\n function: Callable[[T, S], T], sequence: Iterable[S], initial: T\n) -> T with (T: Any, S: Any): ...\n\nI think it might be good to make specifying the bound mandatory, and if there is no bound then you can use Any or object (using object actually seems a bit more correct to me).\n\nAlso, instead of re-purposing “with”, it could be done with “where” as a soft keyword:\n\nclass ClassA(Generic[T]) where (T: str):\n def method1(self) -> T:\n ...",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/91",
+      "reply_to": 78
+    },
+    {
+      "post_id": 92,
+      "author": "emily",
+      "created_at": "2023-04-07T19:42:00.604Z",
+      "text": "On behalf of the Steering Council, we’d like to report that we are happy to accept PEP 695. Thanks to everyone for the reinvigorated discussion in the last few weeks – I look forward to this step forward for typing in Python.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/92",
+      "reply_to": null
+    },
+    {
+      "post_id": 93,
+      "author": "brettcannon",
+      "created_at": "2023-04-07T20:00:14.377Z",
+      "text": "Yes and no. As you pointed out, “With PEP 677, you could have argued that it’s intuitive and mirrors existing Python syntax, that it’s a smaller change” while “PEP 695 changing how functions and classes can be declared is a big deal”. But the key detail there is while PEP 677 proposed something that I would argue was a bit of syntactic nicety for something that functioned fine w/o the PEP, PEP 695 has a much broader impact in terms of improving your typed code. So I think a better concept to compare this to in terms of impact compared to cost is decorators; not necessary but there’s a more demonstrable improvement to how your code reads, the general semantics, and minimizing errors than compared to simplifying how you write Callable.\n\nOr at least that’s how I approached the two PEPs when thinking about whether to accept/reject them.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/93",
+      "reply_to": 81
+    },
+    {
+      "post_id": 94,
+      "author": "davidism",
+      "created_at": "2023-04-07T20:35:41.111Z",
+      "text": "This never got addressed.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/94",
+      "reply_to": null
+    },
+    {
+      "post_id": 95,
+      "author": "gpshead",
+      "created_at": "2023-04-07T20:40:27.131Z",
+      "text": "I expect this is something that the implementation work will reveal.\n\nSlices are not expected to ever be used in function or class definitions so it seems like there is sufficient information for to reason about what is what.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/95",
+      "reply_to": 94
+    },
+    {
+      "post_id": 96,
+      "author": "erictraut",
+      "created_at": "2023-04-07T20:53:51.655Z",
+      "text": "Doesn’t this [T: str] syntax conflict with how slices are parsed.\n\nThe grammar changes introduced in this PEP are unambiguous. The : token is never interpreted as a slice when used in the context of a type parameter definition, just as : is never interpreted as a slice when it’s used today for parameter type annotations.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/96",
+      "reply_to": 95
+    },
+    {
+      "post_id": 97,
+      "author": "ntessore",
+      "created_at": "2023-04-07T21:01:11.263Z",
+      "text": "But it would break my super important and not at all contrived class, as far as I understand.\n\nclass BoundedMeta(type):\n def __instancecheck__(self, obj):\n return isinstance(obj, float) and self.LO <= obj <= self.UP\n\nclass Bounded(metaclass=BoundedMeta):\n def __class_getitem__(cls, rng):\n lo, up = rng.start, rng.stop\n return type(f'Bounded[{lo}:{up}]', (cls,), {'LO': lo, 'UP': up})\n\nprint(isinstance(3.1, Bounded[2.3:5.5])) # True",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/97",
+      "reply_to": 96
+    },
+    {
+      "post_id": 98,
+      "author": "erictraut",
+      "created_at": "2023-04-07T21:19:30.665Z",
+      "text": "But it would break my super important and not at all contrived class, as far as I understand.\n\nThis PEP has no impact on how : is interpreted in the grammar today. That’s true for your code sample above or any other code that works today. So no fear, your super-important not-at-all-contrived class would continue to work just fine. .\n\nThe grammar changes this PEP introduces are for type parameter definitions only. For example, if you were to change your class to be generic with a type parameter named T, you would use the following syntax.\n\nclass Bounded[T: str](metaclass=BoundedMeta): ...",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/98",
+      "reply_to": 97
+    },
+    {
+      "post_id": 99,
+      "author": "cdce8p",
+      "created_at": "2023-04-07T21:37:32.336Z",
+      "text": "I might have missed it but I believe this wasn’t addressed as well. It’s likely just an implementation detail. However the AST change would make it easier for linters (written in Python) to highlight the name specificly without needing to parse the expression themselves (using regex).",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/99",
+      "reply_to": 9
+    },
+    {
+      "post_id": 100,
+      "author": "Tinche",
+      "created_at": "2023-04-08T02:04:19.948Z",
+      "text": "Congrats to the authors! One more thing to look forward to in 3.12.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/100",
+      "reply_to": null
+    },
+    {
+      "post_id": 101,
+      "author": "UltimateLobster",
+      "created_at": "2023-04-08T12:23:27.937Z",
+      "text": "Congrats! I’m so excited to see it was accepted and can’t wait to see it implemented! \n\nCouple of questions though:\n\nWhen will the PEP’s status be officially updated?\n\nDoes it mean we will be able to see it in Python 3.12? After all, we’re about to enter the beta phase meanning that new features aren’t supposed to be added and this feature will need some time to be implemented.\n\nIs there any way for outside users like myself to be updated with the schedules of when such decisions are made? From my perspective, my only option is to enter this (and other pep threads im interested in) every day and check if there is an update, but is there some public schedule which we can look at to know when such decision should be made?",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/101",
+      "reply_to": null
+    },
+    {
+      "post_id": 102,
+      "author": "a-reich",
+      "created_at": "2023-04-08T14:10:02.963Z",
+      "text": "You could subscribe to the official issue for the SC request.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/102",
+      "reply_to": 101
+    },
+    {
+      "post_id": 103,
+      "author": "Jelle",
+      "created_at": "2023-04-08T15:38:03.090Z",
+      "text": "When somebody makes a PR to the PEPs repo to update it.\n\nYes, it should go into 3.12, and yes, that means we should start implementing it soon. Hopefully @erictraut can submit his draft implementation and we can iterate on that.\n\nI think subscribing to the GitHub - python/steering-council: Communications from the Steering Council repo is the best way to stay up to date with SC decisions. There is no set schedule; the SC is a small group of volunteers who do things when they have the time to do so.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/103",
+      "reply_to": 101
+    },
+    {
+      "post_id": 104,
+      "author": "guido",
+      "created_at": "2023-04-08T15:53:50.787Z",
+      "text": "@erictraut Congrats with the SC acceptance! We have only about 3 weeks to get this into 3.12 – the beta 1 feature freeze is May 8 (PEP 693 – Python 3.12 Release Schedule | peps.python.org). And during that time falls PyCon, which means I have less time to focus on this. Do you want to start by merging the current main branch into your prototype, or would you prefer to start over? (The merge alone could be a big job.)\n\nI hope there are volunteers to help with this process. (IIRC Eric’s prototype is linked from the PEP.)",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/104",
+      "reply_to": null
+    },
+    {
+      "post_id": 105,
+      "author": "erictraut",
+      "created_at": "2023-04-09T01:23:57.928Z",
+      "text": "My earlier prototype is in this branch, but it implements an older version of the spec (prior to incorporating input about scoping rules). The cpython compiler code has also changed significantly in the past year, so I don’t think it’s worth trying to carry the prototype forward in its entirety.\n\nThere are parts of the prototype that can be used with little or no modification. This includes:\n\nGrammar changes\n\nAST changes (Note: these changes don’t yet include the suggestions that @cdce8p made.)\n\nUnit tests\n\nChanges to typing.py classes\n\nI’ve manually integrated these changes into a new branch that is synced with the latest cpython main branch.\n\nThis leaves the following work:\n\n5. Symtable changes\n\n6. Compiler changes\n\n7. Moving TypeVar, TypeVarTuple, ParamSpec and Generic implementations from Python to C\n\nI’m hoping that we can get a core Python developer or someone who has expertise with the symtable and compiler components to volunteer to implement the necessary changes. I’m happy to collaborate and share learnings from my proof of concept, but I’d prefer that someone else take the lead here. Any takers?\n\nOne consideration is whether PEP 696 (Type defaults for TypeVarLIkes) is going to be pursued for Python 3.12. If so, it might make sense to combine the implementation effort for 695 and 696. Given the short time window available, PEP 696 may need to wait until Python 3.13. @Gobot1234, what is the status of 696? Have you submitted it to the SC for review?",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/105",
+      "reply_to": null
+    },
+    {
+      "post_id": 106,
+      "author": "emily",
+      "created_at": "2023-04-09T02:40:51.500Z",
+      "text": "It has been submitted and is at the top of our list for discussion next week.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/106",
+      "reply_to": 105
+    },
+    {
+      "post_id": 107,
+      "author": "bedlamzd",
+      "created_at": "2023-04-10T18:13:33.438Z",
+      "text": "Haven’t seen this mentioned but I’m a bit confused with type constraint syntax.\n\nPEP suggests the following\n\nclass Foo[AnyStr: (bytes, str)]:\n ...\n\nThis for me reads more like a “tuple with bytes and str” rather then “union of bytes and str” which it is. Wouldn’t the following be more consistent with existing syntax?\n\nclass Foo[AnyStr: bytes | str]:\n ...\n\nI assume people are already familiar with union operator and this feels to me like a more natural way to write such constraint.\n\nOtherwise great PEP, really looking forward to it!",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/107",
+      "reply_to": null
+    },
+    {
+      "post_id": 108,
+      "author": "Jelle",
+      "created_at": "2023-04-10T18:30:57.672Z",
+      "text": "That would mean something else; it would be equivalent to TypeVar(\"AnyStr\", bound=bytes | str) instead of TypeVar(\"AnyStr\", bytes, str).",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/108",
+      "reply_to": 107
+    },
+    {
+      "post_id": 109,
+      "author": "bedlamzd",
+      "created_at": "2023-04-10T18:53:12.716Z",
+      "text": "Indeed, thank you!",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/109",
+      "reply_to": 108
+    },
+    {
+      "post_id": 110,
+      "author": "lys.nikolaou",
+      "created_at": "2023-04-12T19:14:20.912Z",
+      "text": "@erictraut Would you need any help with the required AST changes or the parser in general? If so, I’d be happy to help out, so feel free to reach out to me!",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/110",
+      "reply_to": 105
+    },
+    {
+      "post_id": 111,
+      "author": "Jelle",
+      "created_at": "2023-04-13T00:46:22.989Z",
+      "text": "Would you mind enabling issues on your CPython fork at GitHub - erictraut/cpython: The Python programming language?\n\nWe can then use issues there to discuss and track the implementation.\n\nI’m planning to start out with implementing TypeVar and co in C.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/111",
+      "reply_to": 105
+    },
+    {
+      "post_id": 112,
+      "author": "erictraut",
+      "created_at": "2023-04-13T01:00:19.238Z",
+      "text": "Thanks Jelle. I just enabled issues and discussions in my fork.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/112",
+      "reply_to": 111
+    },
+    {
+      "post_id": 113,
+      "author": "Pythonista",
+      "created_at": "2023-04-27T11:21:09.390Z",
+      "text": "May I suggest a change to the proposed syntax?\n\nFor upper bound specification, letting a: b denote “a subtypes b” is a bit inconsistent because elsewhere it means “a has type b”.\n\nFor constrained type specification, letting a: (b, …) denote “a is one of b, …” is a bit inconsistent for the same reason.\n\nInstead, may I suggest the following?\n\na < b means a subtypes b\n\na > b means a supertypes b\n\na in (b, …) means a is one of b, …\n\n<, <:, <= are all common notations in the type theory literature for the subtype relation. (Scala uses <: and >:.) Personally, I like < in this case because it is the most visually concise.\n\nThoughts? I think it’s worth getting this right early, to pay off dividends in the long run.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/113",
+      "reply_to": null
+    },
+    {
+      "post_id": 114,
+      "author": "Jelle",
+      "created_at": "2023-04-27T17:21:13.908Z",
+      "text": "This was discussed exhaustively in the lead-up to the PEP, and the PEP contains a survey of the syntax in other languages. : is reasonably common in other languages, and that’s what we ended up with.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/114",
+      "reply_to": 113
+    },
+    {
+      "post_id": 115,
+      "author": "NeilGirdhar",
+      "created_at": "2023-04-28T18:26:00.394Z",
+      "text": "In function signatures and inline type annotations, it means a is a subtype. I don’t think it means “has type” in any situation?\n\nConsistent with what? The tuple notation isn’t used anywhere else as far as I know?",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/115",
+      "reply_to": 114
+    },
+    {
+      "post_id": 116,
+      "author": "EpicWink",
+      "created_at": "2023-04-29T01:12:11.622Z",
+      "text": "I’m fairly sure foo: Foo means foo is an instance of Foo (or an instance of a subtype of Foo), where Foo is not necessarily a class, outside of this PEP. I think that’s what they mean by “has type”.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/116",
+      "reply_to": 115
+    },
+    {
+      "post_id": 117,
+      "author": "tmk",
+      "created_at": "2023-06-01T14:41:06.579Z",
+      "text": "The PEP states\n\nWe propose to deprecate the existing typing.TypeAlias introduced in PEP 613. The new syntax eliminates its need entirely.\n\nBut as far as I can tell, if you want to use the type alias at runtime, you still need typing.TypeAlias. Consider:\n\nPython 3.12.0b1 (main, Jun 1 2023, 14:31:32) [GCC 12.2.0] on linux\nType \"help\", \"copyright\", \"credits\" or \"license\" for more information.\n>>> from typing import TypeAlias\n>>> List: TypeAlias = list\n>>> List(x*2 for x in range(3))\n[0, 2, 4]\n>>> type List = list\n>>> List(x*2 for x in range(3))\nTraceback (most recent call last):\n File \"<stdin>\", line 1, in <module>\nTypeError: 'typing.TypeAliasType' object is not callable\n\nIt seems the type alias created by type X = Y can only be used in annotations and not as a class.\n\nSo, what’s the guidance going forward? Are “run-time type aliases” a bad idea for some reason?",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/117",
+      "reply_to": null
+    },
+    {
+      "post_id": 118,
+      "author": "guido",
+      "created_at": "2023-06-01T14:55:55.252Z",
+      "text": "Probably new style type aliases should be made callable, similar to types.GenericAlias. @erictraut @Jelle",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/118",
+      "reply_to": 117
+    },
+    {
+      "post_id": 119,
+      "author": "AlexWaygood",
+      "created_at": "2023-06-01T15:14:08.723Z",
+      "text": "This could be thought of as a feature rather than a bug.\n\nOne of the motivations for PEP 613 was so that type checkers could more easily differentiate between variable assignments and type-alias assignments. By using your List type alias as a callable at runtime, you’re in some ways subverting the intended purpose of PEP 613.\n\nI think it’s quite nice that the new-style syntax for type aliases enforces a restriction against runtime use – it emphasises the idea that these are special kinds of assignments that are specifically intended for typing.\n\nAlso, unlike generic aliases, many (most?) type aliases won’t have values that are callable. Instances of types.UnionType aren’t callable; nor is Literal[1, 2, 3, 4, 5], etc. New-style type aliases also natively support forward references; resolving these aliases could result in NameError if done at the wrong place, so these obviously won’t be callable either.\n\nIf you really need to call a new-style type alias at runtime, you can always call it like this (though I have no idea how happy type checkers will be about it):\n\ntype List = list\nList.__value__(x*2 for x in range(3)",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/119",
+      "reply_to": 117
+    },
+    {
+      "post_id": 120,
+      "author": "erictraut",
+      "created_at": "2023-06-01T15:31:17.486Z",
+      "text": "Alex stated it well, and I agree with what he said.\n\nIn general, I don’t think type aliases should be used in value expressions at runtime. As Alex said, if you need to access the value of a TypeAliasType, you can use the __value__ attribute.\n\nIf your intent is to create an alias of a class symbol that can be used anywhere that the class can be used (as shown in your example), you should use a variable, not a type alias (List = list). This has the added benefit that type checkers will not specialize the class, allowing it to be specialized later based on the context in which it is used. Contrast that to List: TypeAlias = list where list is assumed to be specialized to list[Any].",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/120",
+      "reply_to": 118
+    },
+    {
+      "post_id": 121,
+      "author": "Jelle",
+      "created_at": "2023-06-01T15:41:18.019Z",
+      "text": "This is an interesting idea, and I’m a bit more positive about it than Alex and Eric. I see two ways to implement it, both of which come with some tradeoffs:\n\nImplement __call__ as returning its argument unchanged\n\nThis would make type aliases work similarly to NewType. It’s simple and fast. It could unlock syntax like this for NewType in the future, removing the need to repeat the name and allowing for lazy evaluation of the supertype:\n\ntype NT = NewType[int]\n\nOn the negative side, this would work differently from existing assignment-based type aliases in that the value would not be converted in any way. In Thomas’s example, List(x*2 for x in range(3)) would return a generator expression at runtime, not a list.\n\nImplement __call__ as return self.__value__(arg)\n\nThis would mean that the type alias’s value is used as the converter function. That would make the List() call indeed turn the value into a list, but as Alex called out, it means calling the type alias would work only for simple aliases, not e.g. for unions. In addition, it would implicitly force the evaluation of the lazily evaluated type alias, which could be surprising behavior.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/121",
+      "reply_to": 118
+    },
+    {
+      "post_id": 122,
+      "author": "NeilGirdhar",
+      "created_at": "2023-06-02T00:27:28.107Z",
+      "text": "Besides union types, abstract types also cannot be constructed. That’s why I think it’s generally an error to conflate type[SomeClass] with Callable[..., SomeClass], which is what calling a type does. I think that if you want something you can call, you should annotate it Callable[..., SomeClass].\n\nEven better would be to provide a parameter definition. There is no way to know the parameter specification of the constructor of some type[SomeClass] since __init__ doesn’t obey LSP so any subclass can change it.\n\nConsider your list example. I guess the reason you’re making a type alias is so that you can change the container type? Then, I think you need two lines of code:\n\ntype OurContainer = list[Any]\nmake_container: Callable[[Iterable[Any]], OurContainer] = list\n\nI don’t think this redundancy is so bad because these two lines are really two different things that only happen to have the same value.\n\nSuppose, you decide that the elements are all integers. Then, you might do:\n\ntype OurContainer = list[int]\ndef make_container(it: Iterable[int], /) -> OurContainer:\n retval = list(it)\n # check that the elements are all integers\n return retval\n\nAnd so there’s some more benefit to splitting these two things.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/122",
+      "reply_to": 117
+    },
+    {
+      "post_id": 123,
+      "author": "tmk",
+      "created_at": "2023-06-02T10:35:59.279Z",
+      "text": "I agree that type[SomeClass] is in general problematic but that’s not what a type alias is, right? A type alias is a one-to-one mapping, so I think there’s no need to worry about inheritance and LSP here. Type checkers treat these two things very differently:\n\nclass C: ...\nMyType: type[C] = C\nMyAlias: TypeAlias = C\n\nBut I realize now that my example was not very good because everyone is focusing on the __call__ part. The actual example I had in mind (which I then foolishly replaced with a simpler example) was this:\n\nfrom enum import Enum, auto\nfrom typing import TypeAlias\n\nclass DatasetSplit(Enum):\n train = auto()\n validation = auto()\n test = auto()\n\nclass Dataset:\n Split: TypeAlias = DatasetSplit\n\n def __init__(self, split: Split) -> None:\n self._split = split\n\nds = Dataset(split=Dataset.Split.train)\n\nwhere the user of the library can either explicitly import DatasetSplit or can access it via Dataset.Split. This type-checks in mypy and pyright and works at runtime. When I remove the TypeAlias annotation and just write Split = DatasetSplit in the class body, then mypy complains Variable \"main.Dataset.Split\" is not valid as a type. Though pyright accepts it.\n\nEDIT: I know I could just use a nested class instead, but my point is just that something is possible to do with TypeAlias that isn’t possible with the new type X = Y syntax.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/123",
+      "reply_to": 122
+    },
+    {
+      "post_id": 124,
+      "author": "NeilGirdhar",
+      "created_at": "2023-06-05T20:43:25.021Z",
+      "text": "Good example.\n\nI think that you answer your own question though. As you say:\n\nAnd then in your example, you use it as an alias:\n\nand as a class variable:\n\nTherefore, I think it makes the most sense to simply have two statements: one to set a class variable, and one to set a type alias.\n\nUnlike a type variable, a class variable can be assigned. And as far as I know, type variables are resolved statically whereas class variables are resolved dynamically (in case it is overridden in a subclass). So these really do need to be separate declarations.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/124",
+      "reply_to": 123
+    },
+    {
+      "post_id": 125,
+      "author": "nmsmith",
+      "created_at": "2023-07-03T08:09:50.789Z",
+      "text": "I love most aspects of PEP 695, however I believe there is one major issue with it. The issue relates to the use of the : symbol to denote a subtyping relationship between types. (For example, def foo[T: int] constrains T to be a subtype of int.)\n\nThere are several reasons why this syntax is suboptimal. Please hear me out—I believe that together these reasons constitute strong evidence that the syntax should be changed.\n\nReason #1: This syntax is not forwards compatible\n\nUsing the : symbol to specify a subtyping relationship is not forwards compatible with two extensions that might eventually be made to Python’s type annotation syntax:\n\nThe specification of supertype relationships (i.e. lower bounds).\n\nThe specification of types parameterized by values (a.k.a. “dependent types”).\n\nFor each extension, I will briefly explain:\n\nwhy it is practical, and\n\nhow it is incompatible with the use of : to specify a subtyping relationship.\n\nSupertype relationships\n\nAmongst programming languages that support constraints upon type parameters, some of them (e.g. Java, Scala, Julia…) support both lower bounds and upper bounds. This feature is especially useful for languages that support use-site variance annotations, e.g. Java and Kotlin.\n\nHere is an example of what this might look like in Python. I shall use Scala’s syntax for type bounds, namely <: (upper bound) and >: (lower bound). I shall also use a hypothetical where syntax:\n\ndef foo[T](items: list[T])\nwhere\n T <: int | str # Things that we might GET from the list.\n T >: int # Things that we can PUT into the list.\n-> bool:\n x: int|str = items.pop() # We can get 'int|str'\n items.push(0) # But we can only put 'int'\n ...\n\nAs defined, the function foo is able to operate generically on any list where the items are (at most) integers or strings, and for which it is safe to add arbitrary integers. Thus, it is safe to invoke this function upon:\n\nlist[int]\n\nlist[int|str]\n\nBut it is NOT safe to invoke this function on:\n\nlist[int|str|bool]\n\nlist[NonZeroInt] (a hypothetical subtype of int)\n\nI’m not necessarily advocating for this type system extension. However, it would be good to avoid unnecessary barriers. The use of : to specify upper bounds is one such barrier, because it doesn’t facilitate a subsequent syntax for lower bounds. (Unless we used the syntax int: T, but wow, that would be confusing!)\n\nTypes parameterized by values (dependent types)\n\nSeveral advanced type systems support the parameterization of types by values. For example, one might define an Array with a statically-known length as:\n\nclass Array[T, length: int]:\n\nHere is how an instance of Array would be constructed:\n\narr = Array[Int, 8](...)\n\nThis is a kind of “dependent typing”, and there are many practical uses for it. Indeed, the type system of Mojo —a language that extends Python—has dependent types, and uses the exact syntax that I’ve shown above. But notably, under the syntax proposed by PEP 695, the length parameter would be interpreted as a type declaration, not a value declaration! So fundamentally, the use of : to denote subtyping is incompatible with the above syntax for dependent typing.\n\nAbout Mojo: Mojo is a programming language that extends Python with static typing and Rust-like memory safety. It aims to be an excellent language for specifying high-performance machine-learning models. The project is being led by Chris Lattner, creator of LLVM and Swift. Its type system allows types to be parameterized by values, as shown above.\n\nReason #2: This syntax is not consistent with Python’s existing syntax\n\nCompare the following two code snippets:\n\n# TEST whether x is an INSTANCE of 'Sequence'\nif isinstance(x, Sequence):\n\n# DECLARE that x is an INSTANCE of 'Sequence'\ndef foo(x: Sequence):\n\nNow in contrast, compare the following:\n\n# TEST whether T is a SUBTYPE of 'Sequence'\nif issubclass(T, Sequence):\n\n# DECLARE that T is a SUBTYPE of 'Sequence'\nclass Foo[T: Sequence]:\n\nThe syntax for testing instances (isinstance) is different from the syntax for testing subtypes (issubclass). Therefore, the average Python user would anticipate that the syntax for declaring instances (:) is different from the syntax for declaring subtypes (?). But unfortunately, PEP 695 proposes using the : operator for both purposes.\n\nReason #3: The : symbol already has 5 different meanings\n\nIn today’s Python, the : symbol is already used in 5 different places:\n\nIntroducing a nested block\n\nDictionary literal\n\nSlicing\n\nType annotation\n\nPart of the walrus operator (:=)\n\nPEP 695 extends : with yet another meaning.\n\nFor learners, this will likely be a source of confusion.\n\nFor experts, this will potentially increase the cognitive overhead of reading function signatures. For example, consider the signature:\n\nfn foo[T: int](x: int, y: T, z: T):\n\nIn this single line of code, the : symbol has three distinct meanings:\n\nSubtype annotation\n\nType annotation\n\nIntroducing a nested block\n\nProposed solution\n\nThese problems can be avoided by choosing a different operator. I don’t care too much which operator is chosen, however, it would probably be the most sensible to include the < character as part of the operator, since this appears to be the only ASCII character that is strongly associated with a subset/superset relationship.\n\nHence, I would suggest considering one of the following operators:\n\n<:\n\n<\n\nThe first of these is already the de-facto standard for a subtype relation. It is used in Scala and Julia. The notation makes a lot of sense:\n\n< means “sub”\n\n: means “type”\n\nThis operator was also proposed by others earlier in this thread, and in the prior thread on PEP 695.\n\nWhat about T: (int, str) syntax?\n\nPEP 695 also proposes using the : syntax to specify that a type variable must be instantiated with a type drawn from a set. The syntax is:\n\nclass Foo[T: (int, str)]:\n\nIf we were to introduce the <: symbol (or something similar) to mean “subtype”, we would need a different symbol to express the above relationship, because it is not a subtyping relationship.\n\nIn mathematics, the ∈ symbol (“element of”) is used to express such a relationship. And in Python, it turns out that we already have the in keyword for this. So I would propose using in in place of the : symbol:\n\nclass Foo[T in (int, str)]:\n\nSummary\n\nUsing the : operator to denote a subtyping relationship would be problematic. We can avoid these problems by using a slightly different syntax, for example <: and in.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/125",
+      "reply_to": null
+    },
+    {
+      "post_id": 126,
+      "author": "tmk",
+      "created_at": "2023-07-03T10:36:36.108Z",
+      "text": "Regarding the dependent types: you can still achieve this with Literal types.\n\nFor example:\n\nfrom typing import Literal\n\nclass Array[DType, Length: int]: ...\n\nx: Array[float, Literal[4]]\n\ndef concat[DType, L1: int, L2: int](\n x: Array[DType, L1], y: Array[DType, L2]\n) -> Array[DType, L1 + L2]: ... # the `+` operator here would need to be generalized to int literal types\n\nAnd I think that’s actually what Mojo is doing. It’s just that Mojo allows using 4 as shorthand for Literal[4] when it’s in a typing context, which allows them to write:\n\nArray[float, 4]\n\nAnd I actually think Python should also allow this. There is a fork of mypy which does allow it (they call it “Bare Literals”): GitHub - KotlinIsland/basedmypy: Based static typing for Python that makes breaking changes from PEP 484. Based? Based on what? so I think this would be safe to do. (It wouldn’t be safe for string literals because they could be confused with forward references. Though maybe with PEP 649 it would become safe?)\n\nRegarding your other points, I’m not familiar enough with lower bounds to comment on that. I do agree with reason #2 to some degree, but I think I can live with it…",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/126",
+      "reply_to": 125
+    },
+    {
+      "post_id": 127,
+      "author": "nmsmith",
+      "created_at": "2023-07-03T11:54:15.825Z",
+      "text": "I can see how you’d come to that conclusion, but it turns out that in Mojo, 4 really is being passed as a value, not as a literal type. You can use the value in subsequent computations:\n\nclass Array[T, length: int]:\n def __init__(self):\n self.x = sqrt(length) + 1\na = Array[string, 16]()\nprint(a.x) # prints '5'\n\nNote: I’ve modified the syntax of this Mojo program to make it look like Python. The above program won’t compile as-is, but a very similar one will.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/127",
+      "reply_to": 126
+    },
+    {
+      "post_id": 128,
+      "author": "tmk",
+      "created_at": "2023-07-03T12:20:38.223Z",
+      "text": "Hmm, but then how does Mojo distinguish value-parameterization from type-parameterization? For example, I also saw this example in the Mojo docs:\n\nfrom Autotune import autotune\n\ndef exp_buffer_impl[dt: DType](data: ArraySlice[dt]):\n # Pick vector length for this dtype and hardware\n alias vector_len = autotune(1, 4, 8, 16, 32)\n\n # Use it as the vectorization length\n vectorize[exp[dt, vector_len]](data)\n\nSource: Modular Docs - Mojo🔥 programming manual\n\nThat looks to me like an upper bound.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/128",
+      "reply_to": 127
+    },
+    {
+      "post_id": 129,
+      "author": "nmsmith",
+      "created_at": "2023-07-03T12:25:32.116Z",
+      "text": "Mojo doesn’t currently support type bounds, because subtyping (inheritance etc.) hasn’t been implemented yet. In that example, dt is a value, not a type, and thus DType is a type annotation, not a bound. (My understanding is that DType is a temporary hack that is being used to simulate a sum type / union type. I wouldn’t study it too closely.)\n\nBut I think we’re beginning to drift off topic. If you’d like to discuss the details of Mojo, you’re welcome to join the Mojo Discord server! (You can DM me there: nick.sm)\n\nThe point of relevance to this thread is that in Mojo, values and types can be used as “type arguments”. But the syntax for type bounds (:) that is proposed for PEP 695 is incompatible with this.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/129",
+      "reply_to": 128
+    },
+    {
+      "post_id": 131,
+      "author": "erictraut",
+      "created_at": "2023-07-03T21:59:30.262Z",
+      "text": "@nmsmith, thanks for your thoughtful feedback. However, PEP 695 has already been accepted and implemented in Python 3.12. You’re about six months too late to provide feedback and about 16 months too late to be involved in the (lengthy) discussions among members of the Python typing community where we debated various facets of the spec.\n\nThe good news is that all of the issues you raised in your feedback were considered and discussed. I’ll try to address each of them in turn.\n\nYou raised a concern that the new syntax doesn’t allow for the addition of “lower bound” support in the future. The addition of a lower-bound constraint was deemed unlikely for Python. It’s a feature that is found in very few modern programming languages. Refer to the appendix of the PEP for a thorough overview of other languages and which generics features they support. To the best of my knowledge, lower bound support has not been requested by users of mypy, pyright or other Python type checkers, and no motivating use cases have been provided for such a feature. In the unlikely case where such a need arises in the future for new types of constraints, there are ways that we could extend the syntax to accommodate.\n\nYou asserted that the syntax is not consistent with Python’s existing syntax. I don’t agree with that. It’s syntactically and semantically consistent with parameter and variable type annotations, where the annotation indicates that the symbol must be a subtype of the provided annotation. For example, a variable foo: str must contain a str instance or a subtype thereof. Likewise, a type parameter with an upper bound is constrained to be a subtype of the provided annotation. You drew an analogy with the isinstance and issubclass calls. These are runtime calls. They’re functions, not dedicated syntax. They are used for testing class hierarchy relationships of nominal types. They were not designed to be used with the full static type system (and indeed they predate the static type system by many years). You mentioned a function issubtype. Please correct me if I’m wrong, but I think you meant issubclass. “Subclass” and “subtype” are related but different concepts. “Subtype” is a static type concept, and isinstance and issubclass do not understand subtype relationships in general. For example, these calls don’t operate on generic types (like dict[str, str]) or structural types (like non-runtime protocols or TypedDicts).\n\nYou raised the concern that the : token is already used in several ways in Python. Most languages reuse tokens in different parts of the grammar. This is generally not a problem for users. When we were exploring various syntax options for PEP 695, I conducted a poll among typed Python users to get their feedback on various options, and there was a strong preference for the syntax that is in the final specification. I’ll also note that the syntax that we chose for type parameter bounds is consistent with a number of other languages. Refer to the table in the appendix for details.\n\nYou proposed using <:. That was one of the options we discussed during our lengthy debates and explorations. It was also one of the options included in the survey I conducted. The feedback was that it looked strange, and it wasn’t intuitively obvious what it meant – compared to : which was immediately understood by most typed Python users who took the survey. If I remember correctly, <: was the least popular of the options in the poll.\n\nAgain, thanks for taking the time to provide the feedback. Your input is most welcome on future static typing proposals.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/131",
+      "reply_to": 130
+    },
+    {
+      "post_id": 132,
+      "author": "nmsmith",
+      "created_at": "2023-07-03T22:43:38.172Z",
+      "text": "PEP 695 has already been accepted and implemented in Python 3.12. You’re about six months too late\n\nPython 3.12 is still in beta/prerelease, and thus per this page, it is open to “feature fixes”. That’s why I’m here—I’m suggesting that : has several problems and that it might be worth fixing them.\n\nIf others agree with this assessment, then it is obviously a good idea to address the issue when Python 3.12 has ~0 users, rather than when it has millions of users!\n\nYou drew an analogy with the isinstance and issubclass calls. These are runtime calls. They’re functions.\n\nMy point is just that there is a fundamental distinction between:\n\nan object being an instance of a type\n\na type being a subtype of a type\n\nPython offers two different functions for testing these things, because they are not the same concept! I strongly disagree with your assertion that they are. It’s just not true.\n\nThe assertion that you’ve made is analogous to asserting that the ∈ (“element of”) operator in mathematics is the same thing as the ⊆ (“subset of”) operator.\n\nPlease correct me if I’m wrong, but I think you meant issubclass .\n\nYes, that was a typo. Thanks.\n\nWhen we were exploring various syntax options for PEP 695, I conducted a poll among typed Python users to get their feedback on various options, and there was a strong preference for the syntax that is in the final specification.\n\nI checked that poll before making my original post. (Indeed, I read every post in the history of PEP 695.) The poll had an extremely small sample size (19 people), and was only sent to one particular subcommunity (the “Microsoft-internal Python forum”). What’s more, the respondents were not given information about the potential upsides/downsides of each operator (such as the information contained within my earlier post). Consequently, I don’t think it is fair to use the poll as an argument in favour of anything. At best, it tells us what people’s “gut feeling” is when encountering a foreign operator. People will obviously vote for what is most familiar and/or aesthetically pleasing. I agree with you that : is aesthetically pleasing (moreso than <:), however, we can’t let aethetics overrule practicality.\n\nI’ve provided ample evidence that : is not a wise choice. I believe that evidence still stands. My motivation for sharing this assessment is to help Python grow in a good direction. That is all.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/132",
+      "reply_to": 131
+    },
+    {
+      "post_id": 133,
+      "author": "NeilGirdhar",
+      "created_at": "2023-07-03T23:08:23.928Z",
+      "text": "First of all, that was a really well laid out first post. Welcome to the community, Nick.\n\nI have no idea whether there’s any point in debating a PEP that’s already been accepted.\n\nI also don’t want to get caught in the crossfire here, but the thing that I like about Nick’s suggestion is that having separate notation for subtype and instance-of:\n\ndistinguishes concepts that are easily confused, and\n\nit opens the possibility of the oeprator being used in other places.\n\nSpecifically, the subtype notation could be used in parameter type annotations. Instead of:\n\ndef f(some_subtype: type[SomeType]) -> SomeType: ...\n\nwe could have\n\ndef f(some_subtype <: SomeType) -> SomeType: ...\n\nBut then you’d have to keep type[..] around for other cases, and it’s usually a bad idea to have two ways of doing things. Also, it’s probably too terse for an uncommon case that should be made more obvious.\n\nStill, there is a nice consistency with the meaning of the restriction wherein T is a subtype of SomeType:\n\ndef f[T <: SomeType](x: T) -> T: ...\n\nThis operator comes at a cost though: You’re adding an operator that people have to learn, and you’re making the type variable specification a lot busier (all those < characters).\n\nI don’t really have a strong opinion about changing the notation. I’d happily accept whatever gets decided, and I’m absolutely thrilled that this PEP was accepted.\n\nOne good thing that can come from this discussion would be to put some of these ideas about the meaning of : in the two type contexts (parameters and type variables) into the documentation.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/133",
+      "reply_to": 132
+    },
+    {
+      "post_id": 134,
+      "author": "elis.byberi",
+      "created_at": "2023-07-03T23:26:16.140Z",
+      "text": "Out of curiosity, don’t square brackets already make this distinction obvious?",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/134",
+      "reply_to": 133
+    },
+    {
+      "post_id": 135,
+      "author": "NeilGirdhar",
+      "created_at": "2023-07-03T23:27:45.461Z",
+      "text": "Yes, sure. I think “obvious” might be different for different people. And everything becomes obvious after you get used to it—which is why I’ll happily accept whatever is decided.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/135",
+      "reply_to": 134
+    },
+    {
+      "post_id": 136,
+      "author": "nmsmith",
+      "created_at": "2023-07-03T23:31:18.705Z",
+      "text": "you’re making the type variable specification a lot busier\n\nJust to re-iterate: I don’t really mind what syntax is chosen, as long as it is forward compatible, as I’ve talked about. If people find <: too noisy, then < is a reasonable second choice. Consider:\n\ndef foo[T < Sequence](..)\n\nThis looks clean and concise to me. So maybe we can have the best of both worlds: aesthetics and forward compatibility. (The trade-off with this option is that technically <= would be the mathematically accurate symbol.)",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/136",
+      "reply_to": 134
+    },
+    {
+      "post_id": 137,
+      "author": "nmsmith",
+      "created_at": "2023-07-04T01:23:15.447Z",
+      "text": "I’ve consulted with the developers of Mojo. They agree that the : syntax is incompatible with their syntax for dependent typing, however they believe that they can resolve this problem by just using their own syntax for type annotations (rather than Python’s syntax), if need be. It’s not ideal, but it won’t be a major issue in practice.\n\nAt this point, I’ve provided all the information that I can about this issue, so I’ll leave it to the Python devs to figure out how to proceed from here.\n\nThank you for your time everyone.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/137",
+      "reply_to": null
+    },
+    {
+      "post_id": 138,
+      "author": "brettcannon",
+      "created_at": "2023-07-07T00:20:33.615Z",
+      "text": "You actually might be surprised at how many people use main, let alone the betas.\n\nThe key way to change something like this after Python has reached beta is for a groundswell of support to make the change, lest we break people already using the syntax to prepare for Python 3.12 final’s release.\n\nI also don’t think we should make changes simply for Mojo’s benefit (yet). The language still requires an invite and they have not demonstrated they will be successful in their goal of being a Python superset. As such, I wish them luck, but to me Mojo is still too experimental and lacks enough users for us to have to restrict something in Python for them.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/138",
+      "reply_to": 132
+    },
+    {
+      "post_id": 139,
+      "author": "gwerbin",
+      "created_at": "2023-08-03T11:18:40.294Z",
+      "text": "I suppose it’s too late to vote for a keyword like deftype or typedef instead of type. I see some discussion about the type soft keyword, but no serious discussion of alternatives to it.\n\nI also didn’t see any response to PEP 695: Type Parameter Syntax - #70 by davidism which asks about conflicting with slice syntax. What became of that?",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/139",
+      "reply_to": null
+    },
+    {
+      "post_id": 140,
+      "author": "Jelle",
+      "created_at": "2023-08-03T13:16:03.046Z",
+      "text": "Yes, it’s too late.\n\nIt doesn’t conflict in the grammar, because PEP 695 syntax doesn’t appear in places where you could use a slice. I can’t say if some people might find it confusing, but something like this:\n\ndef f[T: int](x: list[T]) -> list[T]:\n return x[:1:2]\n\nthe two uses of : within square brackets are visually quite different.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/140",
+      "reply_to": 139
+    },
+    {
+      "post_id": 142,
+      "author": "ajoino",
+      "created_at": "2023-09-06T07:25:56.184Z",
+      "text": "Beyond the fact that this is unlikely to happen because of compatibility reasons, this has seemingly nothing to do with PEP 695.",
+      "url": "https://discuss.python.org/t/pep-695-type-parameter-syntax/21646/142",
+      "reply_to": 141
     }
   ]
 }

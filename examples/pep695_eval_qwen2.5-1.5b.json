@@ -1,0 +1,28 @@
+{
+  "pep": 695,
+  "ground_truth_rejected_ideas": 5,
+  "predicted_rejected_decisions": 2,
+  "recovered": 1,
+  "recall": 0.2,
+  "precision": 0.5,
+  "f1": 0.286,
+  "reason_overlap": 0.189,
+  "match_threshold": 0.2,
+  "matches": [
+    {
+      "ground_truth": "Prefix Clause",
+      "recovered_decision": "Decorator-based Syntax",
+      "idea_similarity": 0.231,
+      "reason_similarity": 0.189
+    }
+  ],
+  "missed": [
+    "Angle Brackets",
+    "Bounds Syntax",
+    "Explicit Variance",
+    "Name Mangling"
+  ],
+  "pep_title": "Type Parameter Syntax",
+  "backend": "ollama:qwen2.5:1.5b",
+  "decisions_file": "pep695_qwen2.5-1.5b_decisions.json"
+}
