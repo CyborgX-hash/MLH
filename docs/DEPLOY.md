@@ -52,6 +52,26 @@ The models run at OpenRouter, so the API needs no GPU and fits Render's free ins
 - Open the static site, connect a repository, wait for **Processing completed**, press **Extract decisions**,
   then ask a question.
 
+## Alternative: frontend on Vercel
+
+Instead of Render's static site, the frontend can run on Vercel, with the API still on Render.
+
+| Vercel setting | Value |
+|---|---|
+| Framework preset | Vite |
+| Root directory | `frontend` |
+| Install command | `npm ci` |
+| Build command | `npm run build` |
+| Output directory | `dist` |
+| Environment variable | `VITE_API_BASE_URL=https://<your-api>.onrender.com` (no trailing slash; redeploy after changing it) |
+
+`frontend/vercel.json` rewrites every path to `index.html`, so direct links such as `/repos/2/decisions` work.
+On the Render API, set `CORS_ORIGINS=["https://<your-project>.vercel.app"]`. Vercel preview deployments get
+other URLs, which CORS blocks unless you add them to that list.
+
+Use Neon's **direct** connection string (host without `-pooler`) as `DATABASE_URL`. The pooled one goes through
+PgBouncer, which can break the server-side prepared statements the psycopg driver uses.
+
 ## What to expect on free plans
 
 - **Cold starts:** the free API sleeps after about 15 minutes idle; the first request then takes 30–60 seconds,
