@@ -8,7 +8,7 @@ from __future__ import annotations
 import hashlib
 from typing import Dict, Iterable, List, Optional, Sequence, Set, Tuple
 
-from sqlalchemy import and_, case, delete, or_, select, tuple_
+from sqlalchemy import case, delete, or_, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 

@@ -114,7 +114,7 @@ def test_failed_stage_gives_partial_job_and_keeps_other_data(session_factory, db
     assert "commits" not in repo.sync_cursors  # failed stage will be fully retried next time
 
 
-def test_rate_limit_stops_remaining_stages(session_factory, db):
+def test_rate_limit_skips_github_stages_but_still_links_and_indexes(session_factory, db):
     fake = FakeGitHub()
     fake.fail[f"/repos/{O}/{R}/pulls"] = lambda: httpx.Response(
         403, headers={"x-ratelimit-remaining": "0", "x-ratelimit-reset": "9999999999"}, json={})
@@ -122,8 +122,10 @@ def test_rate_limit_stops_remaining_stages(session_factory, db):
     job = sync(session_factory, db, fake, repo)
     assert job.status == "partial"
     assert job.progress["pull_requests"]["status"] == "failed"
-    assert job.progress["code"]["status"] == "skipped"
-    assert "rate limit" in job.errors[0]["message"]
+    assert job.progress["code"]["status"] == "skipped" and "rate limit" in job.progress["code"]["message"]
+    assert job.progress["links"]["status"] == "done" and job.progress["index"]["status"] == "done"
+    assert "rate limit" in job.errors[0]["message"] and len(job.errors) == 1
+    assert fake.count(f"/repos/{O}/{R}/commits") == 0  # no GitHub calls after the limit
 
 
 def test_metadata_failure_fails_job(session_factory, db):

@@ -9,6 +9,7 @@ import { DashboardPage } from './pages/DashboardPage'
 import { DecisionDetailPage } from './pages/DecisionDetailPage'
 import { DecisionExplorerPage } from './pages/DecisionExplorerPage'
 import { LandingPage } from './pages/LandingPage'
+import { PrImpactPage } from './pages/PrImpactPage'
 
 function NotFound() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="decisions/:decisionId" element={<DecisionDetailPage />} />
           <Route path="ask" element={<AskPage />} />
           <Route path="conflicts" element={<ConflictReviewPage />} />
+          <Route path="pr-impact" element={<PrImpactPage />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Route>

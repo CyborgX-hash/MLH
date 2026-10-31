@@ -269,6 +269,9 @@ class GitHubClient:
             url = f"{self._repo(owner, repo)}/pulls/{int(number)}/comments"
         yield from self._paginate(url, params, limit=limit)
 
+    def get_pull_request(self, owner: str, repo: str, number: int) -> dict:
+        return self._get(f"{self._repo(owner, repo)}/pulls/{int(number)}")
+
     def get_pull_request_files(self, owner: str, repo: str, number: int, limit: int = 3000) -> Iterator[dict]:
         yield from self._paginate(f"{self._repo(owner, repo)}/pulls/{int(number)}/files", limit=limit)
 

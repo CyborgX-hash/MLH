@@ -1,6 +1,6 @@
 import { API_BASE_URL } from '../lib/env'
 import type { Decision, DecisionListItem, ReviewRequest } from '../types/decision'
-import type { AskResponse, DecisionGraphData, Overview, TimelineEvent } from '../types/views'
+import type { AskResponse, DecisionGraphData, ImpactReport, Overview, TimelineEvent } from '../types/views'
 import type { Health } from '../types/health'
 import type { CodeMap, RelatedGraph } from '../types/links'
 import type { Repository, RepositoryDetail, SyncJob } from '../types/repository'
@@ -68,7 +68,8 @@ export const getTimeline = (decisionId: number, signal?: AbortSignal) =>
   request<TimelineEvent[]>(`/api/decisions/${decisionId}/timeline`, { signal })
 export const getGraph = (decisionId: number, signal?: AbortSignal) =>
   request<DecisionGraphData>(`/api/decisions/${decisionId}/graph`, { signal })
-export const askQuestion = (repoId: number, question: string, signal?: AbortSignal) =>
+export const analyzePullRequest = (prUrl: string) => request<ImpactReport>('/api/pr-impact', json({ pr_url: prUrl }))
+export const askQuestion =(repoId: number, question: string, signal?: AbortSignal) =>
   request<AskResponse>(`/api/repositories/${repoId}/ask`, { ...json({ question }), signal })
 export const getDecision = (id: number, signal?: AbortSignal) => request<Decision>(`/api/decisions/${id}`, { signal })
 // The reviewer's own GitHub token proves identity and repository access. It is sent once and never stored.

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_db
+from app.api.deps import get_db, require_admin
 from app.models import Decision, DecisionCodeLink, Repository, SourceLink
 from app.schemas.links import CodeLinkOut, CodeMap, FileDecision, LinkOut, RecordRef, RelatedGraph
 from app.services.impact.code_map import map_decision
@@ -28,7 +28,7 @@ def _decision(db: Session, decision_id: int) -> Decision:
     return d
 
 
-@router.post("/repositories/{repository_id}/links/rebuild")
+@router.post("/repositories/{repository_id}/links/rebuild", dependencies=[Depends(require_admin)])
 def rebuild(repository_id: int, db: Session = Depends(get_db)) -> dict:
     counts = rebuild_links(db, _repo(db, repository_id))
     db.commit()

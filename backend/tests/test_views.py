@@ -1,13 +1,11 @@
 """Dashboard overview, decision list details, timeline and graph: only established relationships."""
-import pytest
 from fastapi.testclient import TestClient
 
 from app.api.deps import get_db
 from app.main import app
 from app.services.evidence.authority import Reviewer
-from app.services.evidence.records import create_decision, review_decision
+from app.services.evidence.records import review_decision
 from app.services.history.views import graph, overview, timeline
-from tests.test_rag import cand
 from tests.test_rag import w  # noqa: F401  (fixture)
 
 ALLOWED_EDGE_LABELS = {

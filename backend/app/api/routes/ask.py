@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_db
+from app.api.deps import get_db, require_admin
 from app.core.config import Settings, get_settings
 from app.models import Repository
 from app.services.ai.client import AIClient, AIError
@@ -42,7 +42,7 @@ def ask(repository_id: int, body: AskRequest, db: Session = Depends(get_db), ai:
         raise HTTPException(exc.status, str(exc))
 
 
-@router.post("/repositories/{repository_id}/index")
+@router.post("/repositories/{repository_id}/index", dependencies=[Depends(require_admin)])
 def rebuild_index(repository_id: int, db: Session = Depends(get_db), ai: AIClient = Depends(get_ai_client)) -> dict:
     """Rebuild the knowledge base (also runs automatically after each sync)."""
     return build_index(db, _repo(db, repository_id), ai)

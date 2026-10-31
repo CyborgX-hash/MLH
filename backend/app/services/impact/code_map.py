@@ -95,7 +95,7 @@ def map_decision(db: Session, d: Decision) -> Dict:
     rows: List[DecisionCodeLink] = []
     notes: List[str] = []
     pr_commit = {}
-    for cid, cand in commits.items():
+    for cid in commits:
         c = db.get(Commit, cid)
         for pr_id in prs:
             p = db.get(PullRequest, pr_id)

@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import func, select
 
 from app.api.deps import get_db
+from tests.conftest import ADMIN
 from app.main import app
 from app.models import (
     Comment, Commit, Decision, DecisionEvent, Discussion, Issue, PullRequest, PullRequestFile, Repository, SourceFile,
@@ -265,7 +266,7 @@ def test_api_related_graph_code_map_and_file_lookup(session_factory, db, w):
 
     app.dependency_overrides[get_db] = db_override
     try:
-        api = TestClient(app)
+        api = TestClient(app, headers=ADMIN)
         graph = api.get(f"/api/decisions/{d.id}/related").json()
         cited = [r for r in graph["records"] if r["cited"]]
         assert [(r["kind"], r["number"]) for r in cited] == [("issue", 12)]

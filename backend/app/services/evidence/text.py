@@ -41,3 +41,52 @@ def sentences(text: str) -> List[str]:
 
 def overlap(claim: Set[str], other: Set[str]) -> float:
     return len(claim & other) / len(claim) if claim else 0.0
+
+
+# Words that say nothing about *which* option was chosen.
+GENERIC = STOPWORDS | {
+    "use", "using", "used", "keep", "move", "add", "adding", "remove", "removing", "switch", "choose", "chosen",
+    "adopt", "decision", "decide", "instead", "new", "old", "support", "change", "make", "code", "file", "files",
+    "option", "approach", "level", "class", "into", "from", "via", "per", "all", "none", "true", "false", "self",
+    "return", "import", "def", "for", "not", "and", "the", "fix", "issue", "downstream", "upstream", "go", "going",
+}
+# A term preceded by one of these (within two words) is being argued against, not chosen.
+NEGATED_BEFORE = re.compile(
+    r"\b(?:not|no|never|instead\s+of|rather\s+than|against|without|over|reject(?:ed|ing)?|drop(?:ped|ping)?|"
+    r"avoid(?:ed|ing)?|than)\s+(?:[\w.+#-]+\s+){0,2}$",
+    re.I,
+)
+
+
+def stem(word: str) -> str:
+    for suffix in ("ing", "es", "ed", "s"):
+        if len(word) > len(suffix) + 3 and word.endswith(suffix):
+            return word[: -len(suffix)]
+    return word
+
+
+def key_terms(*texts) -> Set[str]:
+    """Distinctive terms (lower-case, lightly stemmed) that identify what an option or decision is about."""
+    out: Set[str] = set()
+    for t in texts:
+        for w in re.findall(r"[a-z0-9_]{3,}", (t or "").lower()):
+            if w not in GENERIC and not w.isdigit():
+                out.add(stem(w))
+    return out
+
+
+def names_positively(statement: str, outcome: str) -> bool:
+    """True when `statement` names the outcome's distinctive terms and none of them is negated.
+
+    "We decided to use PostgreSQL, not MongoDB." names PostgreSQL positively; it does not name MongoDB
+    positively, so it can never establish "Use MongoDB".
+    """
+    terms = key_terms(outcome)
+    low = (statement or "").lower()
+    if not terms:
+        return False
+    for term in terms:
+        hits = [m.start() for m in re.finditer(re.escape(term), low)]
+        if not hits or all(NEGATED_BEFORE.search(low[max(0, i - 40) : i]) for i in hits):
+            return False
+    return True

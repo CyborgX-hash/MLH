@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 
+import { isSafeGithubUrl } from '../lib/safeUrl'
 import { card, muted, pill, tone } from '../lib/ui'
 
 export function Logo({ size = 28 }: { size?: number }) {
@@ -72,6 +73,7 @@ export function Section({ title, children, aside }: { title: string; children: R
 }
 
 export function ExternalLink({ href, children, className = '' }: { href: string; children: ReactNode; className?: string }) {
+  if (!isSafeGithubUrl(href)) return <span className={className}>{children}</span>
   return (
     <a href={href} target="_blank" rel="noreferrer" className={`text-indigo-600 hover:underline dark:text-indigo-400 ${className}`}>
       {children}
