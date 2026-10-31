@@ -89,6 +89,48 @@ others intact and the job ends as `partial`; the next sync retries it.
   skips Discussions, because GitHub's GraphQL API requires authentication. With a token (5,000 requests/hour)
   limits are much higher. The token stays on the server; `/api/health` only reports whether one is set.
 
+### Evidence validation and human review
+
+An extractor (AI or otherwise) can only submit a **candidate**: topic, decision, alternatives, reasons,
+positions and the sources it cites (`comment:<id>`, `issue:<id>`, `pull_request:<id>`, `discussion:<id>`,
+`commit:<id>`). The backend then checks every citation independently:
+
+| Check | Failure flag |
+|---|---|
+| The ID has DeciTrace's format | `fabricated_id` |
+| The source exists | `source_not_found` |
+| It belongs to this repository (other repositories' data is never shown) | `wrong_repository` |
+| Its stored URL is the original `github.com/<owner>/<repo>/…` URL; a URL claimed by the extractor is never used | `non_github_url`, `url_mismatch` |
+| The quoted text really appears in the stored text | `quote_not_found`, `quote_paraphrased` |
+| The text supports the claim | `weak_support`, `does_not_support_claim` |
+
+Each citation becomes `verified`, `partially_verified` or `unsupported`, and unsupported ones are stored
+(flagged), not dropped. Fixed rules then set the outcome, whatever the extractor claimed:
+
+- **Explicit** only when a verified statement by an owner, member or collaborator states the outcome (or a
+  maintainer's approving review). A non-maintainer saying "let's go with X" is not a decision.
+- **Inferred** when the only support is a merged PR or commit: shown as "not explicitly approved", needs review.
+- **Unresolved** otherwise. Competing proposals or opposing stances from different people mark a conflict.
+  Vote counts are never used.
+- An alternative is **rejected** only with verified objection evidence; otherwise it was "considered, not selected"
+  (or "proposed" while unresolved). An unverified rejection reason is stored as null.
+- A candidate with no verifiable evidence at all is refused: no decision record is created.
+
+Human review: `POST /api/decisions/{id}/reviews` with the reviewer's own GitHub token in `X-GitHub-Token`.
+GitHub confirms who they are (`GET /user`) and their access to the repository; write access or higher is
+required. The token is used for those two calls only and never stored. Every review records reviewer,
+permission, time, outcome and explanation, and the audit log keeps a snapshot of the decision before each
+change. `POST /api/decisions/{id}/supersede` marks a decision as replaced by a newer one.
+
+| Method | Path | Purpose |
+|---|---|---|
+| POST | `/api/repositories/{id}/decisions/validate` | dry run: the validation report, nothing stored |
+| POST | `/api/repositories/{id}/decisions` | validate and record (422 with the report if unsupported) |
+| GET | `/api/repositories/{id}/decisions` | decisions, those needing review first |
+| GET | `/api/decisions/{id}` | alternatives, evidence, positions, reviews, history |
+| POST | `/api/decisions/{id}/reviews` | authorised human outcome |
+| POST | `/api/decisions/{id}/supersede` | replace by a newer decision |
+
 ## Install the extraction engine
 
 Requires Python 3.9 or newer.

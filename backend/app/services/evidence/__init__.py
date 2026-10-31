@@ -1,1 +1,1 @@
-"""Evidence verification and status rules (not implemented yet)."""
+"""Evidence verification, status rules, decision records and human review."""
