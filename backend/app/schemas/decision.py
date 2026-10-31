@@ -73,6 +73,11 @@ class DecisionSummary(BaseModel):
     updated_at: datetime
 
 
+class DecisionListItem(DecisionSummary):
+    alternatives: List["AlternativeOut"] = []
+    evidence_count: int = 0
+
+
 class DecisionOut(DecisionSummary):
     validation_notes: List[str]
     alternatives: List[AlternativeOut] = []

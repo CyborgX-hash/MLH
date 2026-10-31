@@ -165,6 +165,75 @@ mappings are listed separately. With no verified link the API says "No verified 
 | GET | `/api/decisions/{id}/code` | verified and possible implementation (recomputed per request) |
 | GET | `/api/repositories/{id}/files/decisions?path=` | decisions implemented in a file, under its old or new name |
 
+### Asking questions (RAG)
+
+Connecting a repository needs no question: each sync ends by building a knowledge base of chunks from
+decisions, issues, PRs, discussions, comments, commits and key files. Each chunk has a PostgreSQL full-text
+vector and, when an embedding model is available, a pgvector embedding. Unchanged chunks keep their embeddings.
+
+`POST /api/repositories/{id}/ask` with `{"question": "..."}`:
+
+1. **Hybrid retrieval:** SQL filters (repository, kind, decision status) plus full-text ranking plus pgvector
+   cosine similarity, fused with reciprocal rank fusion. Validated decisions rank above raw discussion.
+   Without an embedding model it falls back to full-text search and says so in `warnings`.
+2. **Evidence expansion:** each retrieved decision brings its verified evidence comments, its alternatives (an
+   unrecorded rejection reason is stated as such) and its implementation status from the code map.
+3. **Grounded generation:** the model sees numbered sources `[S1]…[Sn]` and must answer only from them, keep
+   unresolved conflicts unresolved, say when evidence is incomplete, and never write URLs.
+4. **Backend guardrails:**
+   - Citation IDs are mapped to the stored GitHub URLs.
+   - Invented IDs and links are removed.
+   - An answer that cites nothing is withheld.
+   - With no relevant evidence, the model is not called at all.
+   - `confidence` is computed by the backend: `supported` (cites a verified, explicitly established decision),
+     `partial` (cites only raw records), or `insufficient`.
+
+```json
+{
+  "answer": "…[S1]…",
+  "citations": [{"id": "S1", "source_type": "issue", "source_number": 12, "url": "https://github.com/…", "evidence": "…"}],
+  "confidence": "supported",
+  "insufficient_evidence": false,
+  "conflicts": [], "decisions": [], "warnings": [], "retrieval": {"mode": "hybrid", "hits": 12}, "model": "qwen3:8b"
+}
+```
+
+To enable vector search and the default answer model with Ollama:
+
+```bash
+ollama pull qwen3:8b
+ollama pull qwen3-embedding:0.6b
+```
+
+Any other OpenAI-compatible server or hosted provider works through `AI_BASE_URL`, `AI_MODEL` and `AI_API_KEY`.
+
+**Memory:** Qwen3-8B needs about 6 GB and the embedding model about 2.4 GB once loaded. On an 8 GB machine that
+also runs PostgreSQL in Docker, the system ran out of swap and PostgreSQL restarted mid-write. It recovered cleanly
+from its WAL, but use a 16 GB machine, a smaller model (`AI_MODEL=qwen2.5:1.5b` works) or a remote
+OpenAI-compatible endpoint for the models.
+
+### Web interface
+
+The frontend (React, Vite, TypeScript, Tailwind) is dark-first with a light theme, and every page reads the real API:
+
+| Page | Route | What it shows |
+|---|---|---|
+| Landing | `/` | the problem, how it works, features, an example history clearly labelled as illustrative |
+| Repositories | `/connect` | URL input with validation errors and loading state, public/private and rate-limit notes, connected repositories |
+| Dashboard | `/repos/:id` | discussions collected, decisions, unresolved decisions, rejected alternatives, sync stages, recent decision activity |
+| Decision explorer | `/repos/:id/decisions` | filters (accepted, rejected, proposed, unresolved, superseded) and search; selected and rejected alternatives, evidence quality, review status |
+| Decision detail | `/repos/:id/decisions/:decisionId` | problem, proposals, arguments, positions, contributors, related records, implementing PRs, commits and files, **timeline** and **graph**, audit history, review form |
+| Ask DeciTrace | `/repos/:id/ask` | chat with suggested questions, cited answers, conflict warnings, a "no evidence" state |
+| Conflict review | `/repos/:id/conflicts` | contested or unestablished decisions with both sides' original comments and the authorised review action |
+
+The timeline (`GET /api/decisions/{id}/timeline`) and graph (`GET /api/decisions/{id}/graph`) are built only from
+stored evidence, links, code links, reviews and supersede pointers, so they never show a relationship the backend
+has not established. Every timeline event links to its GitHub source. Only a validator-established approval is
+shown as "Approval". The graph shows verified relationships by default; possible connections (dashed) appear
+only when the reader turns them on. Unresolved and inferred decisions are never shown in green.
+AI errors map to clear HTTP codes: model unavailable 503, timeout 504, rate limit 429, context too long 413,
+invalid output 502 after one corrective retry.
+
 ## Install the extraction engine
 
 Requires Python 3.9 or newer.

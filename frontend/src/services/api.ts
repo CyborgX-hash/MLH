@@ -1,5 +1,6 @@
 import { API_BASE_URL } from '../lib/env'
-import type { Decision, DecisionSummary, ReviewRequest } from '../types/decision'
+import type { Decision, DecisionListItem, ReviewRequest } from '../types/decision'
+import type { AskResponse, DecisionGraphData, Overview, TimelineEvent } from '../types/views'
 import type { Health } from '../types/health'
 import type { CodeMap, RelatedGraph } from '../types/links'
 import type { Repository, RepositoryDetail, SyncJob } from '../types/repository'
@@ -60,7 +61,15 @@ export const listRepositories = (signal?: AbortSignal) => request<Repository[]>(
 export const getRepository = (id: number, signal?: AbortSignal) =>
   request<RepositoryDetail>(`/api/repositories/${id}`, { signal })
 export const listDecisions = (repoId: number, signal?: AbortSignal) =>
-  request<DecisionSummary[]>(`/api/repositories/${repoId}/decisions`, { signal })
+  request<DecisionListItem[]>(`/api/repositories/${repoId}/decisions`, { signal })
+export const getOverview = (repoId: number, signal?: AbortSignal) =>
+  request<Overview>(`/api/repositories/${repoId}/overview`, { signal })
+export const getTimeline = (decisionId: number, signal?: AbortSignal) =>
+  request<TimelineEvent[]>(`/api/decisions/${decisionId}/timeline`, { signal })
+export const getGraph = (decisionId: number, signal?: AbortSignal) =>
+  request<DecisionGraphData>(`/api/decisions/${decisionId}/graph`, { signal })
+export const askQuestion = (repoId: number, question: string, signal?: AbortSignal) =>
+  request<AskResponse>(`/api/repositories/${repoId}/ask`, { ...json({ question }), signal })
 export const getDecision = (id: number, signal?: AbortSignal) => request<Decision>(`/api/decisions/${id}`, { signal })
 // The reviewer's own GitHub token proves identity and repository access. It is sent once and never stored.
 export const reviewDecision = (id: number, body: ReviewRequest, githubToken: string) =>

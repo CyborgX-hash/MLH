@@ -29,7 +29,7 @@ repo URL → collectors (GitHub REST/GraphQL, Discourse) → messages (original 
 | M5 | Extractor through an OpenAI-compatible client | |
 | M6 | Evidence validator, status rules, conflict detection, authorised human review, audit history | done |
 | M7 | Decision-to-code mapping with renames, deletions and later changes | done |
-| M8 | Embeddings and grounded `/ask` | |
+| M8 | Knowledge index (full-text + pgvector), hybrid retrieval, grounded `/ask` | done (Qwen3-8B not yet verified) |
 | M9 | PR check | |
-| M10 | UI: intake, decisions, ask, PR check, review queue | |
+| M10 | UI: landing, connect, dashboard, explorer, decision detail (timeline + graph), ask, conflict review | done |
 | M11 | PEP blind evaluation report, final examples | |
