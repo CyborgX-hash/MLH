@@ -20,5 +20,5 @@ frontend:         ## Vite dev server on :5173
 	cd frontend && npm run dev
 
 test:
-	cd backend && .venv/bin/python -m pytest -q
+	cd backend && RUN_DB_TESTS=1 .venv/bin/python -m pytest -q
 	cd frontend && npm run lint && npm run build

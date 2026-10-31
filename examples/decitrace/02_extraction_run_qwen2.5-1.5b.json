@@ -1,0 +1,94 @@
+{
+  "_label": "REAL OUTPUT. AI extraction over the 5 most-discussed psf/requests threads with the open-weight model qwen2.5:1.5b (Ollama, 8 GB laptop). Shows what the validator did with each candidate: most were refused.",
+  "threads": [
+    {
+      "kind": "issue",
+      "record_id": 66,
+      "model": "qwen2.5:1.5b",
+      "outcome": {
+        "merged": [],
+        "created": [],
+        "invalid": 1,
+        "refused": [],
+        "candidates": 1
+      }
+    },
+    {
+      "kind": "pull_request",
+      "record_id": 1,
+      "model": "qwen2.5:1.5b",
+      "outcome": {
+        "merged": [],
+        "created": [],
+        "invalid": 0,
+        "refused": [
+          {
+            "notes": [
+              "reason 'The original suggestion was not accepted due to conflicting ' citing (none): unsupported (no_evidence)",
+              "reason 'The original suggestion was not accepted due to conflicting ' citing (none): unsupported (no_evidence)",
+              "'the outcome or null' is not established by an authoritative, verified statement: kept unresolved.",
+              "Alternative 'None': 'rejected' changed to 'proposed' by the status rules.",
+              "Rejection reason for 'None' dropped: no verified source states it."
+            ],
+            "topic": "short subject"
+          }
+        ],
+        "candidates": 1
+      }
+    },
+    {
+      "kind": "issue",
+      "record_id": 4,
+      "model": "qwen2.5:1.5b",
+      "outcome": {
+        "merged": [],
+        "created": [
+          2
+        ],
+        "invalid": 0,
+        "refused": [
+          {
+            "notes": [
+              "'raise a TypeError for non-string field names in data and reject unsupported non-string keys in files.' is not established by an authoritative, verified statement: kept unresolved.",
+              "Alternative 'normalize the name the same way the surrounding code normalizes everything else': 'rejected' changed to 'proposed' by the status rules.",
+              "Rejection reason for 'normalize the name the same way the surrounding code normalizes everything else' dropped: no verified source states it."
+            ],
+            "topic": "non-string field names in multipart requests"
+          }
+        ],
+        "candidates": 2
+      }
+    },
+    {
+      "kind": "issue",
+      "record_id": 20,
+      "model": "qwen2.5:1.5b",
+      "outcome": {
+        "merged": [],
+        "created": [],
+        "invalid": 0,
+        "refused": [
+          {
+            "notes": [
+              "'raise FileNotFoundError for missing TLS material' is not established by an authoritative, verified statement: kept unresolved."
+            ],
+            "topic": "missing TLS material handling"
+          }
+        ],
+        "candidates": 1
+      }
+    },
+    {
+      "kind": "issue",
+      "record_id": 81,
+      "model": "qwen2.5:1.5b",
+      "outcome": {
+        "merged": [],
+        "created": [],
+        "invalid": 0,
+        "refused": [],
+        "candidates": 0
+      }
+    }
+  ]
+}

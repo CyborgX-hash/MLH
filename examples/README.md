@@ -1,5 +1,14 @@
 # Examples: real input and real output
 
+There are two sets of examples, both produced by running the code on real public data:
+
+- **[`decitrace/`](decitrace/README.md): the DeciTrace web platform** on the GitHub repository `psf/requests`
+  (thread input, AI extraction outcome, validated decision with evidence, cited answer).
+- **The files below: the `decisionlens` PEP evaluation engine** on the discuss.python.org thread for PEP 695
+  (the hackathon's evaluation scenario).
+
+## PEP evaluation engine
+
 Everything here was produced by running the tool. Nothing was written by hand except
 `identity_accounts.json`, which is a representative input for the identity resolver.
 CI (`scripts/validate_examples.py`) checks that every quote cited in the decision files

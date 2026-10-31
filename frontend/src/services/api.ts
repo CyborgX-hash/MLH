@@ -1,6 +1,6 @@
 import { API_BASE_URL } from '../lib/env'
 import type { Decision, DecisionListItem, ReviewRequest } from '../types/decision'
-import type { AskResponse, DecisionGraphData, ImpactReport, Overview, TimelineEvent } from '../types/views'
+import type { AskResponse, DecisionGraphData, ExtractionJob, ImpactReport, Overview, TimelineEvent } from '../types/views'
 import type { Health } from '../types/health'
 import type { CodeMap, RelatedGraph } from '../types/links'
 import type { Repository, RepositoryDetail, SyncJob } from '../types/repository'
@@ -68,7 +68,11 @@ export const getTimeline = (decisionId: number, signal?: AbortSignal) =>
   request<TimelineEvent[]>(`/api/decisions/${decisionId}/timeline`, { signal })
 export const getGraph = (decisionId: number, signal?: AbortSignal) =>
   request<DecisionGraphData>(`/api/decisions/${decisionId}/graph`, { signal })
-export const analyzePullRequest = (prUrl: string) => request<ImpactReport>('/api/pr-impact', json({ pr_url: prUrl }))
+export const startExtraction = (repoId: number, limit = 5) =>
+  request<ExtractionJob>(`/api/repositories/${repoId}/extract?limit=${limit}`, { method: 'POST' })
+export const getExtractionStatus = (repoId: number, signal?: AbortSignal) =>
+  request<ExtractionJob | null>(`/api/repositories/${repoId}/extraction-status`, { signal })
+export const analyzePullRequest =(prUrl: string) => request<ImpactReport>('/api/pr-impact', json({ pr_url: prUrl }))
 export const askQuestion =(repoId: number, question: string, signal?: AbortSignal) =>
   request<AskResponse>(`/api/repositories/${repoId}/ask`, { ...json({ question }), signal })
 export const getDecision = (id: number, signal?: AbortSignal) => request<Decision>(`/api/decisions/${id}`, { signal })

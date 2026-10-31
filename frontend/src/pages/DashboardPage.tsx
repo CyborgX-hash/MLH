@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { ExtractionPanel } from '../components/ExtractionPanel'
 import { SyncProgress } from '../components/SyncProgress'
 import { ErrorBox, Section, Spinner, Stat } from '../components/ui'
 import { useApi } from '../hooks/useApi'
@@ -71,6 +72,7 @@ export function DashboardPage() {
       </div>
 
       <aside className="space-y-6">
+        <ExtractionPanel repoId={repo.id} onFinished={overview.reload} />
         <div className={cardPad}>
           <div className="flex items-center justify-between gap-2">
             <h2 className="font-medium">Sync status</h2>

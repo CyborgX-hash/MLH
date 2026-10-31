@@ -445,6 +445,11 @@ def start_job(db: Session, repo: Repository, full: bool = False) -> tuple[SyncJo
 
 def fail_interrupted_jobs(db: Session) -> int:
     """Jobs left queued/running by a server restart can never finish; mark them so a retry is possible."""
+    from app.models import ExtractionJob
+
+    for ej in db.scalars(select(ExtractionJob).where(ExtractionJob.status.in_(ACTIVE))):
+        ej.status, ej.finished_at = "failed", utcnow()
+        ej.errors = (ej.errors or []) + [{"thread": "-", "error": "Interrupted", "message": "The server restarted."}]
     jobs = list(db.scalars(select(SyncJob).where(SyncJob.status.in_(ACTIVE))))
     for job in jobs:
         job.status, job.stage, job.finished_at = "failed", "failed", utcnow()

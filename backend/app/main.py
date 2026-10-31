@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import SQLAlchemyError
 
 from app import __version__
-from app.api.routes import ask, decisions, health, impact, links, repositories, views
+from app.api.routes import ask, decisions, extraction, health, impact, links, repositories, views
 from app.core.config import get_settings
 from app.db.session import SessionLocal
 from app.workers.ingestion import fail_interrupted_jobs
@@ -42,6 +42,7 @@ def create_app() -> FastAPI:
     app.include_router(ask.router, prefix="/api")
     app.include_router(views.router, prefix="/api")
     app.include_router(impact.router, prefix="/api")
+    app.include_router(extraction.router, prefix="/api")
     return app
 
 
