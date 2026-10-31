@@ -1,0 +1,8 @@
+[
+  {"platform": "github", "handle": "jdoe", "name": "Jane Doe", "email": "jane@example.com"},
+  {"platform": "discourse", "handle": "jane_d", "name": "Jane Doe", "email": "jane@example.com"},
+  {"platform": "mailing-list", "handle": "j.doe", "links": ["github:jdoe"]},
+  {"platform": "github", "handle": "bobby", "name": "Bob Roe"},
+  {"platform": "discourse", "handle": "bob_roe", "name": "Bob Roe"},
+  {"platform": "discourse", "handle": "bobroe", "name": "Robert Roe", "links": ["github:bobby"]}
+]

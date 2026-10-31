@@ -1,0 +1,47 @@
+{
+  "source": "discourse",
+  "url": "https://discuss.example.org/t/pep-9999-fast-cache/9999",
+  "title": "PEP 9999: Fast cache for the parser",
+  "posts": [
+    {
+      "post_id": 1,
+      "author": "alice",
+      "created_at": "2026-01-01T10:00:00Z",
+      "text": "I propose a global memoization cache in `parser/cache.py` to speed up repeated parses. Benchmarks show a 30% gain.",
+      "url": "https://discuss.example.org/t/pep-9999-fast-cache/9999/1",
+      "reply_to": null
+    },
+    {
+      "post_id": 2,
+      "author": "bob",
+      "created_at": "2026-01-01T11:00:00Z",
+      "text": "I don't think a global memoization cache is a good idea because it leaks memory in long running processes. It would also break thread safety.",
+      "url": "https://discuss.example.org/t/pep-9999-fast-cache/9999/2",
+      "reply_to": 1
+    },
+    {
+      "post_id": 3,
+      "author": "carol",
+      "created_at": "2026-01-01T12:00:00Z",
+      "text": "Agreed with bob. How about a per-parser LRU cache instead? Each parser instance keeps its own bounded `ParserCache`, so memory stays bounded.",
+      "url": "https://discuss.example.org/t/pep-9999-fast-cache/9999/3",
+      "reply_to": 2
+    },
+    {
+      "post_id": 4,
+      "author": "alice",
+      "created_at": "2026-01-02T09:00:00Z",
+      "text": "Fair points. I like the per-parser LRU cache. Let's go with the per-parser LRU cache and drop the global memoization cache.",
+      "url": "https://discuss.example.org/t/pep-9999-fast-cache/9999/4",
+      "reply_to": 3
+    },
+    {
+      "post_id": 5,
+      "author": "dave",
+      "created_at": "2026-01-02T10:00:00Z",
+      "text": "Thanks everyone, great discussion!",
+      "url": "https://discuss.example.org/t/pep-9999-fast-cache/9999/5",
+      "reply_to": null
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "pep": 695,
+  "ground_truth_rejected_ideas": 5,
+  "predicted_rejected_decisions": 7,
+  "recovered": 0,
+  "recall": 0.0,
+  "precision": 0.0,
+  "f1": 0.0,
+  "reason_overlap": 0.0,
+  "match_threshold": 0.2,
+  "matches": [],
+  "missed": [
+    "Prefix Clause",
+    "Angle Brackets",
+    "Bounds Syntax",
+    "Explicit Variance",
+    "Name Mangling"
+  ],
+  "pep_title": "Type Parameter Syntax",
+  "backend": "ollama:gemma3:1b",
+  "decisions_file": "sample_output.json"
+}
