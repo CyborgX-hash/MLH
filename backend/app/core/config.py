@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     ai_model: str = "qwen3:8b"
     ai_api_key: Optional[str] = None
     ai_embed_model: Optional[str] = "qwen3-embedding:0.6b"  # empty disables vector search (full-text only)
+    ai_extract_model: Optional[str] = None  # model for decision extraction; defaults to ai_model
     ai_timeout: float = 180.0
 
 

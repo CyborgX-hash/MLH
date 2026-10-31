@@ -81,6 +81,14 @@ jobs:
         run: alembic check
       - name: Run tests, including the live database health check
         run: python -m pytest -q
+      - name: Integration smoke test (real server, real database)
+        run: |
+          uvicorn app.main:app --port 8000 &
+          for i in $(seq 1 30); do curl -sf localhost:8000/api/health && break; sleep 1; done
+          curl -sf localhost:8000/api/health | python -c "import json,sys; h=json.load(sys.stdin); assert h['status']=='ok' and h['database']['pgvector'], h"
+          curl -sf localhost:8000/api/repositories | python -c "import json,sys; assert json.load(sys.stdin)==[]"
+          code=$(curl -s -o /dev/null -w "%{http_code}" -X POST localhost:8000/api/repositories/connect -H 'Content-Type: application/json' -d '{"url":"not a url"}')
+          test "$code" = "422"
 
   frontend:
     name: Frontend (React + Vite)

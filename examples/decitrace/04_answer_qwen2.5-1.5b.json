@@ -1,0 +1,64 @@
+{
+  "_label": "REAL OUTPUT of POST /api/repositories/{id}/ask, produced by the open-weight model qwen2.5:1.5b with full-text retrieval over the real psf/requests data.",
+  "question": "Why does requests declare type annotations at class level on Response instead of in __init__?",
+  "response": {
+    "answer": "Class-level attribute annotations on Response break downstream classes that subclass it with attrs/cattrs.",
+    "citations": [
+      {
+        "id": "S1",
+        "source_type": "decision",
+        "source_number": 1,
+        "url": null,
+        "title": "Decision: Where to declare type annotations on Response attributes",
+        "evidence": "Decision topic: Where to declare type annotations on Response attributes\nStatus: unresolved (no authoritative resolution).\nProblem: Class-level attribute annotations on Response break downstream classes that subclass it with attrs/cattrs (reported for requests-cache).\nOutcome: none established.\nParticipants disagreed (conflict detected).\nAlternative Keep class-level annotations: proposed.\nAlternative Move annotations into __init__: proposed.\nReason: Class-level annotations are PEP 526 compliant and match the rest of the dependency chain\nImplementation: No verified implementation evidence found",
+        "author": null
+      }
+    ],
+    "confidence": "partial",
+    "insufficient_evidence": false,
+    "conflicts": [
+      {
+        "decision_id": 1,
+        "topic": "Where to declare type annotations on Response attributes",
+        "alternatives": [
+          "Keep class-level annotations",
+          "Move annotations into __init__"
+        ]
+      }
+    ],
+    "decisions": [
+      {
+        "id": 1,
+        "topic": "Where to declare type annotations on Response attributes",
+        "status": "unresolved",
+        "determination": "unresolved",
+        "decision": null,
+        "conflict_detected": true,
+        "requires_human_review": true,
+        "implementation": "none",
+        "alternatives": [
+          {
+            "name": "Keep class-level annotations",
+            "status": "proposed",
+            "rejection_reason": null
+          },
+          {
+            "name": "Move annotations into __init__",
+            "status": "proposed",
+            "rejection_reason": null
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      "No embedding model configured; used full-text search only.",
+      "No cited source is a verified, explicitly established decision; treat the answer as partial.",
+      "Some retrieved decisions are unresolved: participants disagreed and no authoritative resolution exists."
+    ],
+    "retrieval": {
+      "mode": "full_text",
+      "hits": 12
+    },
+    "model": "qwen2.5:1.5b"
+  }
+}

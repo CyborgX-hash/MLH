@@ -54,6 +54,21 @@ export interface DecisionGraphData {
   edges: GraphEdge[]
 }
 
+export interface ExtractionJob {
+  id: number
+  status: 'queued' | 'running' | 'completed' | 'partial' | 'failed'
+  model: string
+  threads_total: number
+  threads_done: number
+  candidates: number
+  created: number
+  merged: number
+  refused: number
+  errors: { thread: string; error: string; message: string }[]
+  created_at: string
+  finished_at: string | null
+}
+
 export interface ImpactFinding {
   decision_id: number
   topic: string

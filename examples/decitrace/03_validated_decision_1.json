@@ -1,0 +1,233 @@
+{
+  "_label": "REAL OUTPUT from the validator and database. The candidate for this decision was written by hand by the developer from the real comments of psf/requests#7271 (created_by 'extractor:manual-ui-check'), because the small model could not produce it. Every quote, author and URL below was checked against GitHub data.",
+  "decision": {
+    "id": 1,
+    "repository_id": 1,
+    "topic": "Where to declare type annotations on Response attributes",
+    "problem": "Class-level attribute annotations on Response break downstream classes that subclass it with attrs/cattrs (reported for requests-cache).",
+    "decision": null,
+    "status": "unresolved",
+    "determination": "unresolved",
+    "verification_state": "needs_human_review",
+    "conflict_detected": true,
+    "requires_human_review": true,
+    "superseded_by_id": null,
+    "created_by": "extractor:manual-ui-check",
+    "created_at": "2026-10-31T19:36:14.969982Z",
+    "updated_at": "2026-10-31T19:36:14.969982Z",
+    "validation_notes": [
+      "'Keep class-level (PEP 526) annotations and fix the issue downstream in requests-cache' is not established by an authoritative, verified statement: kept unresolved.",
+      "Alternative 'Keep class-level annotations': 'selected' changed to 'proposed' by the status rules.",
+      "Alternative 'Move annotations into __init__': 'rejected' changed to 'proposed' by the status rules.",
+      "Rejection reason for 'Move annotations into __init__' dropped: no verified source states it."
+    ],
+    "alternatives": [
+      {
+        "name": "Keep class-level annotations",
+        "status": "proposed",
+        "proposed_status": "selected",
+        "rejection_reason": null,
+        "verification_state": "partially_verified"
+      },
+      {
+        "name": "Move annotations into __init__",
+        "status": "proposed",
+        "proposed_status": "rejected",
+        "rejection_reason": null,
+        "verification_state": "partially_verified"
+      }
+    ],
+    "evidence": [
+      {
+        "claim_type": "resolution",
+        "claim_text": "Keep class-level (PEP 526) annotations and fix the issue downstream in requests-cache",
+        "alternative": null,
+        "stance": null,
+        "is_explicit": true,
+        "source_id": "comment:243",
+        "source_kind": "comment",
+        "html_url": "https://github.com/psf/requests/issues/7271#issuecomment-4416447146",
+        "author_login": "nateprewitt",
+        "author_association": "MEMBER",
+        "quote": "we're going to defer the patch to requests-cache",
+        "verification_state": "partially_verified",
+        "flags": [
+          "weak_support"
+        ]
+      },
+      {
+        "claim_type": "alternative",
+        "claim_text": "Keep class-level annotations",
+        "alternative": "Keep class-level annotations",
+        "stance": null,
+        "is_explicit": true,
+        "source_id": "comment:243",
+        "source_kind": "comment",
+        "html_url": "https://github.com/psf/requests/issues/7271#issuecomment-4416447146",
+        "author_login": "nateprewitt",
+        "author_association": "MEMBER",
+        "quote": "What requests is doing is PEP 526 compliant",
+        "verification_state": "partially_verified",
+        "flags": [
+          "weak_support"
+        ]
+      },
+      {
+        "claim_type": "alternative",
+        "claim_text": "Move annotations into __init__",
+        "alternative": "Move annotations into __init__",
+        "stance": null,
+        "is_explicit": true,
+        "source_id": "comment:254",
+        "source_kind": "comment",
+        "html_url": "https://github.com/psf/requests/issues/7271#issuecomment-4401573618",
+        "author_login": "edgarrmondragon",
+        "author_association": "NONE",
+        "quote": "moving the annotations to the attribute assignments inside `__init__` seems to fix the problem.",
+        "verification_state": "verified",
+        "flags": []
+      },
+      {
+        "claim_type": "rejection",
+        "claim_text": "Annotating a type in __init__ that does not exist yet would misrepresent the types",
+        "alternative": "Move annotations into __init__",
+        "stance": null,
+        "is_explicit": true,
+        "source_id": "comment:251",
+        "source_kind": "comment",
+        "html_url": "https://github.com/psf/requests/issues/7271#issuecomment-4402573028",
+        "author_login": "nateprewitt",
+        "author_association": "MEMBER",
+        "quote": "seems like we're lying about types to work around this use case. I'd like to avoid that if we can.",
+        "verification_state": "partially_verified",
+        "flags": [
+          "weak_support"
+        ]
+      },
+      {
+        "claim_type": "reason",
+        "claim_text": "Class-level annotations are PEP 526 compliant and match the rest of the dependency chain",
+        "alternative": "Keep class-level annotations",
+        "stance": null,
+        "is_explicit": true,
+        "source_id": "comment:243",
+        "source_kind": "comment",
+        "html_url": "https://github.com/psf/requests/issues/7271#issuecomment-4416447146",
+        "author_login": "nateprewitt",
+        "author_association": "MEMBER",
+        "quote": "What requests is doing is PEP 526 compliant and matches how these concepts are represented in the rest of our dependency chain.",
+        "verification_state": "verified",
+        "flags": []
+      },
+      {
+        "claim_type": "position",
+        "claim_text": "Move annotations into __init__",
+        "alternative": "Move annotations into __init__",
+        "stance": "support",
+        "is_explicit": true,
+        "source_id": "comment:254",
+        "source_kind": "comment",
+        "html_url": "https://github.com/psf/requests/issues/7271#issuecomment-4401573618",
+        "author_login": "edgarrmondragon",
+        "author_association": "NONE",
+        "quote": "FWIW moving the annotations to the attribute assignments inside `__init__` seems to fix the problem.",
+        "verification_state": "verified",
+        "flags": []
+      },
+      {
+        "claim_type": "position",
+        "claim_text": "Move annotations into __init__",
+        "alternative": "Move annotations into __init__",
+        "stance": "oppose",
+        "is_explicit": true,
+        "source_id": "comment:251",
+        "source_kind": "comment",
+        "html_url": "https://github.com/psf/requests/issues/7271#issuecomment-4402573028",
+        "author_login": "nateprewitt",
+        "author_association": "MEMBER",
+        "quote": "Mechanically, I agree it works to move the attributes into `__init__`, but adding a type in `__init__` that doesn't exist yet seems like we're lying about types to work around this use case.",
+        "verification_state": "verified",
+        "flags": []
+      }
+    ],
+    "reviews": [],
+    "history": [
+      {
+        "event": "created",
+        "actor": "extractor:manual-ui-check",
+        "snapshot": {},
+        "details": {
+          "notes": [
+            "'Keep class-level (PEP 526) annotations and fix the issue downstream in requests-cache' is not established by an authoritative, verified statement: kept unresolved.",
+            "Alternative 'Keep class-level annotations': 'selected' changed to 'proposed' by the status rules.",
+            "Alternative 'Move annotations into __init__': 'rejected' changed to 'proposed' by the status rules.",
+            "Rejection reason for 'Move annotations into __init__' dropped: no verified source states it."
+          ]
+        },
+        "created_at": "2026-10-31T19:36:14.969982Z"
+      }
+    ]
+  },
+  "timeline": [
+    {
+      "type": "proposal",
+      "label": "Move annotations into __init__ proposed or supported",
+      "at": "2026-05-07T22:15:02Z",
+      "url": "https://github.com/psf/requests/issues/7271#issuecomment-4401573618",
+      "author": "edgarrmondragon",
+      "quote": "moving the annotations to the attribute assignments inside `__init__` seems to fix the problem.",
+      "verified": true,
+      "source": "github"
+    },
+    {
+      "type": "rejection",
+      "label": "Objection to Move annotations into __init__",
+      "at": "2026-05-08T01:40:00Z",
+      "url": "https://github.com/psf/requests/issues/7271#issuecomment-4402573028",
+      "author": "nateprewitt",
+      "quote": "seems like we're lying about types to work around this use case. I'd like to avoid that if we can.",
+      "verified": false,
+      "source": "github"
+    },
+    {
+      "type": "argument",
+      "label": "Argument against Move annotations into __init__",
+      "at": "2026-05-08T01:40:00Z",
+      "url": "https://github.com/psf/requests/issues/7271#issuecomment-4402573028",
+      "author": "nateprewitt",
+      "quote": "Mechanically, I agree it works to move the attributes into `__init__`, but adding a type in `__init__` that doesn't exist yet seems like we're lying about types to work around this use case.",
+      "verified": true,
+      "source": "github"
+    },
+    {
+      "type": "argument",
+      "label": "Statement cited as a resolution (not an established approval)",
+      "at": "2026-05-10T21:55:01Z",
+      "url": "https://github.com/psf/requests/issues/7271#issuecomment-4416447146",
+      "author": "nateprewitt",
+      "quote": "we're going to defer the patch to requests-cache",
+      "verified": false,
+      "source": "github"
+    },
+    {
+      "type": "proposal",
+      "label": "Keep class-level annotations proposed or supported",
+      "at": "2026-05-10T21:55:01Z",
+      "url": "https://github.com/psf/requests/issues/7271#issuecomment-4416447146",
+      "author": "nateprewitt",
+      "quote": "What requests is doing is PEP 526 compliant",
+      "verified": false,
+      "source": "github"
+    },
+    {
+      "type": "argument",
+      "label": "Reasoning: Class-level annotations are PEP 526 compliant and match the rest of the dependency chain",
+      "at": "2026-05-10T21:55:01Z",
+      "url": "https://github.com/psf/requests/issues/7271#issuecomment-4416447146",
+      "author": "nateprewitt",
+      "quote": "What requests is doing is PEP 526 compliant and matches how these concepts are represented in the rest of our dependency chain.",
+      "verified": true,
+      "source": "github"
+    }
+  ]
+}
