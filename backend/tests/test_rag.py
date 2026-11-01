@@ -228,6 +228,28 @@ def test_client_retries_once_on_invalid_json_then_fails():
         client_with(lambda r: chat("still not json")).chat_json([], AnswerDraft)
 
 
+def test_client_retries_empty_reply_without_echoing_it():
+    sent, replies = [], iter([chat(""), chat(None), chat('{"answer": "ok"}')])
+
+    def handler(r):
+        sent.append(json.loads(r.content)["messages"])
+        return next(replies)
+
+    assert client_with(handler).chat_json([{"role": "user", "content": "q"}], AnswerDraft).answer == "ok"
+    assert all(m == [{"role": "user", "content": "q"}] for m in sent)  # no empty assistant turn sent back
+
+
+def test_client_reads_answer_from_reasoning_field_when_content_is_empty():
+    resp = httpx.Response(200, json={"choices": [{"message": {"content": "", "reasoning": '{"answer": "r"}'},
+                                                  "finish_reason": "stop"}]})
+    assert client_with(lambda r: resp).chat_json([], AnswerDraft).answer == "r"
+
+
+def test_client_empty_replies_report_finish_reason():
+    with pytest.raises(InvalidModelOutput, match=r"empty reply \(finish_reason: length\)"):
+        client_with(lambda r: chat("", finish="length")).chat_json([], AnswerDraft)
+
+
 def test_client_missing_fields_is_invalid_output():
     with pytest.raises(InvalidModelOutput):
         client_with(lambda r: chat('{"citations": []}')).chat_json([], AnswerDraft)

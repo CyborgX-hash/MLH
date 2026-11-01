@@ -105,25 +105,37 @@ class AIClient:
         return resp.json()
 
     def chat_json(self, messages: List[Dict[str, str]], schema: Type[T], max_tokens: int = 1200) -> T:
-        """Ask for JSON matching `schema`; one corrective retry on invalid output."""
+        """Ask for JSON matching `schema`; one corrective retry on invalid output, two retries on an empty reply."""
         convo = list(messages)
-        last_error = ""
-        for attempt in range(2):
+        last_error, corrected = "", False
+        for _ in range(3):
             data = self._post("/chat/completions", {
                 **self.extra_body,
                 "model": self.model, "messages": convo, "temperature": 0, "max_tokens": max_tokens,
                 "response_format": {"type": "json_object"},
             })
             try:
-                content = data["choices"][0]["message"]["content"]
+                choice = data["choices"][0]
+                message = choice["message"]
             except (KeyError, IndexError, TypeError):
                 raise InvalidModelOutput("The AI provider returned an unexpected response shape.") from None
-            if data["choices"][0].get("finish_reason") == "length" and attempt == 1:
+            finish = choice.get("finish_reason") or "unknown"
+            content = message.get("content") or ""
+            if not content.strip():
+                # Some OpenRouter providers return the answer only in the reasoning field, or nothing at all.
+                content = message.get("reasoning") or message.get("reasoning_content") or ""
+            if not content.strip():
+                last_error = f"the model returned an empty reply (finish_reason: {finish})"
+                continue  # nothing to correct; send the same request again
+            if finish == "length" and corrected:
                 raise ContextTooLong("The model ran out of tokens before finishing its answer.")
             try:
                 return schema.model_validate(_extract_json(content))
             except (json.JSONDecodeError, ValueError, ValidationError) as exc:
-                last_error = str(exc).splitlines()[0][:300]
+                last_error = f"{str(exc).splitlines()[0][:300]} (finish_reason: {finish})"
+                if corrected:
+                    break
+                corrected = True
                 convo = messages + [
                     {"role": "assistant", "content": content[:2000]},
                     {"role": "user", "content": f"That was not valid JSON for the required schema ({last_error}). "
