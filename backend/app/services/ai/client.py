@@ -121,10 +121,10 @@ class AIClient:
                 raise InvalidModelOutput("The AI provider returned an unexpected response shape.") from None
             finish = choice.get("finish_reason") or "unknown"
             content = message.get("content") or ""
-            if not content.strip():
-                # Some OpenRouter providers return the answer only in the reasoning field, or nothing at all.
+            if not THINK.sub("", content).strip():
+                # Some OpenRouter providers return the answer only in the reasoning field, or only a <think> trace.
                 content = message.get("reasoning") or message.get("reasoning_content") or ""
-            if not content.strip():
+            if not THINK.sub("", content).strip():
                 last_error = f"the model returned an empty reply (finish_reason: {finish})"
                 continue  # nothing to correct; send the same request again
             if finish == "length" and corrected:
@@ -132,7 +132,8 @@ class AIClient:
             try:
                 return schema.model_validate(_extract_json(content))
             except (json.JSONDecodeError, ValueError, ValidationError) as exc:
-                last_error = f"{str(exc).splitlines()[0][:300]} (finish_reason: {finish})"
+                preview = " ".join(THINK.sub("", content).split())[:80]
+                last_error = f"{str(exc).splitlines()[0][:300]} (finish_reason: {finish}; reply began: {preview!r})"
                 if corrected:
                     break
                 corrected = True

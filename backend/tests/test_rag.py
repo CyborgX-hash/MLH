@@ -245,6 +245,16 @@ def test_client_reads_answer_from_reasoning_field_when_content_is_empty():
     assert client_with(lambda r: resp).chat_json([], AnswerDraft).answer == "r"
 
 
+def test_client_treats_think_only_reply_as_empty():
+    replies = iter([chat("<think>long trace, no answer</think>"), chat('{"answer": "ok"}')])
+    assert client_with(lambda r: next(replies)).chat_json([], AnswerDraft).answer == "ok"
+
+
+def test_client_invalid_reply_error_shows_its_start():
+    with pytest.raises(InvalidModelOutput, match=r"reply began: 'I could not find a decision here\.'"):
+        client_with(lambda r: chat("I could not find a decision here.")).chat_json([], AnswerDraft)
+
+
 def test_client_empty_replies_report_finish_reason():
     with pytest.raises(InvalidModelOutput, match=r"empty reply \(finish_reason: length\)"):
         client_with(lambda r: chat("", finish="length")).chat_json([], AnswerDraft)
