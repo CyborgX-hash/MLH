@@ -37,6 +37,17 @@ export function ConnectPage() {
           DeciTrace collects the repository's history in the background and builds its knowledge base. You can ask
           questions once it has finished.
         </p>
+        <div role="note" className="mt-4 space-y-2 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200">
+          <p>
+            <span className="font-medium">Please wait about 1 minute before connecting.</span> The backend runs on
+            Render's free tier, which sleeps when idle and takes around a minute to start up again.
+          </p>
+          <p>
+            <span className="font-medium">Sync or discussion fetching failing?</span> If syncing your open-source
+            repository or fetching its discussions fails after you connect it, that isn't a bug in the project: the
+            free Qwen API key it uses has expired.
+          </p>
+        </div>
         <label htmlFor="repo-url" className="mt-5 block text-sm font-medium">Repository URL</label>
         <div className="mt-1.5 flex flex-col gap-2 sm:flex-row">
           <input
